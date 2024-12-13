@@ -7,6 +7,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -15,12 +16,34 @@
             font-family: Arial, sans-serif;
             visibility: hidden;
         }
+        .navbar {
+            width: 100%;
+            background-color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 10px 0;
+            text-align: center;
+            z-index: 1;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+        }
         #content {
             text-align: center;
+            margin-top: 80px;
         }
         input[type="text"] {
-            padding: 10px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 20px;
             width: 300px;
             border: 2px solid #333;
             border-radius: 4px;
@@ -28,12 +51,15 @@
         }
         input[type="text"]:focus {
             border-color: #007BFF;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
             outline: none;
         }
     </style>
 </head>
 <body>
+    <div class="navbar">
+        <a href="/gameslist">Games List</a>
+    </div>
     <div id="content">
         <input type="text" id="searchInput" placeholder="Search...">
     </div>
