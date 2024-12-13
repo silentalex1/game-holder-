@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hidden Search Bar</title>
+    <title>Games Holder</title>
     <style>
         body {
             display: flex;
@@ -24,15 +24,29 @@
             width: 300px;
             border: 2px solid #333;
             border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
         }
     </style>
 </head>
 <body>
     <div id="content">
-        <input type="text" placeholder="Search...">
+        <input type="text" id="searchInput" placeholder="Search...">
     </div>
+    <script>
+        document.body.style.visibility = 'visible';
+        document.getElementById("searchInput").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                var query = event.target.value.toLowerCase();
+                if (query === "1v1lol" || query === "1v1") {
+                    window.location.href = "/1v1lol";
+                }
+            }
+        });
+    </script>
 </body>
-<script>
-    document.body.style.visibility = 'visible';
-</script>
 </html>
