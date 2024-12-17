@@ -4,42 +4,77 @@
     <title>Game list</title>
     <style>
         body {
-            background-color: white;
-            color: blue;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            text-align: center;
-            font-size: 2.5em;
+            font-size: 3em;
+            margin-bottom: 0.2em;
+            color: #0073e6;
         }
         h2 {
-            text-align: center;
             font-size: 1.5em;
+            margin-bottom: 1em;
+            color: #005bb5;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 1em auto;
+            padding: 1.5em;
+            max-width: 400px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
         }
         ul {
-            list-style-type: none;
-            text-align: center;
+            list-style: none;
+            padding: 0;
         }
         li {
             margin: 10px 0;
         }
         a {
-            color: blue;
+            color: #0073e6;
             text-decoration: none;
             font-size: 1.2em;
+            transition: color 0.3s, transform 0.3s;
         }
         a:hover {
+            color: #005bb5;
             text-decoration: underline;
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-    <h1>Game list</h1>
-    <h2>Our games list</h2>
-    <ul>
-        <li><a href="/1v1lol">1v1.lol</a></li>
-        <li><a href="/slope">Slope</a></li>
-        <li><a href="/retrobowl">Retro bowl</a></li>
-    </ul>
+    <div class="container">
+        <h1>Game list</h1>
+        <h2>Our games list</h2>
+        <div class="card">
+            <ul>
+                <li><a href="/1v1lol">1v1.lol</a></li>
+                <li><a href="/slope">Slope</a></li>
+                <li><a href="/retrobowl">Retro bowl</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
