@@ -123,6 +123,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 0.5rem 1.5rem rgba(66, 133, 244, 0.3);
+            position: relative;
         }
 
         button:hover {
@@ -204,7 +205,7 @@
     <div class="container">
         <h1>Extension Hub</h1>
         <div class="input-group">
-            <input type="text" id="extensionId" placeholder="Enter Extension ID" autocomplete="off">
+            <input type="text" id="extensionId" placeholder="Enter Chrome Extension ID" autocomplete="off">
             <span class="input-icon">🔗</span>
         </div>
         <button id="installBtn">Install Extension</button>
@@ -227,30 +228,20 @@
         };
 
         const Extension = {
-            validate: id => /^[a-z]{32}$/.test(id.trim()),
-            url: (id, browser) => {
+            validate: id => /^[a-p]{32}$/.test(id.trim()),
+            chromeUrl: id => `https://chrome.google.com/webstore/detail/${id}`,
+            firefoxUrl: id => `https://addons.mozilla.org/addon/${id}`,
+            edgeUrl: id => `https://microsoftedge.microsoft.com/addons/detail/${id}`,
+            installChrome: id => new Promise((resolve, reject) => {
+                chrome.webstore.install(Extension.chromeUrl(id), resolve, reject);
+            }),
+            redirect: (id, browser) => {
                 const urls = {
-                    Chrome: `https://chrome.google.com/webstore/detail/${id}`,
-                    Firefox: `https://addons.mozilla.org/addon/${id}`,
-                    Edge: `https://microsoftedge.microsoft.com/addons/detail/${id}`
+                    Firefox: Extension.firefoxUrl(id),
+                    Edge: Extension.edgeUrl(id),
+                    Other: Extension.chromeUrl(id)
                 };
-                return urls[browser] || urls.Chrome;
-            },
-            async verify(id, browser) {
-                try {
-                    const response = await fetch(Extension.url(id, browser), { method: "HEAD", mode: "no-cors" });
-                    return true;
-                } catch {
-                    return false;
-                }
-            },
-            installChrome(id) {
-                return new Promise((resolve, reject) => {
-                    chrome.webstore.install(Extension.url(id, "Chrome"), resolve, reject);
-                });
-            },
-            redirect(id, browser) {
-                window.open(Extension.url(id, browser), "_blank");
+                window.open(urls[browser] || Extension.chromeUrl(id), "_blank");
             }
         };
 
@@ -273,31 +264,27 @@
             const id = DOM.input.value.trim();
             const browser = Browser.name();
 
-            if (!id) return UI.showStatus("Enter an extension ID.", "var(--error)");
-            if (!Extension.validate(id)) return UI.showStatus("Invalid ID (32 lowercase letters).", "var(--error)");
+            if (!id) return UI.showStatus("Enter a Chrome extension ID.", "var(--error)");
+            if (!Extension.validate(id)) return UI.showStatus("Invalid ID (32 letters, a-p).", "var(--error)");
 
             UI.toggleLoading(true);
-            UI.showStatus(`Checking ${browser} compatibility...`, "var(--primary)");
 
-            const exists = await Extension.verify(id, browser);
-            if (!exists) {
+            if (!Browser.isChrome()) {
+                UI.showStatus(`Redirecting to ${browser} store...`, "var(--primary)");
+                Extension.redirect(id, browser);
                 UI.toggleLoading(false);
-                return UI.showStatus("Extension not found.", "var(--error)");
+                UI.clearInput();
+                return;
             }
 
-            UI.showStatus(`Installing on ${browser}...`, "var(--primary)");
+            UI.showStatus("Installing Chrome extension...", "var(--primary)");
 
             try {
-                if (Browser.isChrome()) {
-                    await Extension.installChrome(id);
-                    UI.showStatus("Installed successfully!", "var(--success)");
-                } else {
-                    Extension.redirect(id, browser);
-                    UI.showStatus(`Opening ${browser} store...`, "var(--success)");
-                }
+                await Extension.installChrome(id);
+                UI.showStatus("Extension installed successfully!", "var(--success)");
                 UI.clearInput();
             } catch (e) {
-                UI.showStatus(`Error: ${e.message || "Installation failed"}`, "var(--error)");
+                UI.showStatus(`Installation failed: ${e.message || "Check ID or domain setup"}`, "var(--error)");
             } finally {
                 UI.toggleLoading(false);
             }
