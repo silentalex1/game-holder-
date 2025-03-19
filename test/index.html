@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extension Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4285f4;
@@ -12,11 +12,11 @@
             --success: #34c759;
             --error: #e74c3c;
             --neutral: #1e293b;
-            --bg-light: #f8fafc;
-            --bg-dark: #e2e8f0;
+            --bg-light: #f9fafb;
+            --bg-dark: #e5e7eb;
             --text: #0f172a;
-            --shadow: rgba(0, 0, 0, 0.15);
-            --highlight: rgba(66, 133, 244, 0.15);
+            --shadow: rgba(0, 0, 0, 0.2);
+            --highlight: rgba(66, 133, 244, 0.2);
             --accent: #facc15;
         }
 
@@ -28,7 +28,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-light), var(--bg-dark));
+            background: linear-gradient(130deg, var(--bg-light), var(--bg-dark));
             min-height: 100vh;
             display: grid;
             place-items: center;
@@ -46,95 +46,95 @@
 
         .orb {
             position: absolute;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.45), transparent);
             border-radius: 50%;
-            animation: drift 18s infinite ease-in-out;
-            filter: blur(30px);
-            opacity: 0.85;
+            animation: drift 16s infinite ease-in-out;
+            filter: blur(35px);
+            opacity: 0.9;
         }
 
-        .orb:nth-child(1) { width: 240px; height: 240px; top: 10%; left: 25%; }
-        .orb:nth-child(2) { width: 200px; height: 200px; top: 75%; left: 65%; }
-        .orb:nth-child(3) { width: 320px; height: 320px; top: 35%; left: 5%; }
+        .orb:nth-child(1) { width: 260px; height: 260px; top: 8%; left: 30%; }
+        .orb:nth-child(2) { width: 220px; height: 220px; top: 80%; left: 60%; }
+        .orb:nth-child(3) { width: 340px; height: 340px; top: 30%; left: 5%; }
 
         .container {
-            background: rgba(255, 255, 255, 0.96);
-            padding: 4rem;
-            border-radius: 2.5rem;
-            box-shadow: 0 2rem 5rem var(--shadow);
+            background: rgba(255, 255, 255, 0.97);
+            padding: 5rem;
+            border-radius: 3rem;
+            box-shadow: 0 2.5rem 6rem var(--shadow);
             text-align: center;
-            animation: rise 1s ease-out;
-            max-width: 45rem;
-            width: 92%;
+            animation: rise 1.2s ease-out;
+            max-width: 50rem;
+            width: 94%;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 3rem;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 3.5rem;
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success));
             -webkit-background-clip: text;
             color: transparent;
             text-transform: uppercase;
-            letter-spacing: 0.35rem;
-            text-shadow: 0 3px 6px var(--highlight);
+            letter-spacing: 0.4rem;
+            text-shadow: 0 4px 8px var(--highlight);
         }
 
         .input-group {
             position: relative;
-            margin-bottom: 3.5rem;
+            margin-bottom: 4rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         input {
             flex: 1;
-            padding: 1.75rem 4.5rem 1.75rem 2.5rem;
+            padding: 2rem 5rem 2rem 3rem;
             border: 2px solid #e5e7eb;
-            border-radius: 3rem;
-            font-size: 1.3rem;
+            border-radius: 3.5rem;
+            font-size: 1.4rem;
             outline: none;
-            transition: all 0.4s ease;
+            transition: all 0.5s ease;
             background: #fff;
-            box-shadow: inset 0 2px 4px var(--shadow);
+            box-shadow: inset 0 3px 6px var(--shadow);
         }
 
         input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 1.25rem var(--highlight);
+            box-shadow: 0 0 1.5rem var(--highlight);
         }
 
         .input-icon {
             position: absolute;
-            right: 2.5rem;
+            right: 3rem;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.75rem;
+            font-size: 2rem;
             color: #64748b;
-            transition: color 0.3s ease, transform 0.3s ease;
+            transition: color 0.4s ease, transform 0.4s ease;
         }
 
         input:focus + .input-icon {
             color: var(--primary);
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.15);
         }
 
         button {
-            padding: 1.5rem 4rem;
-            font-size: 1.4rem;
+            padding: 1.75rem 5rem;
+            font-size: 1.6rem;
             font-weight: 600;
             color: #fff;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             border: none;
-            border-radius: 3rem;
+            border-radius: 3.5rem;
             cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 1rem 2.5rem rgba(66, 133, 244, 0.4);
+            transition: all 0.5s ease;
+            box-shadow: 0 1.25rem 3rem rgba(66, 133, 244, 0.45);
             position: relative;
             overflow: hidden;
         }
@@ -146,25 +146,25 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.7s ease, height 0.7s ease;
+            transition: width 0.8s ease, height 0.8s ease;
         }
 
         button:hover::before {
-            width: 250%;
-            height: 250%;
+            width: 300%;
+            height: 300%;
         }
 
         button:hover {
-            transform: translateY(-0.3rem);
-            box-shadow: 0 1.5rem 3rem rgba(66, 133, 244, 0.5);
+            transform: translateY(-0.4rem);
+            box-shadow: 0 2rem 4rem rgba(66, 133, 244, 0.55);
         }
 
         button:active {
-            transform: scale(0.97);
-            box-shadow: 0 0.75rem 2rem rgba(66, 133, 244, 0.3);
+            transform: scale(0.96);
+            box-shadow: 0 1rem 2.5rem rgba(66, 133, 244, 0.35);
         }
 
         button.loading {
@@ -177,27 +177,28 @@
         button.loading::after {
             content: '';
             position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border: 0.35rem solid #fff;
-            border-top: 0.35rem solid transparent;
+            width: 2.25rem;
+            height: 2.25rem;
+            border: 0.4rem solid #fff;
+            border-top: 0.4rem solid transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.5s linear infinite;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
         .status {
-            margin-top: 2.5rem;
-            font-size: 1.3rem;
+            margin-top: 3rem;
+            font-size: 1.4rem;
             font-weight: 500;
             opacity: 0;
-            transition: opacity 0.6s ease, transform 0.6s ease;
-            transform: translateY(1rem);
-            padding: 0.75rem 1.5rem;
-            border-radius: 1rem;
-            background: rgba(255, 255, 255, 0.7);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+            transform: translateY(1.25rem);
+            padding: 1rem 2rem;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 4px 12px var(--shadow);
         }
 
         .status.visible {
@@ -206,61 +207,66 @@
         }
 
         .history {
-            margin-top: 3rem;
-            font-size: 1rem;
+            margin-top: 3.5rem;
+            font-size: 1.1rem;
             color: var(--text);
-            max-height: 12rem;
+            max-height: 14rem;
             overflow-y: auto;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 1.5rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 2rem;
             display: none;
-            box-shadow: inset 0 2px 4px var(--shadow);
+            box-shadow: inset 0 3px 6px var(--shadow);
         }
 
         .history.visible {
             display: block;
-            animation: fadeIn 0.6s ease-out;
+            animation: fadeIn 0.7s ease-out;
         }
 
         .history-item {
-            padding: 0.75rem 0;
+            padding: 1rem 0;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease;
+            transition: background 0.4s ease;
         }
 
         .history-item:hover {
-            background: rgba(66, 133, 244, 0.05);
+            background: rgba(66, 133, 244, 0.1);
         }
 
         .history-item span {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--accent);
             cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .history-item span:hover {
+            color: var(--primary);
         }
 
         @media (max-width: 480px) {
-            .container { padding: 3rem; }
-            h1 { font-size: 2.4rem; }
-            input { padding: 1.5rem 4rem 1.5rem 2rem; font-size: 1.2rem; }
-            button { padding: 1.25rem 3rem; font-size: 1.3rem; }
-            .status { font-size: 1.1rem; }
-            .history { font-size: 0.9rem; }
+            .container { padding: 3.5rem; }
+            h1 { font-size: 2.8rem; }
+            input { padding: 1.75rem 4.5rem 1.75rem 2.5rem; font-size: 1.3rem; }
+            button { padding: 1.5rem 4rem; font-size: 1.4rem; }
+            .status { font-size: 1.2rem; }
+            .history { font-size: 1rem; }
         }
 
         @keyframes rise {
-            from { opacity: 0; transform: translateY(-4rem); }
+            from { opacity: 0; transform: translateY(-5rem); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes drift {
             0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(3rem, -3.5rem) scale(1.15); }
-            50% { transform: translate(-2.5rem, 3rem) scale(0.85); }
-            75% { transform: translate(3.5rem, 2.5rem) scale(1.1); }
+            25% { transform: translate(4rem, -4rem) scale(1.2); }
+            50% { transform: translate(-3rem, 3.5rem) scale(0.8); }
+            75% { transform: translate(4.5rem, 3rem) scale(1.15); }
         }
 
         @keyframes spin {
@@ -268,7 +274,7 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(0.5rem); }
+            from { opacity: 0; transform: translateY(0.75rem); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -300,70 +306,65 @@
             history: document.getElementById("history")
         };
 
-        const Browser = {
-            isChrome: () => !!window.chrome && !!chrome.webstore,
-            isFirefox: () => navigator.userAgent.includes("Firefox"),
-            isEdge: () => navigator.userAgent.includes("Edg"),
-            name: () => {
-                if (Browser.isChrome()) return "Chrome";
-                if (Browser.isFirefox()) return "Firefox";
-                if (Browser.isEdge()) return "Edge";
-                return "Other";
+        const AI = {
+            detectBrowser: () => {
+                const ua = navigator.userAgent.toLowerCase();
+                const features = {
+                    chrome: !!window.chrome && !!chrome.webstore && !ua.includes("opr") && !ua.includes("edg"),
+                    firefox: ua.includes("firefox") && !ua.includes("seamonkey"),
+                    operagx: ua.includes("opr") && ua.includes("gx")
+                };
+                const weights = {
+                    chrome: features.chrome ? 0.95 : 0,
+                    firefox: features.firefox ? 0.90 : 0,
+                    operagx: features.operagx ? 0.98 : 0
+                };
+                const topMatch = Object.entries(weights).reduce((a, b) => a[1] > b[1] ? a : b, ["unknown", 0]);
+                return topMatch[0] === "unknown" ? "Other" : topMatch[0].charAt(0).toUpperCase() + topMatch[0].slice(1);
             }
         };
 
-        const BackendSimulator = {
+        const Backend = {
             history: JSON.parse(localStorage.getItem("extensionHistory")) || [],
             cache: new Map(),
-            saveHistory: (id, browser) => {
-                const entry = { id, browser, date: new Date().toLocaleString(), status: "Installed" };
-                BackendSimulator.history.unshift(entry);
-                BackendSimulator.history = BackendSimulator.history.slice(0, 5);
-                localStorage.setItem("extensionHistory", JSON.stringify(BackendSimulator.history));
-                BackendSimulator.renderHistory();
+            save: (id, browser) => {
+                Backend.history.unshift({ id, browser, date: new Date().toLocaleString(), status: "Installed" });
+                Backend.history = Backend.history.slice(0, 5);
+                localStorage.setItem("extensionHistory", JSON.stringify(Backend.history));
+                Backend.render();
             },
-            renderHistory: () => {
-                DOM.history.innerHTML = BackendSimulator.history.map(item => 
+            render: () => {
+                DOM.history.innerHTML = Backend.history.map(item => 
                     `<div class="history-item">${item.id} (${item.browser}) - ${item.date} <span onclick="UI.retry('${item.id}')">Retry</span></div>`
                 ).join("");
                 DOM.history.classList.add("visible");
             },
-            fetchExtension: async (id, browser) => {
-                // Simulate fetching extension file from a backend
+            fetch: async (id, browser) => {
                 const key = `${id}-${browser}`;
-                if (BackendSimulator.cache.has(key)) return BackendSimulator.cache.get(key);
+                if (Backend.cache.has(key)) return Backend.cache.get(key);
                 const mockFile = { id, browser, url: `mock://${browser}/${id}.${browser === "Firefox" ? "xpi" : "crx"}` };
-                BackendSimulator.cache.set(key, mockFile);
-                return mockFile;
+                Backend.cache.set(key, mockFile);
+                return new Promise(resolve => setTimeout(() => resolve(mockFile), 500));
             }
         };
 
         const Extension = {
             validate: id => /^[a-z]{32}$/.test(id.trim()),
             installChrome: id => new Promise((resolve, reject) => {
-                chrome.webstore.install(
-                    `https://chrome.google.com/webstore/detail/${id}`,
-                    () => resolve({ success: true }),
+                chrome.webstore.install(`https://chrome.google.com/webstore/detail/${id}`, 
+                    () => resolve({ success: true }), 
                     error => reject(new Error(error))
                 );
             }),
-            installFirefox: async id => {
-                const file = await BackendSimulator.fetchExtension(id, "Firefox");
-                return new Promise((resolve, reject) => {
-                    // Simulate manual install prompt (requires user action)
-                    setTimeout(() => resolve({ success: true, manual: "Download .xpi and drag into Firefox (Developer Mode)" }), 1000);
-                });
-            },
-            installEdge: async id => {
-                const file = await BackendSimulator.fetchExtension(id, "Edge");
-                return new Promise((resolve, reject) => {
-                    // Simulate manual install prompt (requires user action)
-                    setTimeout(() => resolve({ success: true, manual: "Download .crx and drag into Edge (Developer Mode)" }), 1000);
-                });
-            },
-            installOther: async id => {
-                return { success: false, manual: "Browser not supported for direct installation." };
-            }
+            installFirefox: id => Backend.fetch(id, "Firefox").then(file => ({
+                success: true,
+                manual: "Download .xpi and drag into Firefox (Developer Mode required)"
+            })),
+            installOperaGX: id => Backend.fetch(id, "OperaGX").then(file => ({
+                success: true,
+                manual: "Download .crx and drag into Opera GX (Developer Mode required)"
+            })),
+            installOther: () => ({ success: false, manual: "Browser not supported for direct installation" })
         };
 
         const UI = {
@@ -375,45 +376,49 @@
                 DOM.status.textContent = msg;
                 DOM.status.style.color = color;
                 DOM.status.classList.add("visible");
-                setTimeout(() => DOM.status.classList.remove("visible"), 8000);
+                setTimeout(() => DOM.status.classList.remove("visible"), 10000);
             },
             clearInput: () => DOM.input.value = "",
             resetStatus: () => DOM.status.classList.remove("visible"),
             toggleHistory: state => DOM.history.classList.toggle("visible", state),
             retry: id => {
                 DOM.input.value = id;
-                installExtension();
+                install();
             }
         };
 
-        async function installExtension() {
+        async function install() {
             const id = DOM.input.value.trim();
-            const browser = Browser.name();
+            const browser = AI.detectBrowser();
 
-            if (!id) return UI.showStatus("Enter an extension ID.", "var(--error)");
-            if (!Extension.validate(id)) return UI.showStatus("Invalid ID (32 lowercase letters).", "var(--error)");
+            if (!id) return UI.showStatus("Enter an extension ID", "var(--error)");
+            if (!Extension.validate(id)) return UI.showStatus("Invalid ID (32 lowercase letters)", "var(--error)");
 
             UI.toggleLoading(true);
-            UI.showStatus(`Preparing installation for ${browser}...`, "var(--primary)");
+            UI.showStatus(`Installing for ${browser}...`, "var(--primary)");
 
             try {
                 let result;
-                if (Browser.isChrome()) {
-                    result = await Extension.installChrome(id);
-                } else if (Browser.isFirefox()) {
-                    result = await Extension.installFirefox(id);
-                } else if (Browser.isEdge()) {
-                    result = await Extension.installEdge(id);
-                } else {
-                    result = await Extension.installOther(id);
+                switch (browser) {
+                    case "Chrome":
+                        result = await Extension.installChrome(id);
+                        break;
+                    case "Firefox":
+                        result = await Extension.installFirefox(id);
+                        break;
+                    case "OperaGX":
+                        result = await Extension.installOperaGX(id);
+                        break;
+                    default:
+                        result = Extension.installOther();
                 }
 
                 if (result.success) {
                     UI.showStatus(result.manual || "Extension installed successfully!", "var(--success)");
-                    BackendSimulator.saveHistory(id, browser);
+                    Backend.save(id, browser);
                     UI.clearInput();
                 } else {
-                    UI.showStatus(result.manual || "Installation not supported.", "var(--error)");
+                    UI.showStatus(result.manual, "var(--error)");
                 }
             } catch (e) {
                 UI.showStatus(`Failed: ${e.message || "Unknown error"}`, "var(--error)");
@@ -422,10 +427,10 @@
             }
         }
 
-        DOM.btn.addEventListener("click", installExtension);
-        DOM.input.addEventListener("keypress", e => e.key === "Enter" && installExtension());
+        DOM.btn.addEventListener("click", install);
+        DOM.input.addEventListener("keypress", e => e.key === "Enter" && install());
         DOM.input.addEventListener("input", UI.resetStatus);
-        window.addEventListener("load", () => BackendSimulator.history.length && BackendSimulator.renderHistory());
+        window.addEventListener("load", () => Backend.history.length && Backend.render());
     </script>
 </body>
 </html>
