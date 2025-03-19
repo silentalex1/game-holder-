@@ -4,143 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extension Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800&display=swap" rel="stylesheet">
     <style>
-        body {
+        :root {
+            --primary: #4285f4;
+            --secondary: #9b59b6;
+            --success: #34c759;
+            --error: #e74c3c;
+            --neutral: #2c3e50;
+            --bg-light: #eef2f7;
+            --bg-dark: #d1dbe8;
+            --text: #34495e;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(160deg, #eef2f7, #d1dbe8);
-            height: 100vh;
+            background: linear-gradient(160deg, var(--bg-light), var(--bg-dark));
+            min-height: 100vh;
             display: grid;
             place-items: center;
             overflow: hidden;
-            position: relative;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.97);
-            padding: 60px;
-            border-radius: 25px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            animation: emerge 0.9s ease-out;
-            max-width: 550px;
-            width: 90%;
-            position: relative;
-            z-index: 1;
-        }
-
-        h1 {
-            font-size: 3em;
-            font-weight: 800;
-            margin-bottom: 35px;
-            background: linear-gradient(90deg, #4285f4, #9b59b6, #34c759);
-            -webkit-background-clip: text;
-            color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 45px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 20px 60px 20px 25px;
-            border: 2px solid #e5e7eb;
-            border-radius: 35px;
-            font-size: 1.2em;
-            outline: none;
-            transition: all 0.4s ease;
-            box-sizing: border-box;
-            background: #fafafa;
-        }
-
-        input[type="text"]:focus {
-            border-color: #4285f4;
-            background: #fff;
-            box-shadow: 0 0 15px rgba(66, 133, 244, 0.25);
-        }
-
-        .input-icon {
-            position: absolute;
-            right: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.4em;
-            color: #7f8c8d;
-            transition: color 0.3s ease;
-        }
-
-        input:focus + .input-icon {
-            color: #4285f4;
-        }
-
-        button {
-            padding: 18px 50px;
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #fff;
-            background: linear-gradient(90deg, #4285f4, #9b59b6);
-            border: none;
-            border-radius: 35px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(66, 133, 244, 0.4);
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 30px rgba(66, 133, 244, 0.5);
-        }
-
-        button:active {
-            transform: scale(0.98);
-            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
-        }
-
-        button.loading {
-            background: linear-gradient(90deg, #bdc3c7, #95a5a6);
-            cursor: not-allowed;
-            position: relative;
-            transform: scale(1);
-            box-shadow: none;
-        }
-
-        button.loading::after {
-            content: '';
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            border: 4px solid #fff;
-            border-top: 4px solid transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .status {
-            margin-top: 30px;
-            font-size: 1.2em;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.5s ease, transform 0.3s ease;
-            transform: translateY(10px);
-        }
-
-        .status.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .bg-layer {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 0;
             overflow: hidden;
         }
@@ -149,7 +44,7 @@
             position: absolute;
             background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
             border-radius: 50%;
-            animation: float 25s infinite ease-in-out;
+            animation: drift 25s infinite ease-in-out;
             filter: blur(20px);
         }
 
@@ -157,16 +52,141 @@
         .orb:nth-child(2) { width: 150px; height: 150px; top: 65%; left: 75%; }
         .orb:nth-child(3) { width: 300px; height: 300px; top: 45%; left: 5%; }
 
-        @keyframes emerge {
-            from { opacity: 0; transform: translateY(-40px); }
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 1.25rem 3rem var(--shadow);
+            text-align: center;
+            animation: appear 0.8s ease-out;
+            max-width: 35rem;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success));
+            -webkit-background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.25rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1.25rem 3.5rem 1.25rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 2rem;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0.75rem rgba(66, 133, 244, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.25rem;
+            color: #7f8c8d;
+            transition: color 0.3s ease;
+        }
+
+        input:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0.5rem 1.5rem rgba(66, 133, 244, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0.75rem 2rem rgba(66, 133, 244, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+            box-shadow: 0 0.3rem 0.75rem rgba(66, 133, 244, 0.2);
+        }
+
+        button.loading {
+            background: linear-gradient(90deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: scale(1);
+            box-shadow: none;
+        }
+
+        button.loading::after {
+            content: '';
+            position: absolute;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 0.25rem solid #fff;
+            border-top: 0.25rem solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .status {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateY(0.5rem);
+        }
+
+        .status.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 2rem; }
+            h1 { font-size: 2rem; }
+            input { padding: 1rem 3rem 1rem 1.25rem; font-size: 1rem; }
+            button { padding: 0.875rem 2rem; font-size: 1.1rem; }
+        }
+
+        @keyframes appear {
+            from { opacity: 0; transform: translateY(-2.5rem); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes float {
+        @keyframes drift {
             0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -40px) scale(1.1); }
-            50% { transform: translate(-20px, 35px) scale(0.9); }
-            75% { transform: translate(40px, 20px) scale(1.05); }
+            25% { transform: translate(2rem, -2.5rem) scale(1.1); }
+            50% { transform: translate(-1.5rem, 2rem) scale(0.9); }
+            75% { transform: translate(2.5rem, 1.5rem) scale(1.05); }
         }
 
         @keyframes spin {
@@ -184,125 +204,108 @@
     <div class="container">
         <h1>Extension Hub</h1>
         <div class="input-group">
-            <input type="text" id="extensionId" placeholder="Enter Extension ID">
+            <input type="text" id="extensionId" placeholder="Enter Extension ID" autocomplete="off">
             <span class="input-icon">🔗</span>
         </div>
         <button id="installBtn">Install Extension</button>
         <div id="status" class="status"></div>
     </div>
 
-    <script src="https://chrome.google.com/webstore/install-button.js" async></script>
+    <script src="https://chrome.google.com/webstore/install-button.js" async defer></script>
     <script>
-        const installBtn = document.getElementById("installBtn");
-        const extensionIdInput = document.getElementById("extensionId");
-        const statusElement = document.getElementById("status");
+        const DOM = {
+            btn: document.getElementById("installBtn"),
+            input: document.getElementById("extensionId"),
+            status: document.getElementById("status")
+        };
 
         const Browser = {
             isChrome: () => !!window.chrome && !!chrome.webstore,
             isFirefox: () => navigator.userAgent.includes("Firefox"),
             isEdge: () => navigator.userAgent.includes("Edg"),
-            getName: () => {
-                if (Browser.isChrome()) return "Chrome";
-                if (Browser.isFirefox()) return "Firefox";
-                if (Browser.isEdge()) return "Edge";
-                return "Unknown";
-            }
+            name: () => Browser.isChrome() ? "Chrome" : Browser.isFirefox() ? "Firefox" : Browser.isEdge() ? "Edge" : "Other"
         };
 
-        const ExtensionManager = {
-            validateId: (id) => /^[a-z]{32}$/.test(id.trim()),
-            getStoreUrl: (id, browser) => {
-                if (browser === "Chrome") return `https://chrome.google.com/webstore/detail/${id}`;
-                if (browser === "Firefox") return `https://addons.mozilla.org/addon/${id}`;
-                if (browser === "Edge") return `https://microsoftedge.microsoft.com/addons/detail/${id}`;
-                return null;
+        const Extension = {
+            validate: id => /^[a-z]{32}$/.test(id.trim()),
+            url: (id, browser) => {
+                const urls = {
+                    Chrome: `https://chrome.google.com/webstore/detail/${id}`,
+                    Firefox: `https://addons.mozilla.org/addon/${id}`,
+                    Edge: `https://microsoftedge.microsoft.com/addons/detail/${id}`
+                };
+                return urls[browser] || urls.Chrome;
             },
-            async verifyExtension(id, browser) {
-                const url = ExtensionManager.getStoreUrl(id, browser);
+            async verify(id, browser) {
                 try {
-                    const response = await fetch(url, { method: "HEAD", mode: "no-cors" });
-                    return !!url; // Fallback to true if CORS blocks response check
+                    const response = await fetch(Extension.url(id, browser), { method: "HEAD", mode: "no-cors" });
+                    return true;
                 } catch {
                     return false;
                 }
             },
             installChrome(id) {
                 return new Promise((resolve, reject) => {
-                    chrome.webstore.install(
-                        ExtensionManager.getStoreUrl(id, "Chrome"),
-                        resolve,
-                        reject
-                    );
+                    chrome.webstore.install(Extension.url(id, "Chrome"), resolve, reject);
                 });
             },
-            manualInstall(id, browser) {
-                const url = ExtensionManager.getStoreUrl(id, browser);
-                window.open(url, "_blank");
+            redirect(id, browser) {
+                window.open(Extension.url(id, browser), "_blank");
             }
         };
 
-        function toggleLoading(state) {
-            installBtn.disabled = state;
-            installBtn.classList.toggle("loading", state);
-        }
+        const UI = {
+            toggleLoading: state => {
+                DOM.btn.disabled = state;
+                DOM.btn.classList.toggle("loading", state);
+            },
+            showStatus: (msg, color) => {
+                DOM.status.textContent = msg;
+                DOM.status.style.color = color;
+                DOM.status.classList.add("visible");
+                setTimeout(() => DOM.status.classList.remove("visible"), 5000);
+            },
+            clearInput: () => DOM.input.value = "",
+            resetStatus: () => DOM.status.classList.remove("visible")
+        };
 
-        function showStatus(message, color) {
-            statusElement.textContent = message;
-            statusElement.style.color = color;
-            statusElement.classList.add("visible");
-            setTimeout(() => statusElement.classList.remove("visible"), 6000);
-        }
+        async function install() {
+            const id = DOM.input.value.trim();
+            const browser = Browser.name();
 
-        async function handleInstall() {
-            const id = extensionIdInput.value.trim();
-            const browser = Browser.getName();
+            if (!id) return UI.showStatus("Enter an extension ID.", "var(--error)");
+            if (!Extension.validate(id)) return UI.showStatus("Invalid ID (32 lowercase letters).", "var(--error)");
 
-            if (!id) {
-                showStatus("Please enter an extension ID.", "#e74c3c");
-                return;
-            }
+            UI.toggleLoading(true);
+            UI.showStatus(`Checking ${browser} compatibility...`, "var(--primary)");
 
-            if (!ExtensionManager.validateId(id)) {
-                showStatus("Invalid ID (32 lowercase letters).", "#e74c3c");
-                return;
-            }
-
-            toggleLoading(true);
-            showStatus(`Verifying extension for ${browser}...`, "#4285f4");
-
-            const exists = await ExtensionManager.verifyExtension(id, browser);
+            const exists = await Extension.verify(id, browser);
             if (!exists) {
-                toggleLoading(false);
-                showStatus("Extension not found.", "#e74c3c");
-                return;
+                UI.toggleLoading(false);
+                return UI.showStatus("Extension not found.", "var(--error)");
             }
 
-            showStatus(`Installing on ${browser}...`, "#4285f4");
+            UI.showStatus(`Installing on ${browser}...`, "var(--primary)");
 
             try {
                 if (Browser.isChrome()) {
-                    await ExtensionManager.installChrome(id);
-                    showStatus("Installed successfully!", "#34c759");
+                    await Extension.installChrome(id);
+                    UI.showStatus("Installed successfully!", "var(--success)");
                 } else {
-                    ExtensionManager.manualInstall(id, browser);
-                    showStatus(`Redirecting to ${browser} store...`, "#34c759");
+                    Extension.redirect(id, browser);
+                    UI.showStatus(`Opening ${browser} store...`, "var(--success)");
                 }
-                extensionIdInput.value = "";
-            } catch (error) {
-                showStatus(`Failed: ${error.message || "Unknown error"}`, "#e74c3c");
+                UI.clearInput();
+            } catch (e) {
+                UI.showStatus(`Error: ${e.message || "Installation failed"}`, "var(--error)");
             } finally {
-                toggleLoading(false);
+                UI.toggleLoading(false);
             }
         }
 
-        installBtn.addEventListener("click", handleInstall);
-        extensionIdInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") handleInstall();
-        });
-
-        extensionIdInput.addEventListener("input", () => {
-            statusElement.classList.remove("visible");
-        });
+        DOM.btn.addEventListener("click", install);
+        DOM.input.addEventListener("keypress", e => e.key === "Enter" && install());
+        DOM.input.addEventListener("input", UI.resetStatus);
     </script>
 </body>
 </html>
