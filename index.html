@@ -3,171 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games Holder</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #ffffff;
-            opacity: 0;
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: flex;
-            gap: 1.5rem;
-            z-index: 1000;
-        }
-
-        .navbar a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .navbar a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.8s ease forwards;
-        }
-
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            animation: slideUp 1s ease forwards;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        input[type="text"]:focus {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
-            outline: none;
-            transform: scale(1.02);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .navbar {
-                padding: 0.8rem 1.5rem;
-            }
-            .navbar a {
-                font-size: 1rem;
-            }
-        }
-    </style>
+    <title>Login Page</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/gameslist">Games List</a>
-        <a href="#">Featured</a>
-        <a href="#">Categories</a>
-    </nav>
-
-    <section class="hero">
-        <h1>Welcome to Games Holder</h1>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search for games...">
-        </div>
-    </section>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+            <button type="button" id="github-login">Login with GitHub</button>
+        </form>
+        <p>Don't have an account? <a href="#">Sign up</a></p>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById("searchInput");
-            searchInput.addEventListener("keyup", function(event) {
-                if (event.key === "Enter") {
-                    const query = event.target.value.toLowerCase().trim();
-                    if (query === "1v1lol" || query === "1v1") {
-                        window.location.href = "/1v1lol";
-                    }
-                }
-            });
+        document.getElementById('github-login').addEventListener('click', function () {
+            const clientId = 'Ov23liKPq4OqWefDiy2P'; 
+            const redirectUri = 'YOUR_REDIRECT_URI'; 
+            const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+
+            window.location.href = githubAuthUrl;
         });
     </script>
 </body>
