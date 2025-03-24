@@ -26,8 +26,8 @@
 
     <script>
         document.getElementById('github-login').addEventListener('click', function () {
-            const clientId = 'Ov23liKPq4OqWefDiy2P'; 
-            const redirectUri = 'YOUR_REDIRECT_URI'; 
+            const clientId = 'Ov23liKPq4OqWefDiy2P'; // GitHub Client ID
+            const redirectUri = 'https://gameholder.site/callback'; // Your Redirect URI
             const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
 
             window.location.href = githubAuthUrl;
