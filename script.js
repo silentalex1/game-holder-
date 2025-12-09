@@ -2,11 +2,18 @@ const Config = {
     cookiesAllowed: localStorage.getItem('batprox_consent') === 'true',
     
     themes: {
-        void: { p: '#a855f7', bg: '#030303', s: '#0a0a0a', t: '#fff' },
-        midnight: { p: '#6366f1', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
-        ember: { p: '#f43f5e', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
-        glitch: { p: '#22d3ee', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
-        pure: { p: '#000000', bg: '#ffffff', s: '#f4f4f5', t: '#18181b' }
+        void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
+        midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
+        ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
+        glitch: { p: '#22d3ee', rgb: '34, 211, 238', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
+        forest: { p: '#10b981', rgb: '16, 185, 129', bg: '#022c22', s: '#064e3b', t: '#d1fae5' },
+        ocean: { p: '#3b82f6', rgb: '59, 130, 246', bg: '#1e3a8a', s: '#172554', t: '#dbeafe' },
+        sunset: { p: '#f97316', rgb: '249, 115, 22', bg: '#431407', s: '#7c2d12', t: '#ffedd5' },
+        gold: { p: '#eab308', rgb: '234, 179, 8', bg: '#1a190b', s: '#29250b', t: '#fefce8' },
+        cotton: { p: '#f472b6', rgb: '244, 114, 182', bg: '#1f1016', s: '#2e1a22', t: '#fce7f3' },
+        dracula: { p: '#bd93f9', rgb: '189, 147, 249', bg: '#282a36', s: '#44475a', t: '#f8f8f2' },
+        matrix: { p: '#00ff41', rgb: '0, 255, 65', bg: '#000000', s: '#0d0d0d', t: '#e0ffe4' },
+        royal: { p: '#c084fc', rgb: '192, 132, 252', bg: '#170b29', s: '#251b3b', t: '#f3e8ff' }
     },
 
     save: function(key, val) {
@@ -30,34 +37,45 @@ const BatProx = {
     init: function() {
         const input = document.getElementById('master-input');
         
-        
         input.addEventListener('keydown', (e) => {
             e.stopPropagation(); 
             if (e.key === 'Enter') this.route(input.value);
         });
 
         document.getElementById('vm-terminate').addEventListener('click', () => this.kill());
+        document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
     },
 
     route: function(raw) {
         if (!raw) return;
         let url = raw.trim();
-        
-        if (!url.includes('.') || url.includes(' ')) {
-            url = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-        } else if (!url.startsWith('http')) {
-            url = 'https://' + url;
+        let finalTarget = '';
+        let displayLabel = url;
+
+        if (url.includes('roblox.com') || 
+            url.includes('google.com') || 
+            url.includes('discord.com') || 
+            url.includes('youtube.com')) {
+            
+            finalTarget = 'https://www.bing.com/search?q=site:' + encodeURIComponent(url);
+        } else if (!url.includes('.') || url.includes(' ')) {
+            finalTarget = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+        } else {
+            if (!url.startsWith('http')) {
+                finalTarget = 'https://' + url;
+            } else {
+                finalTarget = url;
+            }
         }
 
-        this.boot(url);
+        this.boot(finalTarget, displayLabel);
         document.getElementById('master-input').blur();
     },
 
-    boot: function(target) {
+    boot: function(target, label) {
         this.vm.classList.add('active');
         this.loader.style.width = '0%';
-        this.urlDisplay.innerText = target.substring(0, 50);
-        
+        this.urlDisplay.innerText = label;
         
         setTimeout(() => this.loader.style.width = '70%', 50);
 
@@ -67,8 +85,8 @@ const BatProx = {
             <!DOCTYPE html>
             <html style="height:100%;margin:0;">
             <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-            <body style="margin:0;height:100%;overflow:hidden;">
-                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen></iframe>
+            <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
+                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
             </body>
             </html>
         `;
@@ -92,7 +110,6 @@ const BatProx = {
 
 const UI = {
     init: function() {
-        this.detectDevice();
         this.clock();
         this.text();
         this.handlers();
@@ -100,14 +117,7 @@ const UI = {
         Config.loadSettings();
     },
 
-    detectDevice: function() {
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-            document.body.classList.add('mobile-device');
-        }
-    },
-
     handlers: function() {
-        
         const hub = document.getElementById('hub-layer');
         document.getElementById('menu-btn').onclick = () => {
             hub.classList.add('visible');
@@ -118,7 +128,6 @@ const UI = {
             setTimeout(() => hub.style.visibility = 'hidden', 300);
         };
 
-        
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
         tabs.forEach(t => t.onclick = () => {
@@ -128,7 +137,6 @@ const UI = {
             document.getElementById(`${t.dataset.view}-view`).classList.add('active');
         });
 
-        // Settings Handlers
         const setUi = document.getElementById('settings-ui');
         document.getElementById('settings-btn').onclick = () => {
             setUi.classList.add('active');
@@ -139,7 +147,6 @@ const UI = {
             setTimeout(() => setUi.style.visibility = 'hidden', 300);
         };
 
-        
         document.getElementById('theme-selector').onchange = (e) => {
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
@@ -151,11 +158,10 @@ const UI = {
         if(!t) return;
         const r = document.documentElement.style;
         r.setProperty('--primary', t.p);
+        r.setProperty('--primary-rgb', t.rgb);
         r.setProperty('--bg', t.bg);
         r.setProperty('--surface', t.s);
         r.setProperty('--text', t.t);
-        r.setProperty('--primary-glow', `${t.p}66`);
-        
         
         document.getElementById('theme-selector').value = name;
     },
@@ -212,6 +218,68 @@ const UI = {
     }
 };
 
+const WarpEngine = {
+    canvas: document.getElementById('warp-canvas'),
+    ctx: null,
+    w: 0,
+    h: 0,
+    p: [],
+
+    init: function() {
+        this.ctx = this.canvas.getContext('2d', { alpha: false });
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        for(let i=0; i<350; i++) this.spawn();
+        this.loop();
+    },
+
+    resize: function() {
+        this.w = this.canvas.width = window.innerWidth;
+        this.h = this.canvas.height = window.innerHeight;
+    },
+
+    spawn: function() {
+        this.p.push({
+            x: (Math.random()-0.5) * this.w * 2,
+            y: (Math.random()-0.5) * this.h * 2,
+            z: Math.random() * this.w,
+            sz: Math.random()
+        });
+    },
+
+    loop: function() {
+        this.ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+        this.ctx.fillRect(0, 0, this.w, this.h);
+        
+        const cx = this.w/2;
+        const cy = this.h/2;
+        
+        this.p.forEach(p => {
+            p.z -= 1.5;
+            if(p.z <= 0) {
+                p.z = this.w;
+                p.x = (Math.random()-0.5) * this.w * 2;
+                p.y = (Math.random()-0.5) * this.h * 2;
+            }
+            
+            const k = 250 / (250 + p.z);
+            const x = p.x * k + cx;
+            const y = p.y * k + cy;
+            const s = (1 - p.z/this.w) * 3 * p.sz;
+            const a = (1 - p.z/this.w);
+            
+            if(x>0 && x<this.w && y>0 && y<this.h) {
+                this.ctx.fillStyle = `rgba(255,255,255,${a})`;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, s, 0, Math.PI*2);
+                this.ctx.fill();
+            }
+        });
+        
+        requestAnimationFrame(() => this.loop());
+    }
+};
+
 const VaporEngine = {
     canvas: document.getElementById('vapor-canvas'),
     ctx: null,
@@ -232,29 +300,32 @@ const VaporEngine = {
     },
 
     loop: function() {
-        
         this.ctx.clearRect(0, 0, this.w, this.h);
         
-        if(this.p.length < 100) {
+        const style = getComputedStyle(document.documentElement);
+        const rgb = style.getPropertyValue('--primary-rgb').trim() || '168, 85, 247';
+        
+        if(this.p.length < 130) {
             this.p.push({
-                x: this.w/2 + (Math.random()-0.5)*100,
+                x: this.w/2 + (Math.random()-0.5)*110,
                 y: this.h + 20,
                 v: Math.random()*2 + 1,
-                s: Math.random()*30 + 10,
+                s: Math.random()*30 + 5,
                 l: 1
             });
         }
 
         this.p.forEach((p, i) => {
             p.y -= p.v;
-            p.l -= 0.01;
+            p.l -= 0.009;
+            p.x += Math.sin(p.y * 0.05) * 0.5;
             
             if(p.l <= 0) this.p.splice(i, 1);
             
             this.ctx.beginPath();
             const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.s);
-            g.addColorStop(0, `rgba(255, 255, 255, ${p.l * 0.8})`);
-            g.addColorStop(0.5, `rgba(168, 85, 247, ${p.l * 0.4})`);
+            g.addColorStop(0, `rgba(255, 255, 255, ${p.l * 0.7})`);
+            g.addColorStop(0.4, `rgba(${rgb}, ${p.l * 0.5})`);
             g.addColorStop(1, 'rgba(0,0,0,0)');
             this.ctx.fillStyle = g;
             this.ctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
@@ -268,5 +339,6 @@ const VaporEngine = {
 document.addEventListener('DOMContentLoaded', () => {
     BatProx.init();
     UI.init();
+    WarpEngine.init();
     VaporEngine.init();
 });
