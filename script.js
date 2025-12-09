@@ -3,6 +3,7 @@ const Config = {
     
     themes: {
         void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
+        blossom: { p: '#fbcfe8', rgb: '251, 207, 232', bg: '#1f1016', s: '#29151e', t: '#fce7f3' },
         starwars: { p: '#ffe81f', rgb: '255, 232, 31', bg: '#000000', s: '#111111', t: '#ffe81f' },
         midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
         ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
@@ -25,6 +26,7 @@ const Config = {
         if(this.cookiesAllowed) {
             const savedTheme = localStorage.getItem('batprox_theme');
             if(savedTheme) UI.applyTheme(savedTheme);
+            MediaLibrary.loadSaved();
         }
     }
 };
@@ -34,6 +36,7 @@ const BatProx = {
     frame: document.getElementById('vm-frame'),
     loader: document.querySelector('.vm-loader'),
     urlDisplay: document.getElementById('vm-url-text'),
+    movieControls: document.getElementById('movie-controls'),
 
     init: function() {
         const input = document.getElementById('master-input');
@@ -50,47 +53,59 @@ const BatProx = {
     route: function(raw) {
         if (!raw) return;
         let url = raw.trim();
+        
+        // Google IGU Bypass Strategy for generic browsing
         let finalTarget = '';
-
         if (url.includes('.') && !url.includes(' ')) {
-            if (!url.startsWith('http')) {
-                url = 'https://' + url;
-            }
-            finalTarget = `https://www.google.com/search?igu=1&q=site:${encodeURIComponent(url)}`;
+             if (!url.startsWith('http')) url = 'https://' + url;
+             // IGU=1 allows embedding search results which acts as a gateway
+             finalTarget = `https://www.google.com/search?igu=1&q=site:${encodeURIComponent(url)}`;
         } else {
-            finalTarget = `https://www.google.com/search?igu=1&q=${encodeURIComponent(url)}`;
+             finalTarget = `https://www.google.com/search?igu=1&q=${encodeURIComponent(url)}`;
         }
 
-        this.boot(finalTarget, url);
+        this.boot(finalTarget, url, false);
         document.getElementById('master-input').blur();
     },
 
-    boot: function(target, label) {
+    boot: function(target, label, isMovie = false) {
         this.vm.classList.add('active');
         this.loader.style.width = '0%';
         this.urlDisplay.innerText = label;
         
-        setTimeout(() => this.loader.style.width = '80%', 50);
+        if(isMovie) {
+            this.movieControls.classList.remove('hidden');
+            document.getElementById('current-movie-title').innerText = label;
+        } else {
+            this.movieControls.classList.add('hidden');
+        }
 
+        setTimeout(() => this.loader.style.width = '80%', 50);
         this.frame.src = 'about:blank';
 
-        const blobContent = `
-            <!DOCTYPE html>
-            <html style="height:100%;margin:0;">
-            <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-            <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
-                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
-            </body>
-            </html>
-        `;
-
-        const blob = new Blob([blobContent], { type: 'text/html' });
-        
-        setTimeout(() => {
-            this.frame.src = URL.createObjectURL(blob);
-            this.loader.style.width = '100%';
-            setTimeout(() => this.loader.style.opacity = '0', 300);
-        }, 200);
+        // Direct embed for movies, Blob for proxy
+        if(isMovie) {
+            this.frame.src = target;
+            setTimeout(() => {
+                this.loader.style.width = '100%';
+                setTimeout(() => this.loader.style.opacity = '0', 300);
+            }, 500);
+        } else {
+            const blobContent = `
+                <!DOCTYPE html>
+                <html style="height:100%;margin:0;">
+                <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
+                    <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([blobContent], { type: 'text/html' });
+            setTimeout(() => {
+                this.frame.src = URL.createObjectURL(blob);
+                this.loader.style.width = '100%';
+                setTimeout(() => this.loader.style.opacity = '0', 300);
+            }, 200);
+        }
     },
 
     kill: function() {
@@ -101,55 +116,97 @@ const BatProx = {
     }
 };
 
-const StarWarsEngine = {
-    layer: document.getElementById('starwars-layer'),
-    active: false,
-    interval: null,
+const MediaLibrary = {
+    // Dummy data structure to simulate VidKing API integration
+    data: [
+        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie" },
+        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie" },
+        { title: "Despicable Me 4", img: "https://image.tmdb.org/t/p/w500/wWba3TaojhK7NdsiC69FoxVC16C.jpg", id: "519182", type: "movie" },
+        { title: "Dune: Part Two", img: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", id: "693134", type: "movie" },
+        { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime" },
+        { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv" },
+        { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime" }
+    ],
+    saved: [],
 
-    enable: function() {
-        if(this.active) return;
-        this.active = true;
-        this.layer.style.display = 'block';
-        this.spawnLoop();
-    },
-
-    disable: function() {
-        this.active = false;
-        this.layer.style.display = 'none';
-        this.layer.innerHTML = '';
-        if(this.interval) clearInterval(this.interval);
-    },
-
-    spawnLoop: function() {
-        this.interval = setInterval(() => {
-            if(!this.active) return;
-            this.spawnShip();
-        }, 3000);
-    },
-
-    spawnShip: function() {
-        const ship = document.createElement('div');
-        ship.classList.add('ship-destroyer');
+    init: function() {
+        this.render('movie');
         
-        const detail = document.createElement('div');
-        detail.classList.add('ship-detail');
-        ship.appendChild(detail);
+        document.getElementById('media-type-selector').onchange = (e) => {
+            this.render(e.target.value);
+        };
 
-        const size = Math.random() * 80 + 40;
-        const topPos = Math.random() * 90;
-        const duration = Math.random() * 8 + 12;
+        document.getElementById('save-movie-btn').onclick = () => {
+            const title = document.getElementById('current-movie-title').innerText;
+            const item = this.data.find(x => x.title === title);
+            if(item && !this.saved.find(x => x.id === item.id)) {
+                this.saved.push(item);
+                this.saveToStorage();
+                this.renderSaved();
+                alert('Saved to collection!');
+            }
+        };
+    },
 
-        ship.style.width = `${size}px`;
-        ship.style.height = `${size * 0.6}px`;
-        ship.style.top = `${topPos}%`;
-        ship.style.left = '-120px';
-        ship.style.animation = `fly-across ${duration}s linear`;
+    render: function(type) {
+        const grid = document.getElementById('movies-grid');
+        grid.innerHTML = '';
+        
+        const filtered = this.data.filter(x => type === 'all' || x.type === type || (type === 'anime' && x.type === 'anime'));
+        
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.innerHTML = `
+                <img src="${item.img}" alt="${item.title}">
+                <div class="media-info">
+                    <div class="media-title">${item.title}</div>
+                </div>
+            `;
+            card.onclick = () => this.play(item);
+            grid.appendChild(card);
+        });
+    },
 
-        this.layer.appendChild(ship);
+    renderSaved: function() {
+        const grid = document.getElementById('saved-grid');
+        grid.innerHTML = '';
+        if(this.saved.length === 0) {
+            grid.innerHTML = '<div class="empty-state">No saved media.</div>';
+            return;
+        }
+        this.saved.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'media-card';
+            card.innerHTML = `
+                <img src="${item.img}" alt="${item.title}">
+                <div class="media-info">
+                    <div class="media-title">${item.title}</div>
+                </div>
+            `;
+            card.onclick = () => this.play(item);
+            grid.appendChild(card);
+        });
+    },
 
-        setTimeout(() => {
-            if(ship.parentNode) ship.parentNode.removeChild(ship);
-        }, duration * 1000);
+    play: function(item) {
+        // VidKing Embed Structure
+        const url = `https://vidking.net/embed/${item.type}/${item.id}`;
+        BatProx.boot(url, item.title, true);
+    },
+
+    saveToStorage: function() {
+        if(Config.cookiesAllowed) {
+            localStorage.setItem('batprox_saved_media', JSON.stringify(this.saved));
+        }
+    },
+
+    loadSaved: function() {
+        const s = localStorage.getItem('batprox_saved_media');
+        if(s) {
+            this.saved = JSON.parse(s);
+            this.renderSaved();
+        }
     }
 };
 
@@ -160,6 +217,7 @@ const UI = {
         this.handlers();
         this.cookies();
         Config.loadSettings();
+        MediaLibrary.init();
     },
 
     handlers: function() {
@@ -211,11 +269,15 @@ const UI = {
         
         document.getElementById('theme-selector').value = name;
 
-        if(name === 'starwars') {
-            StarWarsEngine.enable();
-        } else {
-            StarWarsEngine.disable();
-        }
+        // Engine Toggle
+        document.getElementById('starwars-layer').style.display = name === 'starwars' ? 'block' : 'none';
+        if(name === 'starwars') StarWarsEngine.enable(); else StarWarsEngine.disable();
+
+        document.getElementById('blossom-canvas').style.display = name === 'blossom' ? 'block' : 'none';
+        if(name === 'blossom') BlossomEngine.enable(); else BlossomEngine.disable();
+        
+        // Only show fire for void/default like themes
+        if(name !== 'blossom' && name !== 'starwars') VaporEngine.enable(); else VaporEngine.disable();
     },
 
     cookies: function() {
@@ -271,123 +333,134 @@ const UI = {
     }
 };
 
+// --- Theme Engines ---
+
 const WarpEngine = {
     canvas: document.getElementById('warp-canvas'),
-    ctx: null,
-    w: 0,
-    h: 0,
-    p: [],
-
+    ctx: null, w: 0, h: 0, p: [],
     init: function() {
         this.ctx = this.canvas.getContext('2d', { alpha: false });
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
+        this.resize(); window.addEventListener('resize', () => this.resize());
         for(let i=0; i<300; i++) this.spawn();
         this.loop();
     },
-
-    resize: function() {
-        this.w = this.canvas.width = window.innerWidth;
-        this.h = this.canvas.height = window.innerHeight;
-    },
-
-    spawn: function() {
-        this.p.push({
-            x: (Math.random()-0.5) * this.w * 2,
-            y: (Math.random()-0.5) * this.h * 2,
-            z: Math.random() * this.w,
-            sz: Math.random()
-        });
-    },
-
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
+    spawn: function() { this.p.push({ x: (Math.random()-0.5)*this.w*2, y: (Math.random()-0.5)*this.h*2, z: Math.random()*this.w, sz: Math.random() }); },
     loop: function() {
         this.ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
         this.ctx.fillRect(0, 0, this.w, this.h);
-        
-        const cx = this.w/2;
-        const cy = this.h/2;
-        
+        const cx = this.w/2, cy = this.h/2;
         this.p.forEach(p => {
             p.z -= 1.5;
-            if(p.z <= 0) {
-                p.z = this.w;
-                p.x = (Math.random()-0.5) * this.w * 2;
-                p.y = (Math.random()-0.5) * this.h * 2;
-            }
-            
-            const k = 250 / (250 + p.z);
-            const x = p.x * k + cx;
-            const y = p.y * k + cy;
-            const s = (1 - p.z/this.w) * 3 * p.sz;
-            const a = (1 - p.z/this.w);
-            
-            if(x>0 && x<this.w && y>0 && y<this.h) {
+            if(p.z <= 0) { p.z = this.w; p.x = (Math.random()-0.5)*this.w*2; p.y = (Math.random()-0.5)*this.h*2; }
+            const k = 250/(250+p.z);
+            const x = p.x*k+cx, y = p.y*k+cy, s = (1-p.z/this.w)*3*p.sz, a = (1-p.z/this.w);
+            if(x>0&&x<this.w&&y>0&&y<this.h) {
                 this.ctx.fillStyle = `rgba(255,255,255,${a})`;
-                this.ctx.beginPath();
-                this.ctx.arc(x, y, s, 0, Math.PI*2);
-                this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(x,y,s,0,Math.PI*2); this.ctx.fill();
             }
         });
-        
         requestAnimationFrame(() => this.loop());
     }
 };
 
 const VaporEngine = {
     canvas: document.getElementById('vapor-canvas'),
-    ctx: null,
-    w: 0,
-    h: 0,
-    p: [],
-
+    ctx: null, w: 0, h: 0, p: [], active: true,
     init: function() {
-        this.ctx = this.canvas.getContext('2d', { alpha: false });
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
+        this.ctx = this.canvas.getContext('2d', { alpha: true });
+        this.resize(); window.addEventListener('resize', () => this.resize());
         this.loop();
     },
-
-    resize: function() {
-        this.w = this.canvas.width = window.innerWidth;
-        this.h = this.canvas.height = 400;
-    },
-
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = 450; },
+    enable: function() { this.active = true; },
+    disable: function() { this.active = false; this.p = []; this.ctx.clearRect(0,0,this.w,this.h); },
     loop: function() {
+        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0, 0, this.w, this.h);
-        
         const style = getComputedStyle(document.documentElement);
         const rgb = style.getPropertyValue('--primary-rgb').trim() || '168, 85, 247';
-        
         if(this.p.length < 130) {
-            this.p.push({
-                x: this.w/2 + (Math.random()-0.5)*110,
-                y: this.h + 20,
-                v: Math.random()*2 + 1,
-                s: Math.random()*30 + 5,
-                l: 1
-            });
+            this.p.push({ x: this.w/2 + (Math.random()-0.5)*110, y: this.h + 20, v: Math.random()*2 + 1, s: Math.random()*30 + 5, l: 1 });
         }
-
         this.p.forEach((p, i) => {
-            p.y -= p.v;
-            p.l -= 0.009;
-            p.x += Math.sin(p.y * 0.05) * 0.5;
-            
+            p.y -= p.v; p.l -= 0.009; p.x += Math.sin(p.y * 0.05) * 0.5;
             if(p.l <= 0) this.p.splice(i, 1);
-            
-            const safeRadius = Math.max(0, p.s);
-
+            // Fix IndexSizeError by ensuring radius is positive
+            const safeR = Math.max(0.1, p.s);
             this.ctx.beginPath();
-            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeRadius);
+            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeR);
             g.addColorStop(0, `rgba(255, 255, 255, ${Math.max(0, p.l * 0.7)})`);
             g.addColorStop(0.4, `rgba(${rgb}, ${Math.max(0, p.l * 0.5)})`);
             g.addColorStop(1, 'rgba(0,0,0,0)');
             this.ctx.fillStyle = g;
-            this.ctx.arc(p.x, p.y, safeRadius, 0, Math.PI*2);
+            this.ctx.arc(p.x, p.y, safeR, 0, Math.PI*2);
             this.ctx.fill();
         });
-
         requestAnimationFrame(() => this.loop());
+    }
+};
+
+const BlossomEngine = {
+    canvas: document.getElementById('blossom-canvas'),
+    ctx: null, w: 0, h: 0, p: [], active: false,
+    init: function() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize(); window.addEventListener('resize', () => this.resize());
+        this.loop();
+    },
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
+    enable: function() { this.active = true; this.canvas.style.display = 'block'; },
+    disable: function() { this.active = false; this.canvas.style.display = 'none'; this.p = []; },
+    loop: function() {
+        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        this.ctx.clearRect(0, 0, this.w, this.h);
+        if(this.p.length < 50) {
+            this.p.push({ x: Math.random()*this.w, y: -20, v: Math.random()*2+1, r: Math.random()*360, s: Math.random()*5+3 });
+        }
+        this.p.forEach((p, i) => {
+            p.y += p.v; p.x += Math.sin(p.y * 0.01); p.r += 1;
+            if(p.y > this.h) this.p.splice(i, 1);
+            this.ctx.save();
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.r * Math.PI / 180);
+            this.ctx.fillStyle = '#fbcfe8';
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2);
+            this.ctx.fill();
+            this.ctx.restore();
+        });
+        requestAnimationFrame(() => this.loop());
+    }
+};
+
+const StarWarsEngine = {
+    layer: document.getElementById('starwars-layer'),
+    active: false, interval: null,
+    enable: function() { if(this.active) return; this.active = true; this.layer.style.display = 'block'; this.spawnLoop(); },
+    disable: function() { this.active = false; this.layer.style.display = 'none'; this.layer.innerHTML = ''; if(this.interval) clearInterval(this.interval); },
+    spawnLoop: function() {
+        this.interval = setInterval(() => { if(this.active) this.spawnShip(); }, 3000);
+    },
+    spawnShip: function() {
+        const ship = document.createElement('div');
+        ship.classList.add('tie-fighter');
+        ship.innerHTML = '<div class="tie-wing-l"></div><div class="tie-wing-r"></div><div class="tie-center"><div class="tie-window"></div></div>';
+        
+        const size = 0.5 + Math.random();
+        const topPos = Math.random() * 90;
+        const duration = Math.random() * 5 + 10;
+        
+        ship.style.transform = `scale(${size}) rotate(90deg)`;
+        ship.style.top = `${topPos}%`;
+        ship.style.left = '-100px';
+        
+
+        ship.style.transition = `left ${duration}s linear`;
+        this.layer.appendChild(ship);
+        
+        setTimeout(() => ship.style.left = '110%', 50);
+        setTimeout(() => { if(ship.parentNode) ship.parentNode.removeChild(ship); }, duration * 1000);
     }
 };
 
@@ -396,4 +469,5 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.init();
     WarpEngine.init();
     VaporEngine.init();
+    BlossomEngine.init();
 });
