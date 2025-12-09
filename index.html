@@ -26,24 +26,32 @@
             <div class="hub-container">
                 <div id="games-view" class="hub-page active">
                     <h2>Games Library</h2>
-                    <input type="text" class="hub-search" placeholder="Search games...">
+                    <div class="search-wrapper">
+                        <input type="text" class="hub-search" placeholder="Search games...">
+                    </div>
                 </div>
                 <div id="movies-view" class="hub-page">
                     <h2>Movies Library</h2>
-                    <input type="text" class="hub-search" placeholder="Search movies...">
+                    <div class="search-wrapper">
+                        <input type="text" class="hub-search" placeholder="Search movies...">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="vm-interface">
+        <div class="vm-loader"></div>
         <div class="vm-topbar">
             <div class="vm-actions">
                 <span class="vm-btn close" id="vm-terminate"></span>
                 <span class="vm-btn min"></span>
                 <span class="vm-btn max"></span>
             </div>
-            <div class="vm-title">BatProx Virtual Session</div>
+            <div class="vm-address-bar">
+                <span class="lock-icon">🔒</span>
+                <span id="vm-url-text">batprox://secure-connection</span>
+            </div>
         </div>
         <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
     </div>
@@ -55,7 +63,7 @@
             <span></span>
         </button>
 
-        <div id="clock-display">[00:00 PM] - [12/9/2025]</div>
+        <div id="clock-display">00:00 PM - 12/09/2025</div>
 
         <div class="core-assembly">
             <canvas id="vapor-canvas"></canvas>
@@ -65,7 +73,9 @@
             </div>
         </div>
 
-        <div id="dynamic-text">The best proxy of them all. Goes to BatProx.</div>
+        <div class="status-badge">
+            <div id="dynamic-text">The best proxy of them all. Goes to BatProx.</div>
+        </div>
 
     </div>
 
