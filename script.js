@@ -50,28 +50,18 @@ const BatProx = {
     route: function(raw) {
         if (!raw) return;
         let url = raw.trim();
-        let displayLabel = url;
         let finalTarget = '';
 
-        if (!url.includes('.') || url.includes(' ')) {
-            // Search query fallback using DuckDuckGo HTML version (Very permissive)
-            finalTarget = 'https://html.duckduckgo.com/html?q=' + encodeURIComponent(url);
-        } else {
-            // Bypass Logic: Force DDG Lite for known tough sites to avoid "Refused to Connect"
-            if (url.includes('roblox.com') || 
-                url.includes('google.com') || 
-                url.includes('discord.com')) {
-                finalTarget = 'https://html.duckduckgo.com/html?q=site:' + encodeURIComponent(url);
-            } else {
-                if (!url.startsWith('http')) {
-                    finalTarget = 'https://' + url;
-                } else {
-                    finalTarget = url;
-                }
+        if (url.includes('.') && !url.includes(' ')) {
+            if (!url.startsWith('http')) {
+                url = 'https://' + url;
             }
+            finalTarget = `https://www.google.com/search?igu=1&q=site:${encodeURIComponent(url)}`;
+        } else {
+            finalTarget = `https://www.google.com/search?igu=1&q=${encodeURIComponent(url)}`;
         }
 
-        this.boot(finalTarget, displayLabel);
+        this.boot(finalTarget, url);
         document.getElementById('master-input').blur();
     },
 
@@ -89,7 +79,7 @@ const BatProx = {
             <html style="height:100%;margin:0;">
             <head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
             <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
-                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
+                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
             </body>
             </html>
         `;
@@ -134,26 +124,26 @@ const StarWarsEngine = {
         this.interval = setInterval(() => {
             if(!this.active) return;
             this.spawnShip();
-        }, 4000);
+        }, 3000);
     },
 
     spawnShip: function() {
         const ship = document.createElement('div');
         ship.classList.add('ship-destroyer');
         
-        const engine = document.createElement('div');
-        engine.classList.add('ship-engine');
-        ship.appendChild(engine);
+        const detail = document.createElement('div');
+        detail.classList.add('ship-detail');
+        ship.appendChild(detail);
 
-        const size = Math.random() * 60 + 40;
-        const topPos = Math.random() * 80 + 10;
-        const duration = Math.random() * 10 + 15;
+        const size = Math.random() * 80 + 40;
+        const topPos = Math.random() * 90;
+        const duration = Math.random() * 8 + 12;
 
         ship.style.width = `${size}px`;
-        ship.style.height = `${size * 1.5}px`;
+        ship.style.height = `${size * 0.6}px`;
         ship.style.top = `${topPos}%`;
-        ship.style.left = '-100px';
-        ship.style.animation = `fly-across ${duration}s linear infinite`;
+        ship.style.left = '-120px';
+        ship.style.animation = `fly-across ${duration}s linear`;
 
         this.layer.appendChild(ship);
 
@@ -385,13 +375,15 @@ const VaporEngine = {
             
             if(p.l <= 0) this.p.splice(i, 1);
             
+            const safeRadius = Math.max(0, p.s);
+
             this.ctx.beginPath();
-            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.s);
-            g.addColorStop(0, `rgba(255, 255, 255, ${p.l * 0.7})`);
-            g.addColorStop(0.4, `rgba(${rgb}, ${p.l * 0.5})`);
+            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeRadius);
+            g.addColorStop(0, `rgba(255, 255, 255, ${Math.max(0, p.l * 0.7)})`);
+            g.addColorStop(0.4, `rgba(${rgb}, ${Math.max(0, p.l * 0.5)})`);
             g.addColorStop(1, 'rgba(0,0,0,0)');
             this.ctx.fillStyle = g;
-            this.ctx.arc(p.x, p.y, p.s, 0, Math.PI*2);
+            this.ctx.arc(p.x, p.y, safeRadius, 0, Math.PI*2);
             this.ctx.fill();
         });
 
