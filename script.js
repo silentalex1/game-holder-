@@ -1,473 +1,575 @@
-const Config = {
-    cookiesAllowed: localStorage.getItem('batprox_consent') === 'true',
-    
-    themes: {
-        void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
-        blossom: { p: '#fbcfe8', rgb: '251, 207, 232', bg: '#1f1016', s: '#29151e', t: '#fce7f3' },
-        starwars: { p: '#ffe81f', rgb: '255, 232, 31', bg: '#000000', s: '#111111', t: '#ffe81f' },
-        midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
-        ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
-        glitch: { p: '#22d3ee', rgb: '34, 211, 238', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
-        forest: { p: '#10b981', rgb: '16, 185, 129', bg: '#022c22', s: '#064e3b', t: '#d1fae5' },
-        ocean: { p: '#3b82f6', rgb: '59, 130, 246', bg: '#1e3a8a', s: '#172554', t: '#dbeafe' },
-        sunset: { p: '#f97316', rgb: '249, 115, 22', bg: '#431407', s: '#7c2d12', t: '#ffedd5' },
-        gold: { p: '#eab308', rgb: '234, 179, 8', bg: '#1a190b', s: '#29250b', t: '#fefce8' },
-        cotton: { p: '#f472b6', rgb: '244, 114, 182', bg: '#1f1016', s: '#2e1a22', t: '#fce7f3' },
-        dracula: { p: '#bd93f9', rgb: '189, 147, 249', bg: '#282a36', s: '#44475a', t: '#f8f8f2' },
-        matrix: { p: '#00ff41', rgb: '0, 255, 65', bg: '#000000', s: '#0d0d0d', t: '#e0ffe4' },
-        royal: { p: '#c084fc', rgb: '192, 132, 252', bg: '#170b29', s: '#251b3b', t: '#f3e8ff' }
-    },
+:root {
+    --primary: #a855f7;
+    --primary-rgb: 168, 85, 247;
+    --bg: #030303;
+    --surface: #0a0a0a;
+    --text: #ffffff;
+    --text-dim: #a1a1aa;
+    --border: rgba(255, 255, 255, 0.1);
+}
 
-    save: function(key, val) {
-        if(this.cookiesAllowed) localStorage.setItem(key, val);
-    },
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    loadSettings: function() {
-        if(this.cookiesAllowed) {
-            const savedTheme = localStorage.getItem('batprox_theme');
-            if(savedTheme) UI.applyTheme(savedTheme);
-            MediaLibrary.loadSaved();
-        }
-    }
-};
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    transition: background-color 0.5s ease;
+}
 
-const BatProx = {
-    vm: document.getElementById('vm-interface'),
-    frame: document.getElementById('vm-frame'),
-    loader: document.querySelector('.vm-loader'),
-    urlDisplay: document.getElementById('vm-url-text'),
-    movieControls: document.getElementById('movie-controls'),
+input, select {
+    user-select: text;
+    pointer-events: auto;
+    font-family: inherit;
+}
 
-    init: function() {
-        const input = document.getElementById('master-input');
-        
-        input.addEventListener('keydown', (e) => {
-            e.stopPropagation(); 
-            if (e.key === 'Enter') this.route(input.value);
-        });
+#theme-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
 
-        document.getElementById('vm-terminate').addEventListener('click', () => this.kill());
-        document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
-    },
+#warp-canvas, #blossom-canvas, #starwars-layer, #ocean-layer, #retro-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
 
-    route: function(raw) {
-        if (!raw) return;
-        let url = raw.trim();
-        
-        // Google IGU Bypass Strategy for generic browsing
-        let finalTarget = '';
-        if (url.includes('.') && !url.includes(' ')) {
-             if (!url.startsWith('http')) url = 'https://' + url;
-             // IGU=1 allows embedding search results which acts as a gateway
-             finalTarget = `https://www.google.com/search?igu=1&q=site:${encodeURIComponent(url)}`;
-        } else {
-             finalTarget = `https://www.google.com/search?igu=1&q=${encodeURIComponent(url)}`;
-        }
+#ocean-layer {
+    background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 50%, #172554 100%);
+    overflow: hidden;
+}
+#ocean-layer::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 40%;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 2px,
+        transparent 2px,
+        transparent 40px
+    );
+    animation: ocean-move 10s linear infinite;
+    transform: perspective(500px) rotateX(60deg);
+    opacity: 0.3;
+}
+@keyframes ocean-move { from { transform: perspective(500px) rotateX(60deg) translateX(0); } to { transform: perspective(500px) rotateX(60deg) translateX(-50%); } }
 
-        this.boot(finalTarget, url, false);
-        document.getElementById('master-input').blur();
-    },
+#retro-layer {
+    background: linear-gradient(180deg, #2a0a18 0%, #4a042e 60%, #a21caf 100%);
+    overflow: hidden;
+}
+#retro-layer::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(180deg, #facc15 0%, #ea580c 100%);
+    border-radius: 50%;
+    transform: translateX(-50%) translateY(30%);
+    box-shadow: 0 0 100px #ea580c;
+    opacity: 0.8;
+}
+#retro-layer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+}
 
-    boot: function(target, label, isMovie = false) {
-        this.vm.classList.add('active');
-        this.loader.style.width = '0%';
-        this.urlDisplay.innerText = label;
-        
-        if(isMovie) {
-            this.movieControls.classList.remove('hidden');
-            document.getElementById('current-movie-title').innerText = label;
-        } else {
-            this.movieControls.classList.add('hidden');
-        }
+.tie-fighter {
+    position: absolute;
+    width: 40px;
+    height: 34px;
+    z-index: 0;
+}
+.tie-wing-l, .tie-wing-r {
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    background: #94a3b8;
+    border: 1px solid #475569;
+    clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 90%);
+}
+.tie-wing-r { right: 0; transform: scaleX(-1); }
+.tie-center {
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    width: 24px;
+    height: 14px;
+    background: #64748b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tie-window {
+    width: 8px;
+    height: 8px;
+    background: #000;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
 
-        setTimeout(() => this.loader.style.width = '80%', 50);
-        this.frame.src = 'about:blank';
+.top-controls {
+    position: fixed;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+    pointer-events: auto;
+}
 
-        // Direct embed for movies, Blob for proxy
-        if(isMovie) {
-            this.frame.src = target;
-            setTimeout(() => {
-                this.loader.style.width = '100%';
-                setTimeout(() => this.loader.style.opacity = '0', 300);
-            }, 500);
-        } else {
-            const blobContent = `
-                <!DOCTYPE html>
-                <html style="height:100%;margin:0;">
-                <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
-                    <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
-                </body>
-                </html>
-            `;
-            const blob = new Blob([blobContent], { type: 'text/html' });
-            setTimeout(() => {
-                this.frame.src = URL.createObjectURL(blob);
-                this.loader.style.width = '100%';
-                setTimeout(() => this.loader.style.opacity = '0', 300);
-            }, 200);
-        }
-    },
+.navigation {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    z-index: 1000;
+    pointer-events: auto;
+}
 
-    kill: function() {
-        this.vm.classList.remove('active');
-        this.loader.style.width = '0%';
-        this.loader.style.opacity = '1';
-        setTimeout(() => this.frame.src = 'about:blank', 300);
-    }
-};
+.nav-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+}
+.nav-link:hover { color: var(--text); border-color: var(--primary); box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4); }
 
-const MediaLibrary = {
-    // Dummy data structure to simulate VidKing API integration
-    data: [
-        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie" },
-        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie" },
-        { title: "Despicable Me 4", img: "https://image.tmdb.org/t/p/w500/wWba3TaojhK7NdsiC69FoxVC16C.jpg", id: "519182", type: "movie" },
-        { title: "Dune: Part Two", img: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", id: "693134", type: "movie" },
-        { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime" },
-        { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv" },
-        { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime" }
-    ],
-    saved: [],
+.main-ui {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.main-ui > * { pointer-events: auto; }
 
-    init: function() {
-        this.render('movie');
-        
-        document.getElementById('media-type-selector').onchange = (e) => {
-            this.render(e.target.value);
-        };
+#menu-btn, #settings-btn {
+    width: 42px;
+    height: 42px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+#menu-btn { flex-direction: column; gap: 6px; }
+#menu-btn span { display: block; width: 20px; height: 2px; background: var(--text); transition: 0.3s; }
+#menu-btn:hover span { background: var(--primary); width: 24px; }
+#settings-btn { font-size: 20px; }
+#menu-btn:hover, #settings-btn:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3); color: var(--primary); }
 
-        document.getElementById('save-movie-btn').onclick = () => {
-            const title = document.getElementById('current-movie-title').innerText;
-            const item = this.data.find(x => x.title === title);
-            if(item && !this.saved.find(x => x.id === item.id)) {
-                this.saved.push(item);
-                this.saveToStorage();
-                this.renderSaved();
-                alert('Saved to collection!');
-            }
-        };
-    },
+#clock-display {
+    position: absolute;
+    top: 20%;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
 
-    render: function(type) {
-        const grid = document.getElementById('movies-grid');
-        grid.innerHTML = '';
-        
-        const filtered = this.data.filter(x => type === 'all' || x.type === type || (type === 'anime' && x.type === 'anime'));
-        
-        filtered.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}">
-                <div class="media-info">
-                    <div class="media-title">${item.title}</div>
-                </div>
-            `;
-            card.onclick = () => this.play(item);
-            grid.appendChild(card);
-        });
-    },
+.core-assembly {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 40px;
+}
 
-    renderSaved: function() {
-        const grid = document.getElementById('saved-grid');
-        grid.innerHTML = '';
-        if(this.saved.length === 0) {
-            grid.innerHTML = '<div class="empty-state">No saved media.</div>';
-            return;
-        }
-        this.saved.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}">
-                <div class="media-info">
-                    <div class="media-title">${item.title}</div>
-                </div>
-            `;
-            card.onclick = () => this.play(item);
-            grid.appendChild(card);
-        });
-    },
+#vapor-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
 
-    play: function(item) {
-        // VidKing Embed Structure
-        const url = `https://vidking.net/embed/${item.type}/${item.id}`;
-        BatProx.boot(url, item.title, true);
-    },
+.input-housing {
+    position: relative;
+    z-index: 20;
+    padding: 2px;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(var(--primary-rgb), 0.2);
+    transform: translateZ(0);
+}
+.input-housing::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent 20%, transparent 80%, var(--primary) 90%, transparent 100%);
+    animation: border-spin 3s linear infinite;
+}
+@keyframes border-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    saveToStorage: function() {
-        if(Config.cookiesAllowed) {
-            localStorage.setItem('batprox_saved_media', JSON.stringify(this.saved));
-        }
-    },
+#master-input {
+    position: relative;
+    z-index: 2;
+    width: 400px;
+    padding: 20px 24px;
+    background: var(--surface);
+    color: var(--text);
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 14px;
+    transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#master-input:focus { width: 600px; }
 
-    loadSaved: function() {
-        const s = localStorage.getItem('batprox_saved_media');
-        if(s) {
-            this.saved = JSON.parse(s);
-            this.renderSaved();
-        }
-    }
-};
+.status-badge {
+    margin-top: 50px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    padding: 12px 30px;
+    border-radius: 100px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 320px;
+}
+#dynamic-text { color: var(--text); font-size: 14px; opacity: 1; transition: 0.3s; text-align: center; }
+.text-cycle { opacity: 0 !important; transform: translateY(5px); }
 
-const UI = {
-    init: function() {
-        this.clock();
-        this.text();
-        this.handlers();
-        this.cookies();
-        Config.loadSettings();
-        MediaLibrary.init();
-    },
+/* Hub Interface */
+#hub-layer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(40px);
+    z-index: 800;
+    opacity: 0;
+    visibility: hidden; 
+    transition: opacity 0.3s, visibility 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#hub-layer.visible { opacity: 1; visibility: visible; }
+.hub-window {
+    width: 90%;
+    max-width: 1200px;
+    height: 85%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.9);
+    transform: scale(0.95);
+    transition: transform 0.3s;
+}
+#hub-layer.visible .hub-window { transform: scale(1); }
+#hub-exit {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    background: rgba(255,255,255,0.05);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#hub-exit:hover { background: #ef4444; color: white; }
 
-    handlers: function() {
-        const hub = document.getElementById('hub-layer');
-        document.getElementById('menu-btn').onclick = () => {
-            hub.classList.add('visible');
-            hub.style.visibility = 'visible';
-        };
-        document.getElementById('hub-exit').onclick = () => {
-            hub.classList.remove('visible');
-            setTimeout(() => hub.style.visibility = 'hidden', 300);
-        };
+.hub-tabs {
+    display: flex;
+    padding: 30px 40px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 30px;
+}
+.tab-link {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    padding: 15px 0;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+}
+.tab-link.active { color: var(--text); }
+.tab-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary);
+    box-shadow: 0 -2px 15px var(--primary);
+}
 
-        const tabs = document.querySelectorAll('.tab-link');
-        const pages = document.querySelectorAll('.hub-page');
-        tabs.forEach(t => t.onclick = () => {
-            tabs.forEach(x => x.classList.remove('active'));
-            pages.forEach(x => x.classList.remove('active'));
-            t.classList.add('active');
-            document.getElementById(`${t.dataset.view}-view`).classList.add('active');
-        });
+.hub-container {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.hub-page {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: 0.4s;
+    overflow-y: auto;
+}
+.hub-page.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.hub-search {
+    background: #18181b;
+    border: 1px solid #333;
+    padding: 14px 24px;
+    border-radius: 100px;
+    width: 400px;
+    color: white;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s;
+    margin-bottom: 30px;
+}
+.hub-search:focus { border-color: var(--primary); width: 450px; }
 
-        const setUi = document.getElementById('settings-ui');
-        document.getElementById('settings-btn').onclick = () => {
-            setUi.classList.add('active');
-            setUi.style.visibility = 'visible';
-        };
-        document.getElementById('settings-close').onclick = () => {
-            setUi.classList.remove('active');
-            setTimeout(() => setUi.style.visibility = 'hidden', 300);
-        };
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
+    width: 100%;
+    max-width: 1000px;
+    padding-bottom: 50px;
+}
 
-        document.getElementById('theme-selector').onchange = (e) => {
-            this.applyTheme(e.target.value);
-            Config.save('batprox_theme', e.target.value);
-        };
-    },
+.media-card {
+    background: #18181b;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    aspect-ratio: 2/3;
+    border: 1px solid var(--border);
+}
+.media-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--primary); }
+.media-card img { width: 100%; height: 100%; object-fit: cover; }
+.media-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    padding: 20px 10px 10px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+.media-card:hover .media-info { transform: translateY(0); }
+.media-title { font-size: 14px; font-weight: 600; text-align: center; color: white; }
+.media-type { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
 
-    applyTheme: function(name) {
-        const t = Config.themes[name];
-        if(!t) return;
-        
-        const r = document.documentElement.style;
-        r.setProperty('--primary', t.p);
-        r.setProperty('--primary-rgb', t.rgb);
-        r.setProperty('--bg', t.bg);
-        r.setProperty('--surface', t.s);
-        r.setProperty('--text', t.t);
-        
-        document.getElementById('theme-selector').value = name;
+/* Ask UI */
+#ask-first-ui {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 1200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+}
+#ask-first-ui.active { opacity: 1; visibility: visible; }
+.ask-window {
+    width: 700px;
+    height: 450px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 100px rgba(var(--primary-rgb), 0.2);
+}
+#ask-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #aaa; cursor: pointer; font-size: 18px; }
+.ask-content { display: flex; width: 100%; height: 100%; }
+.ask-poster { width: 300px; height: 100%; background-size: cover; background-position: center; }
+.ask-details { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+#ask-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; color: var(--text); }
+#ask-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 30px; line-height: 1.6; }
+.ask-actions { display: flex; gap: 15px; }
+.primary-btn { flex: 1; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.secondary-btn { flex: 1; background: transparent; color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; }
 
-        // Engine Toggle
-        document.getElementById('starwars-layer').style.display = name === 'starwars' ? 'block' : 'none';
-        if(name === 'starwars') StarWarsEngine.enable(); else StarWarsEngine.disable();
+/* VM Interface */
+#vm-interface {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+#vm-interface.active { opacity: 1; visibility: visible; pointer-events: auto; }
+.vm-loader { height: 3px; width: 0%; background: var(--primary); transition: width 0.5s ease; box-shadow: 0 0 10px var(--primary); }
+.vm-topbar { height: 44px; background: #0a0a0a; border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+.vm-actions { display: flex; gap: 8px; }
+.vm-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+.vm-btn.close { background: #ff5f56; }
+.vm-btn.min { background: #ffbd2e; }
+.vm-btn.max { background: #27c93f; }
+.vm-address-bar { flex: 1; background: #18181b; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; gap: 8px; margin: 0 30px; border: 1px solid #222; }
+.vm-nav-btn { background: #222; border: 1px solid #333; color: #ccc; font-size: 12px; padding: 5px 14px; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-right: 10px; }
+.vm-nav-btn:hover { background: #ef4444; color: white; border-color: #ef4444; }
+.vm-nav-btn.hidden { display: none; }
+#vm-frame { flex: 1; border: none; background: #000; width: 100%; height: 100%; }
 
-        document.getElementById('blossom-canvas').style.display = name === 'blossom' ? 'block' : 'none';
-        if(name === 'blossom') BlossomEngine.enable(); else BlossomEngine.disable();
-        
-        // Only show fire for void/default like themes
-        if(name !== 'blossom' && name !== 'starwars') VaporEngine.enable(); else VaporEngine.disable();
-    },
+/* Sidebar & Ext */
+#vm-sidebar-trigger {
+    position: absolute;
+    bottom: 20px;
+    right: 0;
+    width: 30px;
+    height: 60px;
+    background: var(--surface);
+    border-radius: 10px 0 0 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: 0.3s;
+    z-index: 600;
+}
+#vm-sidebar-trigger:hover { width: 40px; color: var(--primary); }
+#vm-sidebar {
+    position: absolute;
+    bottom: 90px;
+    right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(20px);
+    transition: 0.3s;
+    z-index: 600;
+}
+#vm-sidebar.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+.sidebar-btn { width: 40px; height: 40px; background: #222; border: 1px solid #333; color: white; border-radius: 8px; cursor: pointer; }
+.sidebar-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-    cookies: function() {
-        if(!localStorage.getItem('batprox_consent')) {
-            setTimeout(() => document.getElementById('cookie-consent').classList.add('show'), 1000);
-        }
+#settings-ui, #extension-ui, #next-ep-ui { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 900; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+#settings-ui.active, #extension-ui.active, #next-ep-ui.active { opacity: 1; visibility: visible; }
+.settings-window, .ext-window, .next-window { width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+.ext-list { margin-top: 20px; }
+.ext-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+.ext-item button { background: #222; color: #ccc; border: 1px solid #333; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+.next-window { text-align: center; }
+.next-actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+#next-play { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; }
+#next-cancel { background: transparent; border: 1px solid #333; color: #ccc; padding: 8px 20px; border-radius: 6px; cursor: pointer; }
 
-        document.getElementById('cookie-yes').onclick = () => {
-            localStorage.setItem('batprox_consent', 'true');
-            Config.cookiesAllowed = true;
-            document.getElementById('cookie-consent').classList.remove('show');
-        };
+#cookie-consent { position: fixed; bottom: 30px; left: 30px; width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: translateY(150%); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); display: block; }
+#cookie-consent.show { transform: translateY(0); }
+.cookie-content h3 { font-size: 16px; margin-bottom: 8px; color: var(--text); font-weight: 600; }
+.cookie-content p { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.5; }
+.cookie-actions { display: flex; gap: 10px; }
+#cookie-yes, #cookie-no { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+#cookie-yes { background: var(--primary); color: white; }
+#cookie-no { background: #222; color: #ccc; }
 
-        document.getElementById('cookie-no').onclick = () => {
-            localStorage.setItem('batprox_consent', 'false');
-            Config.cookiesAllowed = false;
-            document.getElementById('cookie-consent').classList.remove('show');
-        };
-    },
-
-    clock: function() {
-        const el = document.getElementById('clock-display');
-        setInterval(() => {
-            const d = new Date();
-            let h = d.getHours();
-            const ap = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            const m = d.getMinutes().toString().padStart(2, '0');
-            const s = d.getSeconds().toString().padStart(2, '0');
-            const mo = (d.getMonth()+1).toString().padStart(2, '0');
-            const da = d.getDate().toString().padStart(2, '0');
-            el.innerText = `${h}:${m}:${s} ${ap} - ${mo}/${da}/${d.getFullYear()}`;
-        }, 1000);
-    },
-
-    text: function() {
-        const el = document.getElementById('dynamic-text');
-        const msgs = [
-            "The best proxy of them all. Goes to BatProx.",
-            "BatProx was made in 2024 but didn't work now it does and is rewritten.",
-            "BatProx is its own and new proxy.",
-            "Fastest of them all."
-        ];
-        let i = 0;
-        setInterval(() => {
-            el.classList.add('text-cycle');
-            setTimeout(() => {
-                i = (i + 1) % msgs.length;
-                el.innerText = msgs[i];
-                el.classList.remove('text-cycle');
-            }, 300);
-        }, 4000);
-    }
-};
-
-// --- Theme Engines ---
-
-const WarpEngine = {
-    canvas: document.getElementById('warp-canvas'),
-    ctx: null, w: 0, h: 0, p: [],
-    init: function() {
-        this.ctx = this.canvas.getContext('2d', { alpha: false });
-        this.resize(); window.addEventListener('resize', () => this.resize());
-        for(let i=0; i<300; i++) this.spawn();
-        this.loop();
-    },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
-    spawn: function() { this.p.push({ x: (Math.random()-0.5)*this.w*2, y: (Math.random()-0.5)*this.h*2, z: Math.random()*this.w, sz: Math.random() }); },
-    loop: function() {
-        this.ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
-        this.ctx.fillRect(0, 0, this.w, this.h);
-        const cx = this.w/2, cy = this.h/2;
-        this.p.forEach(p => {
-            p.z -= 1.5;
-            if(p.z <= 0) { p.z = this.w; p.x = (Math.random()-0.5)*this.w*2; p.y = (Math.random()-0.5)*this.h*2; }
-            const k = 250/(250+p.z);
-            const x = p.x*k+cx, y = p.y*k+cy, s = (1-p.z/this.w)*3*p.sz, a = (1-p.z/this.w);
-            if(x>0&&x<this.w&&y>0&&y<this.h) {
-                this.ctx.fillStyle = `rgba(255,255,255,${a})`;
-                this.ctx.beginPath(); this.ctx.arc(x,y,s,0,Math.PI*2); this.ctx.fill();
-            }
-        });
-        requestAnimationFrame(() => this.loop());
-    }
-};
-
-const VaporEngine = {
-    canvas: document.getElementById('vapor-canvas'),
-    ctx: null, w: 0, h: 0, p: [], active: true,
-    init: function() {
-        this.ctx = this.canvas.getContext('2d', { alpha: true });
-        this.resize(); window.addEventListener('resize', () => this.resize());
-        this.loop();
-    },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = 450; },
-    enable: function() { this.active = true; },
-    disable: function() { this.active = false; this.p = []; this.ctx.clearRect(0,0,this.w,this.h); },
-    loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
-        this.ctx.clearRect(0, 0, this.w, this.h);
-        const style = getComputedStyle(document.documentElement);
-        const rgb = style.getPropertyValue('--primary-rgb').trim() || '168, 85, 247';
-        if(this.p.length < 130) {
-            this.p.push({ x: this.w/2 + (Math.random()-0.5)*110, y: this.h + 20, v: Math.random()*2 + 1, s: Math.random()*30 + 5, l: 1 });
-        }
-        this.p.forEach((p, i) => {
-            p.y -= p.v; p.l -= 0.009; p.x += Math.sin(p.y * 0.05) * 0.5;
-            if(p.l <= 0) this.p.splice(i, 1);
-            // Fix IndexSizeError by ensuring radius is positive
-            const safeR = Math.max(0.1, p.s);
-            this.ctx.beginPath();
-            const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeR);
-            g.addColorStop(0, `rgba(255, 255, 255, ${Math.max(0, p.l * 0.7)})`);
-            g.addColorStop(0.4, `rgba(${rgb}, ${Math.max(0, p.l * 0.5)})`);
-            g.addColorStop(1, 'rgba(0,0,0,0)');
-            this.ctx.fillStyle = g;
-            this.ctx.arc(p.x, p.y, safeR, 0, Math.PI*2);
-            this.ctx.fill();
-        });
-        requestAnimationFrame(() => this.loop());
-    }
-};
-
-const BlossomEngine = {
-    canvas: document.getElementById('blossom-canvas'),
-    ctx: null, w: 0, h: 0, p: [], active: false,
-    init: function() {
-        this.ctx = this.canvas.getContext('2d');
-        this.resize(); window.addEventListener('resize', () => this.resize());
-        this.loop();
-    },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
-    enable: function() { this.active = true; this.canvas.style.display = 'block'; },
-    disable: function() { this.active = false; this.canvas.style.display = 'none'; this.p = []; },
-    loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
-        this.ctx.clearRect(0, 0, this.w, this.h);
-        if(this.p.length < 50) {
-            this.p.push({ x: Math.random()*this.w, y: -20, v: Math.random()*2+1, r: Math.random()*360, s: Math.random()*5+3 });
-        }
-        this.p.forEach((p, i) => {
-            p.y += p.v; p.x += Math.sin(p.y * 0.01); p.r += 1;
-            if(p.y > this.h) this.p.splice(i, 1);
-            this.ctx.save();
-            this.ctx.translate(p.x, p.y);
-            this.ctx.rotate(p.r * Math.PI / 180);
-            this.ctx.fillStyle = '#fbcfe8';
-            this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2);
-            this.ctx.fill();
-            this.ctx.restore();
-        });
-        requestAnimationFrame(() => this.loop());
-    }
-};
-
-const StarWarsEngine = {
-    layer: document.getElementById('starwars-layer'),
-    active: false, interval: null,
-    enable: function() { if(this.active) return; this.active = true; this.layer.style.display = 'block'; this.spawnLoop(); },
-    disable: function() { this.active = false; this.layer.style.display = 'none'; this.layer.innerHTML = ''; if(this.interval) clearInterval(this.interval); },
-    spawnLoop: function() {
-        this.interval = setInterval(() => { if(this.active) this.spawnShip(); }, 3000);
-    },
-    spawnShip: function() {
-        const ship = document.createElement('div');
-        ship.classList.add('tie-fighter');
-        ship.innerHTML = '<div class="tie-wing-l"></div><div class="tie-wing-r"></div><div class="tie-center"><div class="tie-window"></div></div>';
-        
-        const size = 0.5 + Math.random();
-        const topPos = Math.random() * 90;
-        const duration = Math.random() * 5 + 10;
-        
-        ship.style.transform = `scale(${size}) rotate(90deg)`;
-        ship.style.top = `${topPos}%`;
-        ship.style.left = '-100px';
-        
-
-        ship.style.transition = `left ${duration}s linear`;
-        this.layer.appendChild(ship);
-        
-        setTimeout(() => ship.style.left = '110%', 50);
-        setTimeout(() => { if(ship.parentNode) ship.parentNode.removeChild(ship); }, duration * 1000);
-    }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    BatProx.init();
-    UI.init();
-    WarpEngine.init();
-    VaporEngine.init();
-    BlossomEngine.init();
-});
+@media (max-width: 768px) {
+    #master-input { width: 85vw; }
+    #master-input:focus { width: 92vw; }
+    .hub-window { width: 100%; height: 100%; border-radius: 0; border: none; }
+    .hub-page { padding-top: 80px; }
+    .hub-search { width: 85%; }
+    .top-controls { top: 20px; left: 20px; }
+    .navigation { top: 20px; right: 20px; }
+    #cookie-consent { width: 90%; left: 5%; bottom: 20px; }
+}
