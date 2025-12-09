@@ -1,6 +1,6 @@
 :root {
     --primary: #a855f7;
-    --primary-glow: rgba(168, 85, 247, 0.4);
+    --primary-rgb: 168, 85, 247;
     --bg: #030303;
     --surface: #0a0a0a;
     --text: #ffffff;
@@ -48,6 +48,7 @@ input, select {
     top: 35px;
     right: 35px;
     z-index: 50;
+    background: transparent;
 }
 
 .nav-link {
@@ -58,15 +59,15 @@ input, select {
     padding: 10px 24px;
     border: 1px solid var(--border);
     border-radius: 30px;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
     transition: all 0.3s;
 }
 
 .nav-link:hover {
     color: var(--text);
     border-color: var(--primary);
-    box-shadow: 0 0 15px var(--primary-glow);
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4);
 }
 
 .main-ui {
@@ -131,7 +132,7 @@ input, select {
 
 #menu-btn:hover, #settings-btn:hover {
     border-color: var(--primary);
-    box-shadow: 0 0 15px var(--primary-glow);
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4);
     color: var(--primary);
 }
 
@@ -175,7 +176,7 @@ input, select {
     background: #000;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 0 60px var(--primary-glow);
+    box-shadow: 0 0 60px rgba(var(--primary-rgb), 0.3);
     transform: translateZ(0);
 }
 
@@ -249,7 +250,7 @@ input, select {
     backdrop-filter: blur(30px);
     z-index: 100;
     opacity: 0;
-    visibility: hidden; /* Fixes typing bug */
+    visibility: hidden; 
     transition: opacity 0.3s, visibility 0.3s;
     display: flex;
     justify-content: center;
@@ -486,10 +487,11 @@ input, select {
     border-bottom: 1px solid #222;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 15px;
 }
 
-.vm-actions { display: flex; gap: 8px; margin-right: 20px; }
+.vm-actions { display: flex; gap: 8px; }
 .vm-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
 .vm-btn.close { background: #ff5f56; }
 .vm-btn.min { background: #ffbd2e; }
@@ -506,6 +508,24 @@ input, select {
     font-size: 11px;
     color: #666;
     gap: 6px;
+    margin: 0 20px;
+}
+
+.vm-nav-btn {
+    background: #1f1f1f;
+    border: 1px solid #333;
+    color: #ccc;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.vm-nav-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 #vm-frame { flex: 1; border: none; background: white; }
