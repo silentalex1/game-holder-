@@ -2,145 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #121212;
-            background-image: url('https://www.transparenttextures.com/patterns/dark-fish-skin.png');
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #fff;
-        }
-
-        .login-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 2em;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            width: 320px;
-            text-align: center;
-            animation: fadeIn 1s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            margin-bottom: 1em;
-            font-size: 2.5em;
-            color: #e50914;
-        }
-
-        .input-group {
-            margin-bottom: 1em;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5em;
-            color: #ddd;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75em;
-            box-sizing: border-box;
-            border: none;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            margin-bottom: 1em;
-        }
-
-        input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75em;
-            background-color: #e50914;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 1em;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #b20710;
-        }
-
-        #github-login {
-            background-color: #333;
-        }
-
-        #github-login:hover {
-            background-color: #000;
-        }
-
-        p {
-            margin-top: 1em;
-        }
-
-        a {
-            color: #e50914;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>BatProx</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form id="login-form">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+
+    <canvas id="warp-canvas"></canvas>
+
+    <nav class="navigation">
+        <a href="/ourapi" class="nav-link">Our API</a>
+    </nav>
+
+    <div id="hub-layer">
+        <div class="hub-window">
+            <button id="hub-exit">X</button>
+            <div class="hub-tabs">
+                <button class="tab-link active" data-view="games">Games</button>
+                <button class="tab-link" data-view="movies">Movies</button>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+            <div class="hub-container">
+                <div id="games-view" class="hub-page active">
+                    <h2>Games Library</h2>
+                    <input type="text" class="hub-search" placeholder="Search games...">
+                </div>
+                <div id="movies-view" class="hub-page">
+                    <h2>Movies Library</h2>
+                    <input type="text" class="hub-search" placeholder="Search movies...">
+                </div>
             </div>
-            <button type="submit">Login</button>
-            <button type="button" id="github-login">Login with GitHub</button>
-        </form>
-        <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
     </div>
 
-    <script>
-        document.getElementById('github-login').addEventListener('click', function () {
-            const clientIdArray = ['O', 'v', '2', '3', 'l', 'i', 'K', 'P', 'q', '4', 'O', 'q', 'W', 'e', 'f', 'D', 'i', 'y', '2', 'P'];
-            const redirectUriArray = ['h', 't', 't', 'p', 's', ':', '/', '/', 'g', 'a', 'm', 'e', 'h', 'o', 'l', 'd', 'e', 'r', '.', 's', 'i', 't', 'e', '/', 'c', 'a', 'l', 'l', 'b', 'a', 'c', 'k', '/'];
-            const clientId = clientIdArray.join('');
-            const redirectUri = redirectUriArray.join('');
-            const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+    <div id="vm-interface">
+        <div class="vm-topbar">
+            <div class="vm-actions">
+                <span class="vm-btn close" id="vm-terminate"></span>
+                <span class="vm-btn min"></span>
+                <span class="vm-btn max"></span>
+            </div>
+            <div class="vm-title">BatProx Virtual Session</div>
+        </div>
+        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
+    </div>
 
-            window.location.href = githubAuthUrl;
-        });
+    <div class="main-ui">
+        
+        <button id="menu-btn">
+            <span></span>
+            <span></span>
+        </button>
 
-        document.getElementById('login-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            window.location.href = 'https://gameholder.site/lobby';
-        });
-    </script>
+        <div id="clock-display">[00:00 PM] - [12/9/2025]</div>
+
+        <div class="core-assembly">
+            <canvas id="vapor-canvas"></canvas>
+            
+            <div class="input-housing">
+                <input type="text" id="master-input" spellcheck="false" autocomplete="off" placeholder="Enter any website domains:">
+            </div>
+        </div>
+
+        <div id="dynamic-text">The best proxy of them all. Goes to BatProx.</div>
+
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
