@@ -1,10 +1,13 @@
 const BatProx = {
     vm: document.getElementById('vm-interface'),
     frame: document.getElementById('vm-frame'),
+    loader: document.querySelector('.vm-loader'),
+    urlDisplay: document.getElementById('vm-url-text'),
 
     init: function() {
-        document.getElementById('master-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.route(e.target.value);
+        const input = document.getElementById('master-input');
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') this.route(input.value);
         });
 
         document.getElementById('vm-terminate').addEventListener('click', () => {
@@ -28,23 +31,48 @@ const BatProx = {
 
     boot: function(target) {
         this.vm.classList.add('active');
+        this.loader.style.width = '0%';
+        this.urlDisplay.innerText = target;
+        
+        requestAnimationFrame(() => {
+            this.loader.classList.add('loading');
+        });
+
         this.frame.src = 'about:blank';
 
         const virtualDOM = `
             <!DOCTYPE html>
-            <html style="height:100%;margin:0;">
-            <body style="margin:0;height:100%;overflow:hidden;">
-                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer"></iframe>
+            <html style="height:100%;margin:0;overflow:hidden;">
+            <head>
+                <meta name="referrer" content="no-referrer">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body style="margin:0;height:100%;width:100%;overflow:hidden;background:#fff;">
+                <iframe 
+                    src="${target}" 
+                    style="width:100%;height:100%;border:none;display:block;" 
+                    allowfullscreen
+                    allow="camera; microphone; fullscreen; payment"
+                ></iframe>
             </body>
             </html>
         `;
 
         const blob = new Blob([virtualDOM], { type: 'text/html' });
-        this.frame.src = URL.createObjectURL(blob);
+        
+        setTimeout(() => {
+            this.frame.src = URL.createObjectURL(blob);
+            setTimeout(() => {
+                this.loader.style.opacity = '0';
+            }, 600);
+        }, 400); 
     },
 
     kill: function() {
         this.vm.classList.remove('active');
+        this.loader.classList.remove('loading');
+        this.loader.style.width = '0%';
+        this.loader.style.opacity = '1';
         setTimeout(() => {
             this.frame.src = 'about:blank';
         }, 300);
@@ -63,7 +91,7 @@ const WarpEngine = {
         this.resize();
         window.addEventListener('resize', () => this.resize());
         
-        for (let i = 0; i < 450; i++) {
+        for (let i = 0; i < 350; i++) {
             this.particles.push(this.spawn());
         }
         
@@ -80,19 +108,19 @@ const WarpEngine = {
             x: Math.random() * this.width,
             y: Math.random() * this.height,
             z: Math.random() * this.width,
-            sz: Math.random()
+            sz: Math.random() * 2
         };
     },
 
     render: function() {
-        this.ctx.fillStyle = "#020202";
+        this.ctx.fillStyle = "#030303";
         this.ctx.fillRect(0, 0, this.width, this.height);
         
         const cx = this.width / 2;
         const cy = this.height / 2;
 
         this.particles.forEach(p => {
-            p.z -= 1.5;
+            p.z -= 2; 
             
             if (p.z <= 0) {
                 p.z = this.width;
@@ -100,16 +128,16 @@ const WarpEngine = {
                 p.y = Math.random() * this.height;
             }
 
-            const factor = 200 / (200 + p.z);
+            const factor = 250 / (250 + p.z);
             const x = (p.x - this.width / 2) * factor + cx;
             const y = (p.y - this.height / 2) * factor + cy;
-            const r = (1 - p.z / this.width) * 2.5 * p.sz;
-            const a = 1 - (p.z / this.width);
+            const size = (1 - p.z / this.width) * 2.5 * p.sz;
+            const alpha = (1 - p.z / this.width);
 
             if (x > 0 && x < this.width && y > 0 && y < this.height) {
-                this.ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+                this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
                 this.ctx.beginPath();
-                this.ctx.arc(x, y, r, 0, Math.PI * 2);
+                this.ctx.arc(x, y, size, 0, Math.PI * 2);
                 this.ctx.fill();
             }
         });
@@ -134,19 +162,19 @@ const VaporEngine = {
 
     resize: function() {
         this.w = this.canvas.width = window.innerWidth;
-        this.h = this.canvas.height = 350;
+        this.h = this.canvas.height = 400;
     },
 
     add: function() {
-        const x = this.w / 2 + (Math.random() - 0.5) * 50;
+        const x = this.w / 2 + (Math.random() - 0.5) * 80;
         this.p.push({
             x: x,
-            y: this.h + 20,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: -(Math.random() * 1.2 + 0.8),
+            y: this.h + 50,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: -(Math.random() * 2 + 1.5),
             life: 1,
-            decay: Math.random() * 0.008 + 0.004,
-            size: Math.random() * 20 + 20
+            decay: Math.random() * 0.01 + 0.005,
+            size: Math.random() * 25 + 10
         });
     },
 
@@ -154,20 +182,23 @@ const VaporEngine = {
         this.ctx.clearRect(0, 0, this.w, this.h);
         this.ctx.globalCompositeOperation = 'screen';
 
-        if (this.p.length < 120) this.add();
+        if (this.p.length < 150) {
+            this.add();
+            this.add();
+        }
 
         for (let i = this.p.length - 1; i >= 0; i--) {
             let s = this.p[i];
             s.x += s.vx;
             s.y += s.vy;
             s.life -= s.decay;
-            s.size += 0.15;
+            s.size += 0.2;
 
             if (s.life <= 0) {
                 this.p.splice(i, 1);
             } else {
                 const grad = this.ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size);
-                grad.addColorStop(0, `rgba(220, 220, 255, ${s.life * 0.15})`);
+                grad.addColorStop(0, `rgba(180, 180, 255, ${s.life * 0.3})`);
                 grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
                 
                 this.ctx.fillStyle = grad;
@@ -196,7 +227,9 @@ const UI = {
             const ap = h >= 12 ? 'PM' : 'AM';
             h = h % 12 || 12;
             const m = d.getMinutes().toString().padStart(2, '0');
-            el.innerText = `[${h}:${m} ${ap}] - [${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}]`;
+            const mo = (d.getMonth() + 1).toString().padStart(2, '0');
+            const da = d.getDate().toString().padStart(2, '0');
+            el.innerText = `${h}:${m} ${ap} - ${mo}/${da}/${d.getFullYear()}`;
         }, 1000);
     },
 
@@ -216,8 +249,8 @@ const UI = {
                 idx = (idx + 1) % list.length;
                 el.innerText = list[idx];
                 el.classList.remove('text-cycle');
-            }, 500);
-        }, 5000);
+            }, 300);
+        }, 4000);
     },
 
     hub: function() {
