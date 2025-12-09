@@ -10,6 +10,18 @@
 </head>
 <body>
 
+    <div class="top-controls">
+        <button id="menu-btn">
+            <span></span>
+            <span></span>
+        </button>
+        <button id="settings-btn">⚙</button>
+    </div>
+
+    <nav class="navigation">
+        <a href="/ourapi" class="nav-link">Our API</a>
+    </nav>
+
     <canvas id="warp-canvas"></canvas>
     <div id="starwars-layer"></div>
 
@@ -23,10 +35,6 @@
             </div>
         </div>
     </div>
-
-    <nav class="navigation">
-        <a href="/ourapi" class="nav-link">Our API</a>
-    </nav>
 
     <div id="settings-ui">
         <div class="settings-window">
@@ -91,7 +99,7 @@
             </div>
             <div class="vm-address-bar">
                 <span class="lock-icon">🔒</span>
-                <span id="vm-url-text">batprox://duckduckgo-engine</span>
+                <span id="vm-url-text">batprox://secure-gateway</span>
             </div>
             <div class="vm-actions">
                 <span class="vm-btn min"></span>
@@ -99,19 +107,11 @@
                 <span class="vm-btn close" id="vm-terminate"></span>
             </div>
         </div>
-        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
+        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
     </div>
 
     <div class="main-ui">
         
-        <div class="top-controls">
-            <button id="menu-btn">
-                <span></span>
-                <span></span>
-            </button>
-            <button id="settings-btn">⚙</button>
-        </div>
-
         <div id="clock-display">00:00:00 PM - 12/09/2025</div>
 
         <div class="core-assembly">
