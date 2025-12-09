@@ -24,6 +24,7 @@
 
     <canvas id="warp-canvas"></canvas>
     <div id="starwars-layer"></div>
+    <canvas id="blossom-canvas"></canvas>
 
     <div id="cookie-consent">
         <div class="cookie-content">
@@ -47,7 +48,8 @@
                     <label>Interface Theme</label>
                     <div class="select-wrapper">
                         <select id="theme-selector">
-                            <option value="void">Void (Default)</option>
+                            <option value="void">Void (Fire)</option>
+                            <option value="blossom">Pink Blossom</option>
                             <option value="starwars">Star Wars (Galactic)</option>
                             <option value="midnight">Midnight Purple</option>
                             <option value="ember">Crimson Ember</option>
@@ -73,20 +75,45 @@
             <div class="hub-tabs">
                 <button class="tab-link active" data-view="games">Games</button>
                 <button class="tab-link" data-view="movies">Movies</button>
+                <button class="tab-link" data-view="saved">Saved Movies</button>
             </div>
             <div class="hub-container">
+                
                 <div id="games-view" class="hub-page active">
                     <h2>Games Library</h2>
                     <div class="search-wrapper">
                         <input type="text" class="hub-search" id="game-search" placeholder="Search games...">
                     </div>
-                </div>
-                <div id="movies-view" class="hub-page">
-                    <h2>Movies Library</h2>
-                    <div class="search-wrapper">
-                        <input type="text" class="hub-search" id="movie-search" placeholder="Search movies...">
+                    <div class="content-grid" id="games-grid">
+                        <div class="empty-state">No games loaded.</div>
                     </div>
                 </div>
+
+                <div id="movies-view" class="hub-page">
+                    <div class="movie-header">
+                        <h2>Media Library</h2>
+                        <div class="select-wrapper small">
+                            <select id="media-type-selector">
+                                <option value="movie">Movies</option>
+                                <option value="tv">Shows</option>
+                                <option value="anime">Animes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-wrapper">
+                        <input type="text" class="hub-search" id="movie-search" placeholder="Search media...">
+                    </div>
+                    <div class="content-grid" id="movies-grid">
+                    </div>
+                </div>
+
+                <div id="saved-view" class="hub-page">
+                    <h2>Your Collection</h2>
+                    <div class="content-grid" id="saved-grid">
+                        <div class="empty-state">No saved media.</div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -99,12 +126,25 @@
             </div>
             <div class="vm-address-bar">
                 <span class="lock-icon">🔒</span>
-                <span id="vm-url-text">batprox://secure-gateway</span>
+                <span id="vm-url-text">batprox://secure-node</span>
             </div>
             <div class="vm-actions">
                 <span class="vm-btn min"></span>
                 <span class="vm-btn max"></span>
                 <span class="vm-btn close" id="vm-terminate"></span>
+            </div>
+        </div>
+        <div id="movie-controls" class="hidden">
+            <div class="movie-info">
+                <h3 id="current-movie-title">Movie Title</h3>
+            </div>
+            <div class="movie-actions">
+                <button id="save-movie-btn" class="vm-action-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                    </svg>
+                    Save
+                </button>
             </div>
         </div>
         <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
