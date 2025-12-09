@@ -30,7 +30,7 @@
     <div id="settings-ui">
         <div class="settings-window">
             <div class="settings-header">
-                <h2>System Configuration</h2>
+                <h2>Settings Features</h2>
                 <button id="settings-close">X</button>
             </div>
             <div class="settings-body">
@@ -42,7 +42,14 @@
                             <option value="midnight">Midnight Purple</option>
                             <option value="ember">Crimson Ember</option>
                             <option value="glitch">Cyber Glitch</option>
-                            <option value="pure">Pure White</option>
+                            <option value="forest">Neon Forest</option>
+                            <option value="ocean">Deep Ocean</option>
+                            <option value="sunset">Retro Sunset</option>
+                            <option value="gold">Luxury Gold</option>
+                            <option value="cotton">Cotton Candy</option>
+                            <option value="dracula">Dracula Dark</option>
+                            <option value="matrix">System Matrix</option>
+                            <option value="royal">Royal Blue</option>
                         </select>
                     </div>
                 </div>
@@ -77,14 +84,17 @@
     <div id="vm-interface">
         <div class="vm-loader"></div>
         <div class="vm-topbar">
-            <div class="vm-actions">
-                <span class="vm-btn close" id="vm-terminate"></span>
-                <span class="vm-btn min"></span>
-                <span class="vm-btn max"></span>
+            <div class="vm-left">
+                <button id="vm-exit-browse" class="vm-nav-btn">Exit Browse</button>
             </div>
             <div class="vm-address-bar">
                 <span class="lock-icon">🔒</span>
                 <span id="vm-url-text">batprox://secure-node</span>
+            </div>
+            <div class="vm-actions">
+                <span class="vm-btn min"></span>
+                <span class="vm-btn max"></span>
+                <span class="vm-btn close" id="vm-terminate"></span>
             </div>
         </div>
         <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
