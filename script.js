@@ -3,6 +3,7 @@ const Config = {
     
     themes: {
         void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
+        starwars: { p: '#ffe81f', rgb: '255, 232, 31', bg: '#000000', s: '#111111', t: '#ffe81f' },
         midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
         ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
         glitch: { p: '#22d3ee', rgb: '34, 211, 238', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
@@ -49,22 +50,24 @@ const BatProx = {
     route: function(raw) {
         if (!raw) return;
         let url = raw.trim();
-        let finalTarget = '';
         let displayLabel = url;
+        let finalTarget = '';
 
-        if (url.includes('roblox.com') || 
-            url.includes('google.com') || 
-            url.includes('discord.com') || 
-            url.includes('youtube.com')) {
-            
-            finalTarget = 'https://www.bing.com/search?q=site:' + encodeURIComponent(url);
-        } else if (!url.includes('.') || url.includes(' ')) {
-            finalTarget = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
+        if (!url.includes('.') || url.includes(' ')) {
+            // Search query fallback using DuckDuckGo HTML version (Very permissive)
+            finalTarget = 'https://html.duckduckgo.com/html?q=' + encodeURIComponent(url);
         } else {
-            if (!url.startsWith('http')) {
-                finalTarget = 'https://' + url;
+            // Bypass Logic: Force DDG Lite for known tough sites to avoid "Refused to Connect"
+            if (url.includes('roblox.com') || 
+                url.includes('google.com') || 
+                url.includes('discord.com')) {
+                finalTarget = 'https://html.duckduckgo.com/html?q=site:' + encodeURIComponent(url);
             } else {
-                finalTarget = url;
+                if (!url.startsWith('http')) {
+                    finalTarget = 'https://' + url;
+                } else {
+                    finalTarget = url;
+                }
             }
         }
 
@@ -77,7 +80,7 @@ const BatProx = {
         this.loader.style.width = '0%';
         this.urlDisplay.innerText = label;
         
-        setTimeout(() => this.loader.style.width = '70%', 50);
+        setTimeout(() => this.loader.style.width = '80%', 50);
 
         this.frame.src = 'about:blank';
 
@@ -105,6 +108,58 @@ const BatProx = {
         this.loader.style.width = '0%';
         this.loader.style.opacity = '1';
         setTimeout(() => this.frame.src = 'about:blank', 300);
+    }
+};
+
+const StarWarsEngine = {
+    layer: document.getElementById('starwars-layer'),
+    active: false,
+    interval: null,
+
+    enable: function() {
+        if(this.active) return;
+        this.active = true;
+        this.layer.style.display = 'block';
+        this.spawnLoop();
+    },
+
+    disable: function() {
+        this.active = false;
+        this.layer.style.display = 'none';
+        this.layer.innerHTML = '';
+        if(this.interval) clearInterval(this.interval);
+    },
+
+    spawnLoop: function() {
+        this.interval = setInterval(() => {
+            if(!this.active) return;
+            this.spawnShip();
+        }, 4000);
+    },
+
+    spawnShip: function() {
+        const ship = document.createElement('div');
+        ship.classList.add('ship-destroyer');
+        
+        const engine = document.createElement('div');
+        engine.classList.add('ship-engine');
+        ship.appendChild(engine);
+
+        const size = Math.random() * 60 + 40;
+        const topPos = Math.random() * 80 + 10;
+        const duration = Math.random() * 10 + 15;
+
+        ship.style.width = `${size}px`;
+        ship.style.height = `${size * 1.5}px`;
+        ship.style.top = `${topPos}%`;
+        ship.style.left = '-100px';
+        ship.style.animation = `fly-across ${duration}s linear infinite`;
+
+        this.layer.appendChild(ship);
+
+        setTimeout(() => {
+            if(ship.parentNode) ship.parentNode.removeChild(ship);
+        }, duration * 1000);
     }
 };
 
@@ -156,6 +211,7 @@ const UI = {
     applyTheme: function(name) {
         const t = Config.themes[name];
         if(!t) return;
+        
         const r = document.documentElement.style;
         r.setProperty('--primary', t.p);
         r.setProperty('--primary-rgb', t.rgb);
@@ -164,6 +220,12 @@ const UI = {
         r.setProperty('--text', t.t);
         
         document.getElementById('theme-selector').value = name;
+
+        if(name === 'starwars') {
+            StarWarsEngine.enable();
+        } else {
+            StarWarsEngine.disable();
+        }
     },
 
     cookies: function() {
@@ -192,9 +254,10 @@ const UI = {
             const ap = h >= 12 ? 'PM' : 'AM';
             h = h % 12 || 12;
             const m = d.getMinutes().toString().padStart(2, '0');
+            const s = d.getSeconds().toString().padStart(2, '0');
             const mo = (d.getMonth()+1).toString().padStart(2, '0');
             const da = d.getDate().toString().padStart(2, '0');
-            el.innerText = `${h}:${m} ${ap} - ${mo}/${da}/${d.getFullYear()}`;
+            el.innerText = `${h}:${m}:${s} ${ap} - ${mo}/${da}/${d.getFullYear()}`;
         }, 1000);
     },
 
@@ -229,7 +292,7 @@ const WarpEngine = {
         this.ctx = this.canvas.getContext('2d', { alpha: false });
         this.resize();
         window.addEventListener('resize', () => this.resize());
-        for(let i=0; i<350; i++) this.spawn();
+        for(let i=0; i<300; i++) this.spawn();
         this.loop();
     },
 
