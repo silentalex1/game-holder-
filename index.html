@@ -11,11 +11,12 @@
 <body>
 
     <canvas id="warp-canvas"></canvas>
+    <div id="starwars-layer"></div>
 
     <div id="cookie-consent">
         <div class="cookie-content">
-            <h3>Allow Cookies?</h3>
-            <p>If you allow cookies this will grant more permissions, features, and will save setting automatically.</p>
+            <h3>Allow cookies?</h3>
+            <p>If you allow cookies this will grant more permissions, future features, and will save setting options automatically.</p>
             <div class="cookie-actions">
                 <button id="cookie-yes">Yes</button>
                 <button id="cookie-no">No</button>
@@ -39,6 +40,7 @@
                     <div class="select-wrapper">
                         <select id="theme-selector">
                             <option value="void">Void (Default)</option>
+                            <option value="starwars">Star Wars (Galactic)</option>
                             <option value="midnight">Midnight Purple</option>
                             <option value="ember">Crimson Ember</option>
                             <option value="glitch">Cyber Glitch</option>
@@ -89,7 +91,7 @@
             </div>
             <div class="vm-address-bar">
                 <span class="lock-icon">🔒</span>
-                <span id="vm-url-text">batprox://secure-node</span>
+                <span id="vm-url-text">batprox://duckduckgo-engine</span>
             </div>
             <div class="vm-actions">
                 <span class="vm-btn min"></span>
@@ -110,7 +112,7 @@
             <button id="settings-btn">⚙</button>
         </div>
 
-        <div id="clock-display">00:00 PM - 12/09/2025</div>
+        <div id="clock-display">00:00:00 PM - 12/09/2025</div>
 
         <div class="core-assembly">
             <canvas id="vapor-canvas"></canvas>
