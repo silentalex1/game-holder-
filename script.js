@@ -28,7 +28,8 @@ const Config = {
         UI.applyTheme(savedTheme);
         MediaLibrary.loadSaved();
         if(this.extensionsEnabled) {
-            document.getElementById('ext-toggle').checked = true;
+            const toggle = document.getElementById('ext-toggle');
+            if(toggle) toggle.checked = true;
             BatProx.toggleExtensions(true);
         }
     }
@@ -41,11 +42,15 @@ const BatProx = {
 
     init: function() {
         const input = document.getElementById('master-input');
-        input.addEventListener('keydown', (e) => {
-            e.stopPropagation(); 
-            if (e.key === 'Enter') this.route(input.value);
-        });
-        input.addEventListener('click', (e) => e.stopPropagation());
+        if(input) {
+            input.addEventListener('keydown', (e) => {
+                e.stopPropagation(); 
+                if (e.key === 'Enter') this.route(input.value);
+            });
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
 
         const exitBtn = document.getElementById('vm-exit-browse');
         if(exitBtn) exitBtn.addEventListener('click', () => this.kill());
@@ -78,7 +83,9 @@ const BatProx = {
 
     toggleExtensions: function(enable) {
         const btn = document.getElementById('vm-ext-btn');
-        if(enable) btn.classList.remove('hidden'); else btn.classList.add('hidden');
+        if(btn) {
+            if(enable) btn.classList.remove('hidden'); else btn.classList.add('hidden');
+        }
     },
 
     route: function(raw) {
@@ -197,7 +204,7 @@ const MediaLibrary = {
             }
         };
 
-        document.getElementById('ask-close').onclick = () => document.getElementById('ask-ui').classList.remove('active');
+        document.getElementById('ask-close-main').onclick = () => document.getElementById('ask-ui').classList.remove('active');
         document.getElementById('next-close').onclick = () => document.getElementById('next-ep-ui').classList.remove('active');
         document.getElementById('next-play').onclick = () => {
             document.getElementById('next-ep-ui').classList.remove('active');
@@ -280,15 +287,21 @@ const UI = {
 
     handlers: function() {
         const hub = document.getElementById('hub-layer');
+        const settings = document.getElementById('settings-ui');
+        
         document.getElementById('menu-btn').onclick = (e) => {
             e.stopPropagation();
             hub.classList.add('visible');
         };
-        document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
         
-        hub.onclick = (e) => {
-            if(e.target === hub) hub.classList.remove('visible');
+        document.getElementById('settings-btn').onclick = (e) => {
+            e.stopPropagation();
+            settings.classList.add('active');
         };
+
+        document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
+        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
+        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
 
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
@@ -299,20 +312,6 @@ const UI = {
             t.classList.add('active');
             document.getElementById(`${t.dataset.view}-view`).classList.add('active');
         });
-
-        const settings = document.getElementById('settings-ui');
-        document.getElementById('settings-btn').onclick = (e) => {
-            e.stopPropagation();
-            settings.classList.add('active');
-        };
-        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
-        
-        settings.onclick = (e) => {
-            if(e.target === settings) settings.classList.remove('active');
-        };
-
-        document.getElementById('settings-ui').querySelector('.settings-window').onclick = (e) => e.stopPropagation();
-        document.getElementById('hub-layer').querySelector('.hub-window').onclick = (e) => e.stopPropagation();
 
         document.getElementById('theme-selector').onchange = (e) => {
             e.stopPropagation();
@@ -326,7 +325,6 @@ const UI = {
             Config.save('batprox_ext', e.target.checked);
             BatProx.toggleExtensions(e.target.checked);
         };
-        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
     },
 
     applyTheme: function(name) {
@@ -363,13 +361,15 @@ const UI = {
         if(!localStorage.getItem('batprox_consent')) {
             setTimeout(() => document.getElementById('cookie-consent').classList.add('show'), 500);
         }
-        document.getElementById('cookie-yes').onclick = (e) => {
+        const yesBtn = document.getElementById('cookie-yes');
+        if(yesBtn) yesBtn.onclick = (e) => {
             e.stopPropagation();
             localStorage.setItem('batprox_consent', 'true');
             Config.cookiesAllowed = true;
             document.getElementById('cookie-consent').classList.remove('show');
         };
-        document.getElementById('cookie-no').onclick = (e) => {
+        const noBtn = document.getElementById('cookie-no');
+        if(noBtn) noBtn.onclick = (e) => {
             e.stopPropagation();
             localStorage.setItem('batprox_consent', 'false');
             Config.cookiesAllowed = false;
@@ -379,6 +379,7 @@ const UI = {
 
     clock: function() {
         const el = document.getElementById('clock-display');
+        if(!el) return;
         setInterval(() => {
             const d = new Date();
             let h = d.getHours();
@@ -394,6 +395,7 @@ const UI = {
 
     text: function() {
         const el = document.getElementById('dynamic-text');
+        if(!el) return;
         const msgs = [
             "The best proxy of them all. Goes to BatProx.",
             "BatProx was made in 2024 but didn't work now it does and is rewritten.",
@@ -436,7 +438,7 @@ const WarpEngine = {
             if(x>0&&x<this.w&&y>0&&y<this.h) {
                 this.ctx.fillStyle = `rgba(255,255,255,${a})`;
                 this.ctx.beginPath(); 
-                this.ctx.arc(x,y,s,0,Math.PI*2); 
+                this.ctx.arc(x,y,Math.max(0,s),0,Math.PI*2); 
                 this.ctx.fill();
             }
         });
