@@ -39,6 +39,8 @@
         <div id="retro-grid"></div>
     </div>
 
+    <canvas id="vapor-canvas"></canvas>
+
     <div id="cookie-consent">
         <div class="cookie-content">
             <h3>Allow cookies?</h3>
@@ -61,7 +63,7 @@
                     <label>Interface Theme</label>
                     <div class="select-wrapper">
                         <select id="theme-selector">
-                            <option value="void">Void (Winter/Fire)</option>
+                            <option value="void">Void (Winter Snow)</option>
                             <option value="ocean">Deep Ocean</option>
                             <option value="sunset">Retro Sunset</option>
                             <option value="blossom">Pink Blossom</option>
@@ -79,7 +81,7 @@
                     </div>
                 </div>
                 <div class="setting-item">
-                    <label>Allow Extensions</label>
+                    <label>Browser Extensions</label>
                     <div class="toggle-wrapper">
                         <label class="switch">
                             <input type="checkbox" id="ext-toggle">
@@ -156,9 +158,9 @@
     <div id="next-ep-ui">
         <div class="next-window">
             <h2>Continue Watching?</h2>
-            <p id="next-desc">Continue watching...</p>
+            <p id="next-desc">Continue next show...</p>
             <div class="next-actions">
-                <button id="next-play">Resume</button>
+                <button id="next-play">Play Next Episode</button>
                 <button id="next-close">Close</button>
             </div>
         </div>
@@ -191,7 +193,6 @@
     <div class="main-ui">
         <div id="clock-display">00:00:00 PM - 12/09/2025</div>
         <div class="core-assembly">
-            <canvas id="vapor-canvas"></canvas>
             <div class="input-housing">
                 <input type="text" id="master-input" spellcheck="false" autocomplete="off" placeholder="Enter any website domains:">
             </div>
