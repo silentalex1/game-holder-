@@ -52,50 +52,89 @@
         </div>
     </div>
 
-    <div id="settings-ui">
-        <div class="settings-window">
-            <div class="settings-header">
-                <h2>Settings Features</h2>
-                <button id="settings-close">X</button>
-            </div>
-            <div class="settings-body">
-                <div class="setting-item">
-                    <label>Interface Theme</label>
-                    <div class="select-wrapper">
-                        <select id="theme-selector">
-                            <option value="void">Void (Winter Snow)</option>
-                            <option value="ocean">Deep Ocean</option>
-                            <option value="sunset">Retro Sunset</option>
-                            <option value="blossom">Pink Blossom</option>
-                            <option value="starwars">Star Wars (Galactic)</option>
-                            <option value="midnight">Midnight Purple</option>
-                            <option value="ember">Crimson Ember</option>
-                            <option value="glitch">Cyber Glitch</option>
-                            <option value="forest">Neon Forest</option>
-                            <option value="gold">Luxury Gold</option>
-                            <option value="cotton">Cotton Candy</option>
-                            <option value="dracula">Dracula Dark</option>
-                            <option value="matrix">System Matrix</option>
-                            <option value="royal">Royal Blue</option>
-                        </select>
+    <div id="modal-container">
+        <div id="settings-ui" class="modal-overlay">
+            <div class="modal-window settings-window">
+                <div class="modal-header">
+                    <h2>Settings Features</h2>
+                    <button id="settings-close" class="close-btn">X</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label>Interface Theme</label>
+                        <div class="select-wrapper">
+                            <select id="theme-selector">
+                                <option value="void">Void (Winter Snow)</option>
+                                <option value="ocean">Deep Ocean</option>
+                                <option value="sunset">Retro Sunset</option>
+                                <option value="blossom">Pink Blossom</option>
+                                <option value="starwars">Star Wars (Galactic)</option>
+                                <option value="midnight">Midnight Purple</option>
+                                <option value="ember">Crimson Ember</option>
+                                <option value="glitch">Cyber Glitch</option>
+                                <option value="forest">Neon Forest</option>
+                                <option value="gold">Luxury Gold</option>
+                                <option value="cotton">Cotton Candy</option>
+                                <option value="dracula">Dracula Dark</option>
+                                <option value="matrix">System Matrix</option>
+                                <option value="royal">Royal Blue</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Browser Extensions</label>
+                        <div class="toggle-wrapper">
+                            <label class="switch">
+                                <input type="checkbox" id="ext-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="setting-item">
-                    <label>Browser Extensions</label>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="ext-toggle">
-                            <span class="slider round"></span>
-                        </label>
+            </div>
+        </div>
+
+        <div id="ext-ui" class="modal-overlay">
+            <div class="modal-window ext-window">
+                <div class="modal-header">
+                    <h2>Extensions Manager</h2>
+                    <button id="ext-close" class="close-btn">X</button>
+                </div>
+                <div class="modal-body">
+                    <p>No extensions installed. Enable Developer Mode via API.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="ask-ui" class="modal-overlay">
+            <div class="modal-window ask-window">
+                <div class="ask-content">
+                    <h2 id="ask-title">Title Loading...</h2>
+                    <p id="ask-desc">Description loading...</p>
+                    <div class="ask-actions">
+                        <button id="ask-play">Play Now</button>
+                        <button id="ask-save">Save to Collection</button>
                     </div>
+                    <button id="ask-close-main" class="secondary-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="next-ep-ui" class="modal-overlay">
+            <div class="modal-window next-window">
+                <h2>Continue Watching?</h2>
+                <p id="next-desc">Continue next show...</p>
+                <div class="next-actions">
+                    <button id="next-play">Play Next Episode</button>
+                    <button id="next-close" class="secondary-btn">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="hub-layer">
+    <div id="hub-layer" class="modal-overlay">
         <div class="hub-window">
-            <div class="hub-header">
+            <div class="hub-header-bar">
                 <button id="hub-exit">X</button>
             </div>
             <div class="hub-tabs">
@@ -104,7 +143,6 @@
                 <button class="tab-link" data-view="saved">Saved Movies</button>
             </div>
             <div class="hub-container">
-                
                 <div id="games-view" class="hub-page active">
                     <h2>Games Library</h2>
                     <div class="search-wrapper">
@@ -112,7 +150,6 @@
                     </div>
                     <div class="content-grid" id="games-grid"></div>
                 </div>
-
                 <div id="movies-view" class="hub-page">
                     <div class="movie-header">
                         <h2>Media Library</h2>
@@ -129,48 +166,13 @@
                     </div>
                     <div class="content-grid" id="movies-grid"></div>
                 </div>
-
                 <div id="saved-view" class="hub-page">
                     <h2>Your Collection</h2>
                     <div class="content-grid" id="saved-grid">
                         <div class="empty-state">No saved media.</div>
                     </div>
                 </div>
-
             </div>
-        </div>
-    </div>
-
-    <div id="ask-ui">
-        <div class="ask-window">
-            <div class="ask-content">
-                <h2 id="ask-title">Title Loading...</h2>
-                <p id="ask-desc">Description loading...</p>
-                <div class="ask-actions">
-                    <button id="ask-play">Play Now</button>
-                    <button id="ask-save">Save to Collection</button>
-                </div>
-                <button id="ask-close">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="next-ep-ui">
-        <div class="next-window">
-            <h2>Continue Watching?</h2>
-            <p id="next-desc">Continue next show...</p>
-            <div class="next-actions">
-                <button id="next-play">Play Next Episode</button>
-                <button id="next-close">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ext-ui">
-        <div class="ext-window">
-            <h2>Extensions Manager</h2>
-            <p>No extensions installed. Enable Developer Mode via API.</p>
-            <button id="ext-close">Close</button>
         </div>
     </div>
 
