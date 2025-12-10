@@ -18,8 +18,7 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
         'Access-Control-Max-Age': 2592000
     };
 
@@ -40,14 +39,14 @@ const server = http.createServer((req, res) => {
             req.on('end', () => {
                 const data = JSON.parse(body || '{}');
                 const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Anon"); 
-                res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
+                res.end(JSON.stringify({ valid: true, username: mockUser }));
             });
             return;
         }
 
         if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
             const key = 'bp_free_' + crypto.randomBytes(8).toString('hex');
-            res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
+            res.end(JSON.stringify({ success: true, key: key }));
             return;
         }
 
@@ -57,7 +56,7 @@ const server = http.createServer((req, res) => {
             req.on('end', () => {
                 const data = JSON.parse(body || '{}');
                 const isValid = data.key && data.key.startsWith('bp_paid_');
-                res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
+                res.end(JSON.stringify({ valid: isValid }));
             });
             return;
         }
