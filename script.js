@@ -24,14 +24,12 @@ const Config = {
     },
 
     loadSettings: function() {
-        if(this.cookiesAllowed) {
-            const savedTheme = localStorage.getItem('batprox_theme');
-            if(savedTheme) UI.applyTheme(savedTheme);
-            MediaLibrary.loadSaved();
-            if(this.extensionsEnabled) {
-                document.getElementById('ext-toggle').checked = true;
-                BatProx.toggleExtensions(true);
-            }
+        const savedTheme = localStorage.getItem('batprox_theme');
+        if(savedTheme) UI.applyTheme(savedTheme); else UI.applyTheme('void');
+        MediaLibrary.loadSaved();
+        if(this.extensionsEnabled) {
+            document.getElementById('ext-toggle').checked = true;
+            BatProx.toggleExtensions(true);
         }
     }
 };
@@ -47,7 +45,6 @@ const BatProx = {
             e.stopPropagation(); 
             if (e.key === 'Enter') this.route(input.value);
         });
-        
         input.addEventListener('click', (e) => e.stopPropagation());
 
         document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
@@ -95,16 +92,22 @@ const BatProx = {
         this.loader.style.width = '0%';
         setTimeout(() => this.loader.style.width = '100%', 50);
         
-        const blobContent = `
-            <!DOCTYPE html>
-            <html style="height:100%;margin:0;">
-            <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
-                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
-            </body>
-            </html>
-        `;
-        const blob = new Blob([blobContent], { type: 'text/html' });
-        this.frame.src = URL.createObjectURL(blob);
+        const isGameOrMovie = target.includes('vidking') || target.includes('1v1') || target.includes('slope');
+        
+        if (isGameOrMovie) {
+            this.frame.src = target;
+        } else {
+            const blobContent = `
+                <!DOCTYPE html>
+                <html style="height:100%;margin:0;">
+                <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
+                    <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([blobContent], { type: 'text/html' });
+            this.frame.src = URL.createObjectURL(blob);
+        }
         
         setTimeout(() => this.loader.style.opacity = '0', 500);
     },
@@ -120,6 +123,7 @@ const BatProx = {
 const MediaLibrary = {
     data: [
         { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
+        { title: "Five Nights at Freddy's 2", img: "https://image.tmdb.org/t/p/w500/m1t4t2B0b7e2e3e4e5e6e7e8.jpg", id: "upcoming", type: "movie", desc: "Upcoming sequel. (Placeholder)" },
         { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth, Deadpool." },
         { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new emotions!" },
         { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba, a misunderstood young woman because of her green skin, and Glinda, a popular girl, become friends at Shiz University." },
@@ -161,15 +165,18 @@ const MediaLibrary = {
             e.stopPropagation();
             this.render(e.target.value);
         };
+        document.getElementById('media-type-selector').onclick = (e) => e.stopPropagation();
         
-        document.getElementById('ask-play').onclick = () => {
+        document.getElementById('ask-play').onclick = (e) => {
+            e.stopPropagation();
             document.getElementById('ask-ui').classList.remove('active');
+            if(this.currentItem.id === 'upcoming') { alert('This movie is not released yet.'); return; }
+            
             if(this.currentItem.type === 'game') {
                 BatProx.boot(this.currentItem.url);
             } else {
                 const url = `https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`;
-                this.bootDirect(url, this.currentItem.title);
-                
+                BatProx.boot(url);
                 setTimeout(() => {
                     document.getElementById('next-desc').innerText = `Continue next: ${this.currentItem.title}`;
                     document.getElementById('next-ep-ui').classList.add('active');
@@ -178,7 +185,8 @@ const MediaLibrary = {
             document.getElementById('hub-layer').classList.remove('visible');
         };
 
-        document.getElementById('ask-save').onclick = () => {
+        document.getElementById('ask-save').onclick = (e) => {
+            e.stopPropagation();
             if(!this.saved.find(x => x.id === this.currentItem.id)) {
                 this.saved.push(this.currentItem);
                 this.saveToStorage();
@@ -191,28 +199,14 @@ const MediaLibrary = {
         document.getElementById('next-close').onclick = () => document.getElementById('next-ep-ui').classList.remove('active');
         document.getElementById('next-play').onclick = () => {
             document.getElementById('next-ep-ui').classList.remove('active');
-            this.bootDirect(`https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`, this.currentItem.title);
+            BatProx.boot(`https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`);
         };
-    },
-
-    bootDirect: function(url, title) {
-        document.getElementById('vm-interface').classList.add('active');
-        const frame = document.getElementById('vm-frame');
-        const loader = document.querySelector('.vm-loader');
-        
-        loader.style.width = '0%';
-        setTimeout(() => loader.style.width = '100%', 50);
-        
-        frame.src = url;
-        setTimeout(() => loader.style.opacity = '0', 500);
     },
 
     renderGames: function() {
         const grid = document.getElementById('games-grid');
         grid.innerHTML = '';
         const games = this.data.filter(x => x.type === 'game');
-        if(games.length === 0) grid.innerHTML = '<div class="empty-state">No games available.</div>';
-        
         games.forEach(item => this.createCard(item, grid));
     },
 
@@ -282,12 +276,12 @@ const UI = {
 
     handlers: function() {
         const hub = document.getElementById('hub-layer');
-        document.getElementById('menu-btn').onclick = () => hub.classList.add('visible');
-        document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
-        
-        hub.onclick = (e) => {
-            if(e.target === hub) hub.classList.remove('visible');
+        document.getElementById('menu-btn').onclick = (e) => {
+            e.stopPropagation();
+            hub.classList.add('visible');
         };
+        document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
+        hub.onclick = (e) => { if(e.target === hub) hub.classList.remove('visible'); };
 
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
@@ -300,24 +294,25 @@ const UI = {
         });
 
         const settings = document.getElementById('settings-ui');
-        document.getElementById('settings-btn').onclick = () => settings.classList.add('active');
-        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
-        
-        settings.onclick = (e) => {
-            if(e.target === settings) settings.classList.remove('active');
+        document.getElementById('settings-btn').onclick = (e) => {
+            e.stopPropagation();
+            settings.classList.add('active');
         };
+        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
+        settings.onclick = (e) => { if(e.target === settings) settings.classList.remove('active'); };
 
         document.getElementById('settings-ui').querySelector('.settings-window').onclick = (e) => e.stopPropagation();
         document.getElementById('hub-layer').querySelector('.hub-window').onclick = (e) => e.stopPropagation();
 
+        document.getElementById('theme-selector').onclick = (e) => e.stopPropagation();
         document.getElementById('theme-selector').onchange = (e) => {
             e.stopPropagation();
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
         };
 
+        document.getElementById('ext-toggle').onclick = (e) => e.stopPropagation();
         document.getElementById('ext-toggle').onchange = (e) => {
-            e.stopPropagation();
             Config.extensionsEnabled = e.target.checked;
             Config.save('batprox_ext', e.target.checked);
             BatProx.toggleExtensions(e.target.checked);
@@ -357,14 +352,16 @@ const UI = {
 
     cookies: function() {
         if(!localStorage.getItem('batprox_consent')) {
-            setTimeout(() => document.getElementById('cookie-consent').classList.add('show'), 1000);
+            setTimeout(() => document.getElementById('cookie-consent').classList.add('show'), 500);
         }
-        document.getElementById('cookie-yes').onclick = () => {
+        document.getElementById('cookie-yes').onclick = (e) => {
+            e.stopPropagation();
             localStorage.setItem('batprox_consent', 'true');
             Config.cookiesAllowed = true;
             document.getElementById('cookie-consent').classList.remove('show');
         };
-        document.getElementById('cookie-no').onclick = () => {
+        document.getElementById('cookie-no').onclick = (e) => {
+            e.stopPropagation();
             localStorage.setItem('batprox_consent', 'false');
             Config.cookiesAllowed = false;
             document.getElementById('cookie-consent').classList.remove('show');
@@ -430,7 +427,7 @@ const WarpEngine = {
             if(x>0&&x<this.w&&y>0&&y<this.h) {
                 this.ctx.fillStyle = `rgba(255,255,255,${a})`;
                 this.ctx.beginPath(); 
-                this.ctx.arc(x,y,Math.max(0,s),0,Math.PI*2); 
+                this.ctx.arc(x,y,s,0,Math.PI*2); 
                 this.ctx.fill();
             }
         });
@@ -460,7 +457,7 @@ const VaporEngine = {
         this.p.forEach((p, i) => {
             p.y -= p.v; p.l -= 0.009; p.x += Math.sin(p.y * 0.05) * 0.5;
             if(p.l <= 0) this.p.splice(i, 1);
-            const safeR = Math.max(0.1, p.s);
+            const safeR = Math.max(0.1, Math.abs(p.s)); 
             this.ctx.beginPath();
             const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeR);
             g.addColorStop(0, `rgba(255, 255, 255, ${Math.max(0, p.l * 0.7)})`);
@@ -499,7 +496,7 @@ const BlossomEngine = {
             this.ctx.rotate(p.r * Math.PI / 180);
             this.ctx.fillStyle = '#fbcfe8';
             this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, Math.max(0,p.s), Math.max(0,p.s/2), 0, 0, Math.PI*2);
+            this.ctx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2);
             this.ctx.fill();
             this.ctx.restore();
         });
