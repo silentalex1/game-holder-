@@ -107,24 +107,30 @@ const BatProx = {
 const MediaLibrary = {
     data: [
         { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
-        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth, Deadpool." },
-        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new emotions!" },
-        { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba, a misunderstood young woman because of her green skin, and Glinda, a popular girl, become friends at Shiz University." },
-        { title: "Moana 2", img: "https://image.tmdb.org/t/p/w500/m0SbwFZsY9FvYHMpphTi0k0Xn75.jpg", id: "1241982", type: "movie", desc: "After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui and a new crew." },
-        { title: "Gladiator II", img: "https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmf4oo6747ffrp.jpg", id: "558449", type: "movie", desc: "After his home is conquered by the tyrannical Emperors who now lead Rome, Lucius is forced to enter the Colosseum." },
-        { title: "Sonic the Hedgehog 3", img: "https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc3J4fvo24Is982.jpg", id: "939243", type: "movie", desc: "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before." },
-        { title: "Mufasa: The Lion King", img: "https://image.tmdb.org/t/p/w500/jbOSUAWMGzGL1L4EaUF8veTVri9.jpg", id: "762509", type: "movie", desc: "Told in flashbacks, Mufasa is an orphaned cub, lost and alone until he meets a sympathetic lion named Taka." },
+        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries." },
+        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition." },
+        { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba and Glinda become friends at Shiz University." },
+        { title: "Moana 2", img: "https://image.tmdb.org/t/p/w500/m0SbwFZsY9FvYHMpphTi0k0Xn75.jpg", id: "1241982", type: "movie", desc: "Moana journeys alongside Maui and a new crew." },
+        { title: "Gladiator II", img: "https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmf4oo6747ffrp.jpg", id: "558449", type: "movie", desc: "Lucius is forced to enter the Colosseum." },
+        { title: "Sonic the Hedgehog 3", img: "https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc3J4fvo24Is982.jpg", id: "939243", type: "movie", desc: "Sonic, Knuckles, and Tails reunite against Shadow." },
+        { title: "Mufasa: The Lion King", img: "https://image.tmdb.org/t/p/w500/jbOSUAWMGzGL1L4EaUF8veTVri9.jpg", id: "762509", type: "movie", desc: "Mufasa is an orphaned cub until he meets Taka." },
+        { title: "Spider-Man: No Way Home", img: "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg", id: "634649", type: "movie", desc: "Peter Parker seeks Doctor Strange's help." },
+        { title: "The Batman", img: "https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50x9T2c8l9.jpg", id: "414906", type: "movie", desc: "Batman uncovers corruption in Gotham City." },
         { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime", desc: "Monkey D. Luffy sails the seas to find the One Piece." },
         { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime", desc: "Set in Utopian Piltover and the oppressed underground of Zaun." },
-        { title: "Jujutsu Kaisen", img: "https://image.tmdb.org/t/p/w500/fcv2TRuJbQAxJ79qOgM1bjj7qXJ.jpg", id: "95479", type: "anime", desc: "Yuji Itadori, a boy with tremendous physical strength, consumes a cursed object and becomes the host of a powerful curse." },
-        { title: "Demon Slayer", img: "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQSCGPGFzmant.jpg", id: "85937", type: "anime", desc: "It is the Taisho Period in Japan. Tanjiro, a kindhearted boy who sells charcoal for a living, finds his family slaughtered by a demon." },
-        { title: "Chainsaw Man", img: "https://image.tmdb.org/t/p/w500/npdB6eFzizki0WaZ1CiKcjf0W8y.jpg", id: "114410", type: "anime", desc: "Denji has a simple dream—to live a happy and peaceful life, spending time with a girl he likes." },
-        { title: "Solo Leveling", img: "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xc32JH60ymTR.jpg", id: "242095", type: "anime", desc: "Ten years ago, the Gate appeared and connected the real world with the world of magic and monsters." },
-        { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv", desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine." },
-        { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl." },
-        { title: "The Boys", img: "https://image.tmdb.org/t/p/w500/7nsJ8K3awwL2iY6M6W3d8z9W7X2.jpg", id: "76479", type: "tv", desc: "A group of vigilantes set out to take down corrupt superheroes who abuse their superpowers." },
-        { title: "Fallout", img: "https://image.tmdb.org/t/p/w500/8c7a886d3b451433f52879f9722.jpg", id: "106379", type: "tv", desc: "In a future, post-apocalyptic Los Angeles brought about by nuclear decimation, citizens must live in underground bunkers to protect themselves from radiation, mutants and bandits." },
-        { title: "Squid Game", img: "https://image.tmdb.org/t/p/w500/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg", id: "93405", type: "tv", desc: "Hundreds of cash-strapped players accept a strange invitation to compete in children's games. Inside, a tempting prize awaits with deadly high stakes." },
+        { title: "Jujutsu Kaisen", img: "https://image.tmdb.org/t/p/w500/fcv2TRuJbQAxJ79qOgM1bjj7qXJ.jpg", id: "95479", type: "anime", desc: "Yuji Itadori consumes a cursed object." },
+        { title: "Demon Slayer", img: "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQSCGPGFzmant.jpg", id: "85937", type: "anime", desc: "Tanjiro finds his family slaughtered by a demon." },
+        { title: "Chainsaw Man", img: "https://image.tmdb.org/t/p/w500/npdB6eFzizki0WaZ1CiKcjf0W8y.jpg", id: "114410", type: "anime", desc: "Denji has a simple dream." },
+        { title: "Solo Leveling", img: "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xc32JH60ymTR.jpg", id: "242095", type: "anime", desc: "The Gate appeared and connected the real world with magic." },
+        { title: "Attack on Titan", img: "https://image.tmdb.org/t/p/w500/8C5gDxUyG6FcsM1odpXF88g7tL.jpg", id: "1429", type: "anime", desc: "Humanity lives inside cities surrounded by enormous walls." },
+        { title: "Naruto Shippuden", img: "https://image.tmdb.org/t/p/w500/kV27j3Cz4TSwXCz9h4uD9u9Z7s.jpg", id: "46260", type: "anime", desc: "Naruto Uzumaki seeks to become the Hokage." },
+        { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv", desc: "A high school chemistry teacher turns to manufacturing methamphetamine." },
+        { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "A small town uncovers a mystery involving secret experiments." },
+        { title: "The Boys", img: "https://image.tmdb.org/t/p/w500/7nsJ8K3awwL2iY6M6W3d8z9W7X2.jpg", id: "76479", type: "tv", desc: "Vigilantes set out to take down corrupt superheroes." },
+        { title: "Fallout", img: "https://image.tmdb.org/t/p/w500/8c7a886d3b451433f52879f9722.jpg", id: "106379", type: "tv", desc: "Citizens must live in underground bunkers." },
+        { title: "Squid Game", img: "https://image.tmdb.org/t/p/w500/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg", id: "93405", type: "tv", desc: "Hundreds of cash-strapped players accept a strange invitation." },
+        { title: "Game of Thrones", img: "https://image.tmdb.org/t/p/w500/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg", id: "1399", type: "tv", desc: "Nine noble families fight for control over the lands of Westeros." },
+        { title: "The Office", img: "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg", id: "2316", type: "tv", desc: "A mockumentary on a group of typical office workers." },
         { title: "1v1.lol", img: "https://play-lh.googleusercontent.com/1-f-4g-a-q-z-x-c-v-b-n-m", id: "game-1v1", type: "game", url: "https://1v1.lol", desc: "Online building and shooting simulator." }
     ],
     saved: [],
@@ -172,7 +178,6 @@ const MediaLibrary = {
         grid.innerHTML = '';
         const games = this.data.filter(x => x.type === 'game');
         if(games.length === 0) grid.innerHTML = '<div class="empty-state">No games available.</div>';
-        
         games.forEach(item => this.createCard(item, grid));
     },
 
@@ -193,7 +198,7 @@ const MediaLibrary = {
     createCard: function(item, container) {
         const card = document.createElement('div');
         card.className = 'media-card';
-        const img = item.type === 'game' ? item.img : item.img;
+        const img = item.img;
         
         card.innerHTML = `
             <img src="${img}" alt="${item.title}">
@@ -243,6 +248,12 @@ const UI = {
         document.getElementById('menu-btn').onclick = () => document.getElementById('hub-layer').classList.add('visible');
         document.getElementById('hub-exit').onclick = () => document.getElementById('hub-layer').classList.remove('visible');
         
+        document.getElementById('hub-layer').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('hub-layer')) {
+                document.getElementById('hub-layer').classList.remove('visible');
+            }
+        });
+
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
         tabs.forEach(t => t.onclick = () => {
@@ -255,6 +266,12 @@ const UI = {
         document.getElementById('settings-btn').onclick = () => document.getElementById('settings-ui').classList.add('active');
         document.getElementById('settings-close').onclick = () => document.getElementById('settings-ui').classList.remove('active');
         
+        document.getElementById('settings-ui').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('settings-ui')) {
+                document.getElementById('settings-ui').classList.remove('active');
+            }
+        });
+
         document.getElementById('theme-selector').onchange = (e) => {
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
@@ -293,7 +310,10 @@ const UI = {
         
         toggle('retro-grid', name === 'sunset');
 
-        if(['void','ember','midnight','glitch','forest','gold','dracula','matrix','royal'].includes(name)) VaporEngine.enable(); else VaporEngine.disable();
+        toggle('warp-canvas', name === 'void');
+        if(name === 'void') WarpEngine.enable(); else WarpEngine.disable();
+
+        if(['ember','midnight','glitch','forest','gold','dracula','matrix','royal'].includes(name)) VaporEngine.enable(); else VaporEngine.disable();
     },
 
     cookies: function() {
@@ -349,16 +369,19 @@ const UI = {
 
 const WarpEngine = {
     canvas: document.getElementById('warp-canvas'),
-    ctx: null, w: 0, h: 0, p: [],
+    ctx: null, w: 0, h: 0, p: [], active: false,
     init: function() {
         this.ctx = this.canvas.getContext('2d', { alpha: false });
         this.resize(); window.addEventListener('resize', () => this.resize());
-        for(let i=0; i<300; i++) this.spawn();
         this.loop();
     },
     resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
+    enable: function() { this.active = true; this.canvas.style.display = 'block'; },
+    disable: function() { this.active = false; this.canvas.style.display = 'none'; },
     spawn: function() { this.p.push({ x: (Math.random()-0.5)*this.w*2, y: (Math.random()-0.5)*this.h*2, z: Math.random()*this.w, sz: Math.random() }); },
     loop: function() {
+        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        if(this.p.length < 300) this.spawn();
         this.ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
         this.ctx.fillRect(0, 0, this.w, this.h);
         const cx = this.w/2, cy = this.h/2;
@@ -460,7 +483,6 @@ const OceanEngine = {
         if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0,0,this.w,this.h);
         this.offset += 0.02;
-        
         for(let i = 0; i < 3; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, this.h);
@@ -488,17 +510,14 @@ const StarWarsEngine = {
         const ship = document.createElement('div');
         ship.classList.add('tie-fighter');
         ship.innerHTML = '<div class="tie-wing-l"></div><div class="tie-wing-r"></div><div class="tie-center"><div class="tie-window"></div></div>';
-        
         const size = 0.5 + Math.random();
         const topPos = Math.random() * 90;
         const duration = Math.random() * 5 + 10;
-        
         ship.style.transform = `scale(${size}) rotate(90deg)`;
         ship.style.top = `${topPos}%`;
         ship.style.left = '-100px';
         ship.style.transition = `left ${duration}s linear`;
         this.layer.appendChild(ship);
-        
         setTimeout(() => ship.style.left = '110%', 50);
         setTimeout(() => { if(ship.parentNode) ship.parentNode.removeChild(ship); }, duration * 1000);
     }
