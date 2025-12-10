@@ -4,10 +4,10 @@ const Config = {
     
     themes: {
         void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
+        ocean: { p: '#3b82f6', rgb: '59, 130, 246', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
+        sunset: { p: '#f97316', rgb: '249, 115, 22', bg: '#431407', s: '#7c2d12', t: '#ffedd5' },
         blossom: { p: '#fbcfe8', rgb: '251, 207, 232', bg: '#1f1016', s: '#29151e', t: '#fce7f3' },
         starwars: { p: '#ffe81f', rgb: '255, 232, 31', bg: '#000000', s: '#111111', t: '#ffe81f' },
-        ocean: { p: '#38bdf8', rgb: '56, 189, 248', bg: '#0c4a6e', s: '#075985', t: '#e0f2fe' },
-        sunset: { p: '#f472b6', rgb: '244, 114, 182', bg: '#1a0b2e', s: '#2b002b', t: '#ffd1dc' },
         midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
         ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
         glitch: { p: '#22d3ee', rgb: '34, 211, 238', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
@@ -28,9 +28,9 @@ const Config = {
             const savedTheme = localStorage.getItem('batprox_theme');
             if(savedTheme) UI.applyTheme(savedTheme);
             MediaLibrary.loadSaved();
-            if(localStorage.getItem('batprox_ext') === 'true') {
+            if(this.extensionsEnabled) {
                 document.getElementById('ext-toggle').checked = true;
-                BatProx.toggleExtButton(true);
+                BatProx.toggleExtensions(true);
             }
         }
     }
@@ -40,7 +40,6 @@ const BatProx = {
     vm: document.getElementById('vm-interface'),
     frame: document.getElementById('vm-frame'),
     loader: document.querySelector('.vm-loader'),
-    urlDisplay: document.getElementById('vm-url-text'),
 
     init: function() {
         const input = document.getElementById('master-input');
@@ -49,26 +48,28 @@ const BatProx = {
             if (e.key === 'Enter') this.route(input.value);
         });
 
-        document.getElementById('vm-terminate').addEventListener('click', () => this.kill());
         document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
+        document.getElementById('vm-toggle-sidebar').addEventListener('click', () => {
+            document.getElementById('vm-sidebar').classList.toggle('collapsed');
+        });
         
-        // Widget Logic
-        document.getElementById('vm-widget-trigger').onclick = () => {
-            document.getElementById('vm-widget-panel').classList.toggle('active');
+        document.getElementById('vm-menu-btn').onclick = () => {
+             document.getElementById('hub-layer').classList.add('visible');
+             this.kill(); 
         };
-        document.getElementById('vm-wid-menu').onclick = () => { this.kill(); document.getElementById('hub-layer').classList.add('visible'); };
-        document.getElementById('vm-wid-set').onclick = () => { document.getElementById('settings-ui').classList.add('active'); };
-
-        // Extensions
-        document.getElementById('vm-extensions-btn').onclick = () => {
-            document.getElementById('ext-ui').classList.add('active');
+        document.getElementById('vm-settings-btn').onclick = () => {
+            this.kill();
+            document.getElementById('settings-ui').classList.add('active');
         };
-        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
+        document.getElementById('vm-api-btn').onclick = () => window.location.href = '/ourapi';
+        document.getElementById('vm-ext-btn').onclick = () => {
+             document.getElementById('ext-ui').classList.add('active');
+        };
     },
 
-    toggleExtButton: function(show) {
-        const btn = document.getElementById('vm-extensions-btn');
-        if(show) btn.classList.remove('hidden'); else btn.classList.add('hidden');
+    toggleExtensions: function(enable) {
+        const btn = document.getElementById('vm-ext-btn');
+        if(enable) btn.classList.remove('hidden'); else btn.classList.add('hidden');
     },
 
     route: function(raw) {
@@ -77,35 +78,22 @@ const BatProx = {
         let finalTarget = '';
 
         if (url.includes('.') && !url.includes(' ')) {
-            if (!url.startsWith('http')) url = 'https://' + url;
-            const blobContent = `
-                <!DOCTYPE html>
-                <html>
-                <body style="margin:0;padding:0;overflow:hidden;">
-                    <iframe src="${url}" style="width:100%;height:100vh;border:none;" onerror="window.top.location.href='https://html.duckduckgo.com/html?q=${encodeURIComponent(url)}'"></iframe>
-                </body>
-                </html>
-            `;
-            const blob = new Blob([blobContent], { type: 'text/html' });
-            finalTarget = URL.createObjectURL(blob);
+             if (!url.startsWith('http')) url = 'https://' + url;
+             finalTarget = `https://www.google.com/search?igu=1&q=site:${encodeURIComponent(url)}`;
         } else {
-            finalTarget = `https://html.duckduckgo.com/html?q=${encodeURIComponent(url)}`;
+             finalTarget = `https://www.google.com/search?igu=1&q=${encodeURIComponent(url)}`;
         }
 
-        this.boot(finalTarget, url);
+        this.boot(finalTarget);
         document.getElementById('master-input').blur();
     },
 
-    boot: function(target, label) {
+    boot: function(target) {
         this.vm.classList.add('active');
         this.loader.style.width = '0%';
-        this.urlDisplay.innerText = label;
-        setTimeout(() => this.loader.style.width = '80%', 50);
+        setTimeout(() => this.loader.style.width = '100%', 50);
         this.frame.src = target;
-        setTimeout(() => {
-            this.loader.style.width = '100%';
-            setTimeout(() => this.loader.style.opacity = '0', 300);
-        }, 300);
+        setTimeout(() => this.loader.style.opacity = '0', 500);
     },
 
     kill: function() {
@@ -118,18 +106,26 @@ const BatProx = {
 
 const MediaLibrary = {
     data: [
-        { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnWd.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
-        { title: "Five Nights at Freddy's 2", img: "https://image.tmdb.org/t/p/w500/gKkl37BQuKTanygYQG1pyYgLVgf.jpg", id: "1058694", type: "movie", desc: "Upcoming sequel to the FNAF movie." },
-        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth Deadpool." },
-        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions!" },
-        { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime", desc: "Monkey D. Luffy refuses to let anyone or anything stand in the way of his quest to become the King of All Pirates." },
+        { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
+        { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth, Deadpool." },
+        { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new emotions!" },
+        { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba, a misunderstood young woman because of her green skin, and Glinda, a popular girl, become friends at Shiz University." },
+        { title: "Moana 2", img: "https://image.tmdb.org/t/p/w500/m0SbwFZsY9FvYHMpphTi0k0Xn75.jpg", id: "1241982", type: "movie", desc: "After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui and a new crew." },
+        { title: "Gladiator II", img: "https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmf4oo6747ffrp.jpg", id: "558449", type: "movie", desc: "After his home is conquered by the tyrannical Emperors who now lead Rome, Lucius is forced to enter the Colosseum." },
+        { title: "Sonic the Hedgehog 3", img: "https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc3J4fvo24Is982.jpg", id: "939243", type: "movie", desc: "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before." },
+        { title: "Mufasa: The Lion King", img: "https://image.tmdb.org/t/p/w500/jbOSUAWMGzGL1L4EaUF8veTVri9.jpg", id: "762509", type: "movie", desc: "Told in flashbacks, Mufasa is an orphaned cub, lost and alone until he meets a sympathetic lion named Taka." },
+        { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime", desc: "Monkey D. Luffy sails the seas to find the One Piece." },
+        { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime", desc: "Set in Utopian Piltover and the oppressed underground of Zaun." },
+        { title: "Jujutsu Kaisen", img: "https://image.tmdb.org/t/p/w500/fcv2TRuJbQAxJ79qOgM1bjj7qXJ.jpg", id: "95479", type: "anime", desc: "Yuji Itadori, a boy with tremendous physical strength, consumes a cursed object and becomes the host of a powerful curse." },
+        { title: "Demon Slayer", img: "https://image.tmdb.org/t/p/w500/xUfRZu2mi8jH6SzQSCGPGFzmant.jpg", id: "85937", type: "anime", desc: "It is the Taisho Period in Japan. Tanjiro, a kindhearted boy who sells charcoal for a living, finds his family slaughtered by a demon." },
+        { title: "Chainsaw Man", img: "https://image.tmdb.org/t/p/w500/npdB6eFzizki0WaZ1CiKcjf0W8y.jpg", id: "114410", type: "anime", desc: "Denji has a simple dream—to live a happy and peaceful life, spending time with a girl he likes." },
+        { title: "Solo Leveling", img: "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xc32JH60ymTR.jpg", id: "242095", type: "anime", desc: "Ten years ago, the Gate appeared and connected the real world with the world of magic and monsters." },
         { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv", desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine." },
-        { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime", desc: "Amid the stark discord of twin cities Piltover and Zaun, two sisters fight on rival sides of a war." },
-        { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments." }
-    ],
-    games: [
-        { title: "1v1.lol", img: "https://play-lh.googleusercontent.com/B9tJ3o3JcQyQ7kGz7X0v5o3Yj8q5u8w0t7k6l0s4p2x9r3c5e8n1", url: "https://1v1.lol" },
-        { title: "Slope", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6_q_q_q_q_q_q_q_q_q_q_q_q_q_q_q_q_q&s", url: "https://slopegame.io" }
+        { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl." },
+        { title: "The Boys", img: "https://image.tmdb.org/t/p/w500/7nsJ8K3awwL2iY6M6W3d8z9W7X2.jpg", id: "76479", type: "tv", desc: "A group of vigilantes set out to take down corrupt superheroes who abuse their superpowers." },
+        { title: "Fallout", img: "https://image.tmdb.org/t/p/w500/8c7a886d3b451433f52879f9722.jpg", id: "106379", type: "tv", desc: "In a future, post-apocalyptic Los Angeles brought about by nuclear decimation, citizens must live in underground bunkers to protect themselves from radiation, mutants and bandits." },
+        { title: "Squid Game", img: "https://image.tmdb.org/t/p/w500/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg", id: "93405", type: "tv", desc: "Hundreds of cash-strapped players accept a strange invitation to compete in children's games. Inside, a tempting prize awaits with deadly high stakes." },
+        { title: "1v1.lol", img: "https://play-lh.googleusercontent.com/1-f-4g-a-q-z-x-c-v-b-n-m", id: "game-1v1", type: "game", url: "https://1v1.lol", desc: "Online building and shooting simulator." }
     ],
     saved: [],
     currentItem: null,
@@ -138,25 +134,24 @@ const MediaLibrary = {
         this.render('movie');
         this.renderGames();
         
-        document.getElementById('media-type-selector').onchange = (e) => {
-            this.render(e.target.value);
-        };
-
-        // Ask First UI Logic
-        document.getElementById('ask-close').onclick = () => document.getElementById('ask-first-ui').classList.remove('active');
+        document.getElementById('media-type-selector').onchange = (e) => this.render(e.target.value);
         
         document.getElementById('ask-play').onclick = () => {
-            document.getElementById('ask-first-ui').classList.remove('active');
-            if(this.currentItem.url) {
-                BatProx.boot(this.currentItem.url, this.currentItem.title);
+            document.getElementById('ask-ui').classList.remove('active');
+            if(this.currentItem.type === 'game') {
+                BatProx.boot(this.currentItem.url);
             } else {
                 const url = `https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`;
-                BatProx.boot(url, this.currentItem.title);
+                BatProx.boot(url);
+                setTimeout(() => {
+                    document.getElementById('next-desc').innerText = `Continue next: ${this.currentItem.title}`;
+                    document.getElementById('next-ep-ui').classList.add('active');
+                }, 15000); 
             }
         };
 
         document.getElementById('ask-save').onclick = () => {
-            if(this.currentItem && !this.saved.find(x => x.id === this.currentItem.id)) {
+            if(!this.saved.find(x => x.id === this.currentItem.id)) {
                 this.saved.push(this.currentItem);
                 this.saveToStorage();
                 this.renderSaved();
@@ -164,74 +159,67 @@ const MediaLibrary = {
             }
         };
 
-        // Next Episode Logic
-        document.getElementById('next-ep-cancel').onclick = () => document.getElementById('next-ep-ui').classList.remove('active');
+        document.getElementById('ask-close').onclick = () => document.getElementById('ask-ui').classList.remove('active');
+        document.getElementById('next-close').onclick = () => document.getElementById('next-ep-ui').classList.remove('active');
+        document.getElementById('next-play').onclick = () => {
+            document.getElementById('next-ep-ui').classList.remove('active');
+            BatProx.boot(`https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`);
+        };
+    },
+
+    renderGames: function() {
+        const grid = document.getElementById('games-grid');
+        grid.innerHTML = '';
+        const games = this.data.filter(x => x.type === 'game');
+        if(games.length === 0) grid.innerHTML = '<div class="empty-state">No games available.</div>';
+        
+        games.forEach(item => this.createCard(item, grid));
     },
 
     render: function(type) {
         const grid = document.getElementById('movies-grid');
         grid.innerHTML = '';
-        const filtered = this.data.filter(x => type === 'all' || x.type === type || (type === 'anime' && x.type === 'anime'));
-        filtered.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.innerHTML = `<img src="${item.img}" alt="${item.title}"><div class="media-info"><div class="media-title">${item.title}</div></div>`;
-            card.onclick = () => this.openAskUI(item);
-            grid.appendChild(card);
-        });
-    },
-
-    renderGames: function() {
-        const grid = document.getElementById('games-grid');
-        if(!grid) return;
-        this.games.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.innerHTML = `
-                <img src="${item.img}" alt="${item.title}">
-                <div class="game-overlay"><div class="game-play-btn">Play Now</div></div>
-            `;
-            card.onclick = () => BatProx.boot(item.url, item.title);
-            grid.appendChild(card);
-        });
+        const filtered = this.data.filter(x => x.type === type || (type === 'anime' && x.type === 'anime'));
+        filtered.forEach(item => this.createCard(item, grid));
     },
 
     renderSaved: function() {
         const grid = document.getElementById('saved-grid');
         grid.innerHTML = '';
-        if(this.saved.length === 0) {
-            grid.innerHTML = '<div class="empty-state">No saved media.</div>';
-            return;
-        }
-        this.saved.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'media-card';
-            card.innerHTML = `<img src="${item.img}" alt="${item.title}"><div class="media-info"><div class="media-title">${item.title}</div></div>`;
-            card.onclick = () => this.openAskUI(item);
-            grid.appendChild(card);
-        });
+        if(this.saved.length === 0) grid.innerHTML = '<div class="empty-state">No saved media.</div>';
+        this.saved.forEach(item => this.createCard(item, grid));
     },
 
-    openAskUI: function(item) {
-        this.currentItem = item;
-        document.getElementById('ask-img').src = item.img;
-        document.getElementById('ask-title').innerText = item.title;
-        document.getElementById('ask-desc').innerText = item.desc || "No description available.";
-        document.getElementById('ask-first-ui').classList.add('active');
+    createCard: function(item, container) {
+        const card = document.createElement('div');
+        card.className = 'media-card';
+        const img = item.type === 'game' ? item.img : item.img;
+        
+        card.innerHTML = `
+            <img src="${img}" alt="${item.title}">
+            <div class="media-info">
+                <div class="media-title">${item.title}</div>
+            </div>
+            <div class="play-overlay">
+                <span class="play-btn">Play Now</span>
+            </div>
+        `;
+        card.onclick = () => {
+            this.currentItem = item;
+            document.getElementById('ask-title').innerText = item.title;
+            document.getElementById('ask-desc').innerText = item.desc;
+            document.getElementById('ask-ui').classList.add('active');
+        };
+        container.appendChild(card);
     },
 
     saveToStorage: function() {
-        if(Config.cookiesAllowed) {
-            localStorage.setItem('batprox_saved_media', JSON.stringify(this.saved));
-        }
+        if(Config.cookiesAllowed) localStorage.setItem('batprox_saved_media', JSON.stringify(this.saved));
     },
 
     loadSaved: function() {
         const s = localStorage.getItem('batprox_saved_media');
-        if(s) {
-            this.saved = JSON.parse(s);
-            this.renderSaved();
-        }
+        if(s) { this.saved = JSON.parse(s); this.renderSaved(); }
     }
 };
 
@@ -243,13 +231,18 @@ const UI = {
         this.cookies();
         Config.loadSettings();
         MediaLibrary.init();
+        this.updateFavicon();
+    },
+
+    updateFavicon: function() {
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:#3b82f6;stop-opacity:1' /><stop offset='100%' style='stop-color:#10b981;stop-opacity:1' /></linearGradient></defs><path d='M0 0 L10 24 L18 16 Z' fill='#a855f7'/><path d='M36 0 L26 24 L18 16 Z' fill='#a855f7'/><circle cx='18' cy='12' r='7' fill='url(#g)'/></svg>`;
+        document.getElementById('dynamic-favicon').href = 'data:image/svg+xml;base64,' + btoa(svg);
     },
 
     handlers: function() {
-        const hub = document.getElementById('hub-layer');
-        document.getElementById('menu-btn').onclick = () => { hub.classList.add('visible'); hub.style.visibility = 'visible'; };
-        document.getElementById('hub-exit').onclick = () => { hub.classList.remove('visible'); setTimeout(() => hub.style.visibility = 'hidden', 300); };
-
+        document.getElementById('menu-btn').onclick = () => document.getElementById('hub-layer').classList.add('visible');
+        document.getElementById('hub-exit').onclick = () => document.getElementById('hub-layer').classList.remove('visible');
+        
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
         tabs.forEach(t => t.onclick = () => {
@@ -259,19 +252,20 @@ const UI = {
             document.getElementById(`${t.dataset.view}-view`).classList.add('active');
         });
 
-        const setUi = document.getElementById('settings-ui');
-        document.getElementById('settings-btn').onclick = () => { setUi.classList.add('active'); setUi.style.visibility = 'visible'; };
-        document.getElementById('settings-close').onclick = () => { setUi.classList.remove('active'); setTimeout(() => setUi.style.visibility = 'hidden', 300); };
-
+        document.getElementById('settings-btn').onclick = () => document.getElementById('settings-ui').classList.add('active');
+        document.getElementById('settings-close').onclick = () => document.getElementById('settings-ui').classList.remove('active');
+        
         document.getElementById('theme-selector').onchange = (e) => {
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
         };
-        
+
         document.getElementById('ext-toggle').onchange = (e) => {
-            BatProx.toggleExtButton(e.target.checked);
+            Config.extensionsEnabled = e.target.checked;
             Config.save('batprox_ext', e.target.checked);
+            BatProx.toggleExtensions(e.target.checked);
         };
+        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
     },
 
     applyTheme: function(name) {
@@ -286,27 +280,36 @@ const UI = {
         
         document.getElementById('theme-selector').value = name;
 
-        // Engine Toggle
-        document.getElementById('starwars-layer').style.display = name === 'starwars' ? 'block' : 'none';
+        const toggle = (id, state) => document.getElementById(id).style.display = state ? 'block' : 'none';
+        
+        toggle('starwars-layer', name === 'starwars');
         if(name === 'starwars') StarWarsEngine.enable(); else StarWarsEngine.disable();
 
-        document.getElementById('blossom-canvas').style.display = name === 'blossom' ? 'block' : 'none';
+        toggle('blossom-canvas', name === 'blossom');
         if(name === 'blossom') BlossomEngine.enable(); else BlossomEngine.disable();
 
-        document.getElementById('ocean-canvas').style.display = name === 'ocean' ? 'block' : 'none';
+        toggle('ocean-canvas', name === 'ocean');
         if(name === 'ocean') OceanEngine.enable(); else OceanEngine.disable();
-
-        document.getElementById('retro-layer').style.display = name === 'sunset' ? 'block' : 'none';
         
-        if(['blossom','starwars','ocean','sunset'].includes(name)) VaporEngine.disable(); else VaporEngine.enable();
+        toggle('retro-grid', name === 'sunset');
+
+        if(['void','ember','midnight','glitch','forest','gold','dracula','matrix','royal'].includes(name)) VaporEngine.enable(); else VaporEngine.disable();
     },
 
     cookies: function() {
         if(!localStorage.getItem('batprox_consent')) {
             setTimeout(() => document.getElementById('cookie-consent').classList.add('show'), 1000);
         }
-        document.getElementById('cookie-yes').onclick = () => { localStorage.setItem('batprox_consent', 'true'); Config.cookiesAllowed = true; document.getElementById('cookie-consent').classList.remove('show'); };
-        document.getElementById('cookie-no').onclick = () => { localStorage.setItem('batprox_consent', 'false'); Config.cookiesAllowed = false; document.getElementById('cookie-consent').classList.remove('show'); };
+        document.getElementById('cookie-yes').onclick = () => {
+            localStorage.setItem('batprox_consent', 'true');
+            Config.cookiesAllowed = true;
+            document.getElementById('cookie-consent').classList.remove('show');
+        };
+        document.getElementById('cookie-no').onclick = () => {
+            localStorage.setItem('batprox_consent', 'false');
+            Config.cookiesAllowed = false;
+            document.getElementById('cookie-consent').classList.remove('show');
+        };
     },
 
     clock: function() {
@@ -381,7 +384,7 @@ const VaporEngine = {
         this.resize(); window.addEventListener('resize', () => this.resize());
         this.loop();
     },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = 450; },
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = 450; },
     enable: function() { this.active = true; },
     disable: function() { this.active = false; this.p = []; this.ctx.clearRect(0,0,this.w,this.h); },
     loop: function() {
@@ -417,13 +420,15 @@ const BlossomEngine = {
         this.resize(); window.addEventListener('resize', () => this.resize());
         this.loop();
     },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = window.innerHeight; },
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
     enable: function() { this.active = true; this.canvas.style.display = 'block'; },
     disable: function() { this.active = false; this.canvas.style.display = 'none'; this.p = []; },
     loop: function() {
         if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0, 0, this.w, this.h);
-        if(this.p.length < 50) this.p.push({ x: Math.random()*this.w, y: -20, v: Math.random()*2+1, r: Math.random()*360, s: Math.random()*5+3 });
+        if(this.p.length < 50) {
+            this.p.push({ x: Math.random()*this.w, y: -20, v: Math.random()*2+1, r: Math.random()*360, s: Math.random()*5+3 });
+        }
         this.p.forEach((p, i) => {
             p.y += p.v; p.x += Math.sin(p.y * 0.01); p.r += 1;
             if(p.y > this.h) this.p.splice(i, 1);
@@ -440,6 +445,37 @@ const BlossomEngine = {
     }
 };
 
+const OceanEngine = {
+    canvas: document.getElementById('ocean-canvas'),
+    ctx: null, w: 0, h: 0, offset: 0, active: false,
+    init: function() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize(); window.addEventListener('resize', () => this.resize());
+        this.loop();
+    },
+    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
+    enable: function() { this.active = true; this.canvas.style.display = 'block'; },
+    disable: function() { this.active = false; this.canvas.style.display = 'none'; },
+    loop: function() {
+        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        this.ctx.clearRect(0,0,this.w,this.h);
+        this.offset += 0.02;
+        
+        for(let i = 0; i < 3; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, this.h);
+            for(let x = 0; x < this.w; x += 10) {
+                const y = Math.sin(x * 0.003 + this.offset + i) * 50 + (this.h * 0.7);
+                this.ctx.lineTo(x, y);
+            }
+            this.ctx.lineTo(this.w, this.h);
+            this.ctx.fillStyle = `rgba(59, 130, 246, ${0.1 + (i * 0.1)})`;
+            this.ctx.fill();
+        }
+        requestAnimationFrame(() => this.loop());
+    }
+};
+
 const StarWarsEngine = {
     layer: document.getElementById('starwars-layer'),
     active: false, interval: null,
@@ -452,47 +488,19 @@ const StarWarsEngine = {
         const ship = document.createElement('div');
         ship.classList.add('tie-fighter');
         ship.innerHTML = '<div class="tie-wing-l"></div><div class="tie-wing-r"></div><div class="tie-center"><div class="tie-window"></div></div>';
+        
         const size = 0.5 + Math.random();
         const topPos = Math.random() * 90;
         const duration = Math.random() * 5 + 10;
+        
         ship.style.transform = `scale(${size}) rotate(90deg)`;
         ship.style.top = `${topPos}%`;
         ship.style.left = '-100px';
         ship.style.transition = `left ${duration}s linear`;
         this.layer.appendChild(ship);
+        
         setTimeout(() => ship.style.left = '110%', 50);
         setTimeout(() => { if(ship.parentNode) ship.parentNode.removeChild(ship); }, duration * 1000);
-    }
-};
-
-const OceanEngine = {
-    canvas: document.getElementById('ocean-canvas'),
-    ctx: null, w: 0, h: 0, t: 0, active: false,
-    init: function() {
-        this.ctx = this.canvas.getContext('2d');
-        this.resize(); window.addEventListener('resize', () => this.resize());
-        this.loop();
-    },
-    resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = window.innerHeight; },
-    enable: function() { this.active = true; this.canvas.style.display = 'block'; },
-    disable: function() { this.active = false; this.canvas.style.display = 'none'; },
-    loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
-        this.ctx.clearRect(0,0,this.w,this.h);
-        this.t += 0.01;
-        
-        for(let i=0; i<3; i++) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, this.h);
-            for(let x=0; x<=this.w; x+=20) {
-                const y = Math.sin(x*0.005 + this.t + i) * 30 + (this.h - 100 + i*30);
-                this.ctx.lineTo(x, y);
-            }
-            this.ctx.lineTo(this.w, this.h);
-            this.ctx.fillStyle = `rgba(56, 189, 248, ${0.1 + i*0.1})`;
-            this.ctx.fill();
-        }
-        requestAnimationFrame(() => this.loop());
     }
 };
 
