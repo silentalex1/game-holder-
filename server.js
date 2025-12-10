@@ -18,7 +18,7 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, PUT, DELETE',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': 2592000
     };
@@ -38,17 +38,9 @@ const server = http.createServer((req, res) => {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', () => {
-                try {
-                    const data = JSON.parse(body);
-                    const id = data.id || "";
-                    if (/^\d{17,19}$/.test(id)) {
-                        res.end(JSON.stringify({ valid: true, username: `User_${id.slice(-4)}`, hostable: true }));
-                    } else {
-                        res.end(JSON.stringify({ valid: false }));
-                    }
-                } catch (e) {
-                    res.end(JSON.stringify({ valid: false }));
-                }
+                const data = JSON.parse(body || '{}');
+                const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Anon"); 
+                res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
             });
             return;
         }
@@ -59,19 +51,13 @@ const server = http.createServer((req, res) => {
             return;
         }
 
-        if (req.url === '/api/v1/keys/verify' && req.method === 'POST') {
+        if (req.url === '/api/v1/keys/validate-paid' && req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', () => {
                 const data = JSON.parse(body || '{}');
-                const key = data.key || "";
-                if (key.startsWith('bp_paid_')) {
-                    res.end(JSON.stringify({ valid: true, tier: 'paid', features: ['priority', 'edge_nodes', 'no_limits'] }));
-                } else if (key.startsWith('bp_free_')) {
-                    res.end(JSON.stringify({ valid: true, tier: 'free', features: ['standard'] }));
-                } else {
-                    res.end(JSON.stringify({ valid: false }));
-                }
+                const isValid = data.key && data.key.startsWith('bp_paid_');
+                res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
             });
             return;
         }
@@ -105,5 +91,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`BatProx Node running on port ${PORT}`);
+    console.log(`BatProx Host running on port ${PORT}`);
 });
