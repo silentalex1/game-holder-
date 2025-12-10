@@ -1,7 +1,9 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const url = require('url');
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,6 +18,9 @@ const mimeTypes = {
 };
 
 const server = http.createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const pathname = parsedUrl.pathname;
+
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
@@ -28,29 +33,58 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (req.url.startsWith('/api/v1')) {
+    if (pathname.startsWith('/api/proxy')) {
+        const targetUrl = parsedUrl.query.url;
+        if (!targetUrl) {
+            res.writeHead(400);
+            return res.end('URL required');
+        }
+
+        const fetchModule = targetUrl.startsWith('https') ? https : http;
+        
+        fetchModule.get(targetUrl, (proxyRes) => {
+            const proxyHeaders = { ...proxyRes.headers, ...headers };
+            delete proxyHeaders['x-frame-options'];
+            delete proxyHeaders['content-security-policy'];
+            delete proxyHeaders['frame-options'];
+            
+            res.writeHead(proxyRes.statusCode, proxyHeaders);
+            proxyRes.pipe(res);
+        }).on('error', (err) => {
+            res.writeHead(500);
+            res.end('Proxy Error');
+        });
+        return;
+    }
+
+    if (pathname.startsWith('/api/v1')) {
         res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
         
-        let body = '';
-        
-        if (req.url === '/api/v1/discord/validate' && req.method === 'POST') {
+        if (pathname === '/api/v1/discord/validate' && req.method === 'POST') {
+            let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', () => {
                 const data = JSON.parse(body || '{}');
-                const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Dev"); 
-                res.end(JSON.stringify({ valid: true, username: mockUser }));
+                const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Anon"); 
+                res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
             });
             return;
         }
 
-        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
-            const key = 'bp_live_' + crypto.randomBytes(16).toString('hex');
-            res.end(JSON.stringify({ success: true, key: key }));
+        if (pathname === '/api/v1/keys/create' && req.method === 'POST') {
+            const key = 'bp_free_' + crypto.randomBytes(8).toString('hex');
+            res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
             return;
         }
 
-        if (req.url === '/api/v1/status') {
-            res.end(JSON.stringify({ status: "Online", nodes: 42 }));
+        if (pathname === '/api/v1/keys/validate-paid' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', () => {
+                const data = JSON.parse(body || '{}');
+                const isValid = data.key && data.key.startsWith('bp_paid_');
+                res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
+            });
             return;
         }
 
@@ -58,7 +92,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    let filePath = '.' + req.url;
+    let filePath = '.' + pathname;
     if (filePath === './') filePath = './index.html';
     if (filePath === './ourapi') filePath = './ourapi.html';
 
