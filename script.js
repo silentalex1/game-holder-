@@ -47,6 +47,8 @@ const BatProx = {
             e.stopPropagation(); 
             if (e.key === 'Enter') this.route(input.value);
         });
+        
+        input.addEventListener('click', (e) => e.stopPropagation());
 
         document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
         document.getElementById('vm-toggle-sidebar').addEventListener('click', () => {
@@ -92,7 +94,18 @@ const BatProx = {
         this.vm.classList.add('active');
         this.loader.style.width = '0%';
         setTimeout(() => this.loader.style.width = '100%', 50);
-        this.frame.src = target;
+        
+        const blobContent = `
+            <!DOCTYPE html>
+            <html style="height:100%;margin:0;">
+            <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
+                <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
+            </body>
+            </html>
+        `;
+        const blob = new Blob([blobContent], { type: 'text/html' });
+        this.frame.src = URL.createObjectURL(blob);
+        
         setTimeout(() => this.loader.style.opacity = '0', 500);
     },
 
@@ -144,7 +157,10 @@ const MediaLibrary = {
         this.render('movie');
         this.renderGames();
         
-        document.getElementById('media-type-selector').onchange = (e) => this.render(e.target.value);
+        document.getElementById('media-type-selector').onchange = (e) => {
+            e.stopPropagation();
+            this.render(e.target.value);
+        };
         
         document.getElementById('ask-play').onclick = () => {
             document.getElementById('ask-ui').classList.remove('active');
@@ -152,7 +168,8 @@ const MediaLibrary = {
                 BatProx.boot(this.currentItem.url);
             } else {
                 const url = `https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`;
-                BatProx.boot(url);
+                this.bootDirect(url, this.currentItem.title);
+                
                 setTimeout(() => {
                     document.getElementById('next-desc').innerText = `Continue next: ${this.currentItem.title}`;
                     document.getElementById('next-ep-ui').classList.add('active');
@@ -174,8 +191,20 @@ const MediaLibrary = {
         document.getElementById('next-close').onclick = () => document.getElementById('next-ep-ui').classList.remove('active');
         document.getElementById('next-play').onclick = () => {
             document.getElementById('next-ep-ui').classList.remove('active');
-            BatProx.boot(`https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`);
+            this.bootDirect(`https://vidking.net/embed/${this.currentItem.type}/${this.currentItem.id}`, this.currentItem.title);
         };
+    },
+
+    bootDirect: function(url, title) {
+        document.getElementById('vm-interface').classList.add('active');
+        const frame = document.getElementById('vm-frame');
+        const loader = document.querySelector('.vm-loader');
+        
+        loader.style.width = '0%';
+        setTimeout(() => loader.style.width = '100%', 50);
+        
+        frame.src = url;
+        setTimeout(() => loader.style.opacity = '0', 500);
     },
 
     renderGames: function() {
@@ -282,11 +311,13 @@ const UI = {
         document.getElementById('hub-layer').querySelector('.hub-window').onclick = (e) => e.stopPropagation();
 
         document.getElementById('theme-selector').onchange = (e) => {
+            e.stopPropagation();
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
         };
 
         document.getElementById('ext-toggle').onchange = (e) => {
+            e.stopPropagation();
             Config.extensionsEnabled = e.target.checked;
             Config.save('batprox_ext', e.target.checked);
             BatProx.toggleExtensions(e.target.checked);
@@ -399,7 +430,7 @@ const WarpEngine = {
             if(x>0&&x<this.w&&y>0&&y<this.h) {
                 this.ctx.fillStyle = `rgba(255,255,255,${a})`;
                 this.ctx.beginPath(); 
-                this.ctx.arc(x,y,s,0,Math.PI*2); 
+                this.ctx.arc(x,y,Math.max(0,s),0,Math.PI*2); 
                 this.ctx.fill();
             }
         });
@@ -468,7 +499,7 @@ const BlossomEngine = {
             this.ctx.rotate(p.r * Math.PI / 180);
             this.ctx.fillStyle = '#fbcfe8';
             this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2);
+            this.ctx.ellipse(0, 0, Math.max(0,p.s), Math.max(0,p.s/2), 0, 0, Math.PI*2);
             this.ctx.fill();
             this.ctx.restore();
         });
