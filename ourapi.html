@@ -22,199 +22,31 @@
         .feature-card { background: #111; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .feature-title { color: white; font-weight: bold; margin-bottom: 10px; }
         .feature-desc { font-size: 13px; color: #888; }
-        .tier-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
-        .tag-free { background: #10b981; color: #000; }
-        .tag-paid { background: #f43f5e; color: #fff; }
         .btn-gen { background: #a855f7; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; margin-top: 15px; }
-        .btn-gen:hover { opacity: 0.9; }
-        
-        #api-settings-btn { position: fixed; top: 30px; right: 30px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 12px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); z-index: 100; }
-        
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .key-window { width: 400px; background: #111; border: 1px solid #333; border-radius: 16px; padding: 30px; text-align: center; }
-        .key-input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin: 15px 0; outline: none; }
-        .loading-bar { height: 4px; background: #333; width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; display: none; }
-        .loading-fill { height: 100%; width: 0%; background: #a855f7; transition: width 0.3s; }
-        .generated-key { background: #222; padding: 10px; border-radius: 6px; font-family: monospace; color: #a855f7; margin-top: 20px; word-break: break-all; display: none; }
     </style>
 </head>
 <body>
     <a href="/" class="back-btn">← Back to BatProx</a>
-    <button id="api-settings-btn" onclick="openPaidSettings()">⚙</button>
     
     <div class="api-container">
         <h1>BatProx Developer API</h1>
-        <p>Integrate the world's fastest proxy engine directly into your applications using BatScript. Our proprietary API allows you to build custom proxies, manage traffic, and host your bots 24/7 with zero configuration on <strong>gamesholder.site</strong>.</p>
+        <p>Integrate the world's fastest proxy engine directly into your applications.</p>
 
         <div class="feature-grid">
             <div class="feature-card">
                 <div class="feature-title">API Key Generation</div>
-                <div class="feature-desc">Get your freemium development key to instantly start building your dream.</div>
-                <button class="btn-gen" onclick="openKeyGen()">Generate Key</button>
-            </div>
-            <div class="feature-card">
-                <div class="feature-title">Traffic Inspector <span class="tier-tag tag-free">Free</span></div>
-                <div class="feature-desc">Monitor basic request flow and origin headers.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-title">Edge Load Balancing <span class="tier-tag tag-paid">Paid</span></div>
-                <div class="feature-desc">Priority routing through low-congestion nodes.</div>
+                <div class="feature-desc">Get your freemium development key instantly.</div>
+                <button class="btn-gen" onclick="alert('Key Generated: bp_live_demo_key')">Generate Key</button>
             </div>
         </div>
 
-        <h2>1. Initialization</h2>
+        <h2>Initialization</h2>
         <div class="code-block">
 <span class="keyword">const</span> BatNode = <span class="keyword">new</span> <span class="func">BatProx</span>({
-    key: <span class="string">"bp_live_89234..."</span>,
-    domain: <span class="string">"gamesholder.site"</span>,
-    mode: <span class="string">"production"</span>
+    key: <span class="string">"bp_live_..."</span>,
+    domain: <span class="string">"gamesholder.site"</span>
 });
         </div>
-
-        <h2>2. Performance Tuning</h2>
-        <div class="code-block">
-BatNode.performance.settings = {
-    loadBalancing: <span class="keyword">true</span>, <span style="color:#777">// Paid only</span>
-    trafficPrediction: <span class="keyword">true</span>,
-    priority: <span class="string">"high"</span>
-};
-        </div>
     </div>
-
-    <!-- Free Key Generation Modal -->
-    <div class="modal-overlay" id="key-gen-ui">
-        <div class="key-window" id="key-step-1">
-            <h3 style="color:white; font-size:20px; margin-bottom:10px;">Developer Verification</h3>
-            <p style="color:#888; font-size:14px;">Enter your Discord User ID to link your free tier account.</p>
-            <input type="text" class="key-input" id="discord-id-input" placeholder="e.g. 782638...">
-            <button class="btn-gen" style="width:100%" onclick="validateDiscord()">Submit User ID</button>
-            <button onclick="closeKeyGen()" style="background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
-        </div>
-
-        <div class="key-window" id="key-step-2" style="display:none;">
-            <h3 style="color:white;">Verifying Identity</h3>
-            <div class="loading-bar" style="display:block;"><div class="loading-fill" id="load-fill-1"></div></div>
-            <p id="check-text" style="color:#888;">Checking valid ID...</p>
-        </div>
-
-        <div class="key-window" id="key-step-3" style="display:none;">
-            <h3 style="color:white;">Confirm Identity</h3>
-            <p style="color:#ccc; margin:15px 0;">Is your discord username <strong style="color:#a855f7" id="mock-username">User</strong>?</p>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-gen" style="flex:1; margin:0;" onclick="startGeneration()">Yes</button>
-                <button class="btn-gen" style="flex:1; margin:0; background:#333;" onclick="resetKeyGen()">No</button>
-            </div>
-        </div>
-
-        <div class="key-window" id="key-step-4" style="display:none;">
-            <h3 style="color:white;">Generating API Environment</h3>
-            <div class="loading-bar" style="display:block;"><div class="loading-fill" id="load-fill-2"></div></div>
-            <p id="gen-text" style="color:#888;">Allocating resources... 0%</p>
-        </div>
-
-        <div class="key-window" id="key-step-5" style="display:none;">
-            <h3 style="color:white;">API Key Created</h3>
-            <p style="color:#888; font-size:13px;">Do not share this key.</p>
-            <div class="generated-key" style="display:block;" id="final-key">bp_...</div>
-            <button class="btn-gen" style="width:100%" onclick="closeKeyGen()">Done</button>
-        </div>
-    </div>
-
-    <!-- Paid Key Modal -->
-    <div class="modal-overlay" id="paid-key-ui">
-        <div class="key-window">
-            <h3 style="color:white; font-size:20px; margin-bottom:10px;">Premium Configuration</h3>
-            <p style="color:#888; font-size:14px;">Enter your paid API key to unlock features.</p>
-            <input type="password" class="key-input" id="paid-key-input" placeholder="bp_paid_...">
-            <button class="btn-gen" style="width:100%" onclick="savePaidKey()">Save Configuration</button>
-            <button onclick="document.getElementById('paid-key-ui').classList.remove('active')" style="background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
-        </div>
-    </div>
-
-    <script>
-        function openKeyGen() {
-            if(localStorage.getItem('batprox_api_key')) {
-                document.getElementById('final-key').innerText = localStorage.getItem('batprox_api_key');
-                showStep(5);
-            } else {
-                showStep(1);
-            }
-            document.getElementById('key-gen-ui').classList.add('active');
-        }
-
-        function closeKeyGen() {
-            document.getElementById('key-gen-ui').classList.remove('active');
-            setTimeout(() => showStep(1), 300);
-        }
-
-        function showStep(n) {
-            for(let i=1; i<=5; i++) document.getElementById(`key-step-${i}`).style.display = 'none';
-            document.getElementById(`key-step-${n}`).style.display = 'block';
-        }
-
-        function validateDiscord() {
-            const id = document.getElementById('discord-id-input').value;
-            if(id.length < 17) { alert("Enter your discord ID and make sure its valid."); return; }
-            
-            showStep(2);
-            let w = 0;
-            const bar = document.getElementById('load-fill-1');
-            const int = setInterval(() => {
-                w += 5; bar.style.width = w + '%';
-                if(w >= 100) {
-                    clearInterval(int);
-                    fetch('/api/v1/discord/validate', { method:'POST', body: JSON.stringify({id}) })
-                        .then(r=>r.json()).then(d => {
-                            document.getElementById('mock-username').innerText = d.username;
-                            showStep(3);
-                        });
-                }
-            }, 50);
-        }
-
-        function resetKeyGen() {
-            alert("Enter your discord ID and make sure its valid.");
-            showStep(1);
-        }
-
-        function startGeneration() {
-            showStep(4);
-            let w = 0;
-            const bar = document.getElementById('load-fill-2');
-            const txt = document.getElementById('gen-text');
-            const int = setInterval(() => {
-                w += 2; bar.style.width = w + '%';
-                txt.innerText = `Creating your free version api currently.. [${w}%]`;
-                if(w >= 100) {
-                    clearInterval(int);
-                    fetch('/api/v1/keys/create', { method:'POST' })
-                        .then(r=>r.json()).then(d => {
-                            localStorage.setItem('batprox_api_key', d.key);
-                            document.getElementById('final-key').innerText = d.key;
-                            showStep(5);
-                        });
-                }
-            }, 30);
-        }
-
-        function openPaidSettings() {
-            document.getElementById('paid-key-ui').classList.add('active');
-        }
-
-        function savePaidKey() {
-            const key = document.getElementById('paid-key-input').value;
-            fetch('/api/v1/keys/validate-paid', { method: 'POST', body: JSON.stringify({key}) })
-                .then(r=>r.json()).then(d => {
-                    if(d.valid) {
-                        localStorage.setItem('batprox_paid_key', key);
-                        alert("Premium features enabled.");
-                        document.getElementById('paid-key-ui').classList.remove('active');
-                    } else {
-                        alert("Invalid paid API key.");
-                    }
-                });
-        }
-    </script>
 </body>
 </html>
