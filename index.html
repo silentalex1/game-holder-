@@ -8,10 +8,18 @@
     <title>Bat Prox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
+    <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="">
 </head>
 <body>
 
     <div class="top-controls">
+        <div class="brand-logo">
+            <div class="bat-shape">
+                <div class="bat-wing-left"></div>
+                <div class="bat-wing-right"></div>
+                <div class="bat-globe"></div>
+            </div>
+        </div>
         <button id="menu-btn">
             <span></span>
             <span></span>
@@ -23,11 +31,13 @@
         <a href="/ourapi" class="nav-link">Our API</a>
     </nav>
 
-    <canvas id="warp-canvas"></canvas>
-    <div id="starwars-layer"></div>
-    <canvas id="blossom-canvas"></canvas>
-    <canvas id="ocean-canvas"></canvas>
-    <div id="retro-layer"></div>
+    <div id="bg-layer">
+        <canvas id="warp-canvas"></canvas>
+        <div id="starwars-layer"></div>
+        <canvas id="blossom-canvas"></canvas>
+        <canvas id="ocean-canvas"></canvas>
+        <div id="retro-grid"></div>
+    </div>
 
     <div id="cookie-consent">
         <div class="cookie-content">
@@ -71,51 +81,21 @@
                 <div class="setting-item">
                     <label>Browser Extensions</label>
                     <div class="toggle-wrapper">
-                        <span>Allow Extensions</span>
-                        <input type="checkbox" id="ext-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="ext-toggle">
+                            <span class="slider round"></span>
+                        </label>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="ask-first-ui">
-        <div class="ask-window">
-            <button id="ask-close">X</button>
-            <div class="ask-content">
-                <div class="ask-poster">
-                    <img id="ask-img" src="" alt="Cover">
-                </div>
-                <div class="ask-details">
-                    <h2 id="ask-title">Title</h2>
-                    <p id="ask-desc">Description loading...</p>
-                    <div class="ask-actions">
-                        <button id="ask-play">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
-                            Play Now
-                        </button>
-                        <button id="ask-save">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
-                            Save
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="next-ep-ui">
-        <div class="next-window">
-            <h3>Continue watching?</h3>
-            <p>Playing next episode in 5 seconds...</p>
-            <button id="next-ep-btn">Play Next Episode</button>
-            <button id="next-ep-cancel">Cancel</button>
         </div>
     </div>
 
     <div id="hub-layer">
         <div class="hub-window">
-            <button id="hub-exit">X</button>
+            <div class="hub-header">
+                <button id="hub-exit">X</button>
+            </div>
             <div class="hub-tabs">
                 <button class="tab-link active" data-view="games">Games</button>
                 <button class="tab-link" data-view="movies">Movies</button>
@@ -159,68 +139,54 @@
         </div>
     </div>
 
+    <div id="ask-ui">
+        <div class="ask-window">
+            <div class="ask-content">
+                <h2 id="ask-title">Title Loading...</h2>
+                <p id="ask-desc">Description loading...</p>
+                <div class="ask-actions">
+                    <button id="ask-play">Play Now</button>
+                    <button id="ask-save">Save to Collection</button>
+                </div>
+                <button id="ask-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="next-ep-ui">
+        <div class="next-window">
+            <h2>Continue Watching?</h2>
+            <p id="next-desc">Continue next show...</p>
+            <div class="next-actions">
+                <button id="next-play">Play Next Episode</button>
+                <button id="next-close">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="ext-ui">
         <div class="ext-window">
-            <div class="ext-header">
-                <h2>Extensions</h2>
-                <button id="ext-close">X</button>
-            </div>
-            <div class="ext-grid">
-                <div class="ext-card">
-                    <div class="ext-icon">AD</div>
-                    <div class="ext-info">
-                        <h4>AdBlocker</h4>
-                        <button>Enable</button>
-                    </div>
-                </div>
-                <div class="ext-card">
-                    <div class="ext-icon">vpn</div>
-                    <div class="ext-info">
-                        <h4>Built-in VPN</h4>
-                        <button>Enable</button>
-                    </div>
-                </div>
-                <div class="ext-card">
-                    <div class="ext-icon">DT</div>
-                    <div class="ext-info">
-                        <h4>Dark Reader</h4>
-                        <button>Enable</button>
-                    </div>
-                </div>
-            </div>
+            <h2>Extensions Manager</h2>
+            <p>No extensions installed.</p>
+            <button id="ext-close">Close</button>
         </div>
     </div>
 
     <div id="vm-interface">
         <div class="vm-loader"></div>
         
-        <div class="vm-sidebar-left">
-            <button class="vm-side-btn" id="vm-side-menu">☰</button>
-            <button class="vm-side-btn" id="vm-side-settings">⚙</button>
-            <button class="vm-side-btn" id="vm-side-api">API</button>
-        </div>
+        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
 
-        <div class="vm-topbar">
-            <div class="vm-left">
-                <button id="vm-exit-browse" class="vm-nav-btn">Exit Browse</button>
-                <button id="vm-extensions-btn" class="vm-nav-btn hidden">Extension here</button>
-            </div>
-            <div class="vm-address-bar">
-                <span class="lock-icon">🔒</span>
-                <span id="vm-url-text">batprox://secure-blob</span>
-            </div>
-        </div>
-
-        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups"></iframe>
-        
-        <div id="vm-widget-container">
-            <div id="vm-widget-trigger">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </div>
-            <div id="vm-widget-panel">
-                <button id="vm-wid-menu">Menu</button>
-                <button id="vm-wid-set">Settings</button>
-                <button id="vm-wid-api">Our API</button>
+        <div id="vm-sidebar" class="sidebar-expanded">
+            <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
+            <div class="sidebar-content">
+                <button id="vm-menu-btn" class="sidebar-btn" title="Menu">
+                    <span></span><span></span>
+                </button>
+                <button id="vm-settings-btn" class="sidebar-btn" title="Settings">⚙</button>
+                <button id="vm-api-btn" class="sidebar-btn" title="Our API">API</button>
+                <button id="vm-exit-browse" class="sidebar-btn exit" title="Exit">Exit</button>
+                <button id="vm-ext-btn" class="sidebar-btn hidden" title="Extensions">Ext</button>
             </div>
         </div>
     </div>
