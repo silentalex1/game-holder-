@@ -16,12 +16,13 @@ const mimeTypes = {
     '.svg': 'image/svg+xml'
 };
 
-const apiKeys = new Map();
+const userKeys = new Map();
 
 const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, DELETE',
+        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': 2592000
     };
 
@@ -33,9 +34,53 @@ const server = http.createServer((req, res) => {
 
     let filePath = '.' + req.url;
     
+    // API V1 Endpoints
     if (req.url.startsWith('/api/v1')) {
         res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
         
+        // Mock Discord Lookup (Real logic would require a bot token)
+        if (req.url.startsWith('/api/v1/discord/lookup') && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+                const { id } = JSON.parse(body || '{}');
+                // Deterministic mock for functionality demonstration
+                if (id && /^\d{17,19}$/.test(id)) {
+                    res.end(JSON.stringify({ 
+                        valid: true, 
+                        username: `User_${id.substring(0,4)}`, 
+                        discriminator: '0000' 
+                    }));
+                } else {
+                    res.end(JSON.stringify({ valid: false, error: "Invalid Discord ID format." }));
+                }
+            });
+            return;
+        }
+
+        // Key Generation
+        if (req.url === '/api/v1/keys/generate' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+                const { discordId } = JSON.parse(body || '{}');
+                if (!userKeys.has(discordId)) userKeys.set(discordId, []);
+                
+                const keys = userKeys.get(discordId);
+                if (keys.length >= 4) {
+                    res.end(JSON.stringify({ success: false, message: "Max 4 keys allowed." }));
+                    return;
+                }
+
+                const newKey = `bp_${discordId}_${crypto.randomBytes(4).toString('hex')}`;
+                keys.push({ key: newKey, created: Date.now(), tier: 'Freemium' });
+                
+                res.end(JSON.stringify({ success: true, key: newKey, keys: keys }));
+            });
+            return;
+        }
+
+        // Status
         if (req.url === '/api/v1/status') {
             res.end(JSON.stringify({
                 status: "Operational",
@@ -43,18 +88,6 @@ const server = http.createServer((req, res) => {
                 nodes: 48,
                 load: "Low",
                 region: "Auto-Global"
-            }));
-            return;
-        }
-
-        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
-            const key = 'bp_' + crypto.randomBytes(16).toString('hex');
-            apiKeys.set(key, { tier: 'free', limit: 1000 });
-            res.end(JSON.stringify({
-                success: true,
-                key: key,
-                tier: "Free",
-                message: "Key active. Upgrade for Edge Caching."
             }));
             return;
         }
