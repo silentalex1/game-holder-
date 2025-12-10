@@ -29,27 +29,27 @@ const server = http.createServer((req, res) => {
     }
 
     let filePath = '.' + req.url;
-    
+    if (filePath === './') filePath = './index.html';
+    if (filePath === './ourapi') filePath = './ourapi.html';
+
+    // API Routes
     if (req.url.startsWith('/api/v1')) {
         res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
         
-        if (req.url.includes('/keys/create')) {
-            const key = 'bp_' + crypto.randomBytes(8).toString('hex');
+        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
+            const key = 'bp_live_' + crypto.randomBytes(12).toString('hex');
             res.end(JSON.stringify({ success: true, key: key }));
             return;
         }
         
-        if (req.url.includes('/discord/validate')) {
-            res.end(JSON.stringify({ valid: true, username: "Linked_User" }));
+        if (req.url === '/api/v1/discord/validate') {
+            res.end(JSON.stringify({ valid: true, username: "VerifiedUser" }));
             return;
         }
 
-        res.end(JSON.stringify({ status: "Online", nodes: 52 }));
+        res.end(JSON.stringify({ status: "OK" }));
         return;
     }
-
-    if (filePath === './') filePath = './index.html';
-    if (filePath === './ourapi') filePath = './ourapi.html';
 
     const extname = String(path.extname(filePath)).toLowerCase();
     const contentType = mimeTypes[extname] || 'application/octet-stream';
@@ -57,9 +57,9 @@ const server = http.createServer((req, res) => {
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code === 'ENOENT') {
-                fs.readFile('./index.html', (err, main) => {
+                fs.readFile('./index.html', (err, mainContent) => {
                     res.writeHead(200, { 'Content-Type': 'text/html' });
-                    res.end(main, 'utf-8');
+                    res.end(mainContent, 'utf-8');
                 });
             } else {
                 res.writeHead(500);
@@ -73,5 +73,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`BatProx Host: http://localhost:${PORT}`);
+    console.log(`BatProx Host running on port ${PORT}`);
 });
