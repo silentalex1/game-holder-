@@ -29,27 +29,33 @@ const server = http.createServer((req, res) => {
     }
 
     let filePath = '.' + req.url;
-    if (filePath === './') filePath = './index.html';
-    if (filePath === './ourapi') filePath = './ourapi.html';
-
-    // API Routes
+    
     if (req.url.startsWith('/api/v1')) {
         res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
         
-        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
-            const key = 'bp_live_' + crypto.randomBytes(12).toString('hex');
-            res.end(JSON.stringify({ success: true, key: key }));
-            return;
-        }
-        
-        if (req.url === '/api/v1/discord/validate') {
-            res.end(JSON.stringify({ valid: true, username: "VerifiedUser" }));
+        if (req.url === '/api/v1/discord/validate' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', () => {
+                const data = JSON.parse(body || '{}');
+                const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Anon"); 
+                res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
+            });
             return;
         }
 
-        res.end(JSON.stringify({ status: "OK" }));
+        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
+            const key = 'bp_free_' + crypto.randomBytes(8).toString('hex');
+            res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
+            return;
+        }
+
+        res.end(JSON.stringify({ error: "Endpoint not found" }));
         return;
     }
+
+    if (filePath === './') filePath = './index.html';
+    if (filePath === './ourapi') filePath = './ourapi.html';
 
     const extname = String(path.extname(filePath)).toLowerCase();
     const contentType = mimeTypes[extname] || 'application/octet-stream';
