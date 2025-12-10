@@ -8,20 +8,16 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { overflow-y: auto; background: #030303; }
-        .api-container { max-width: 1000px; margin: 80px auto; padding: 30px; position: relative; }
+        .api-container { max-width: 1000px; margin: 80px auto; padding: 30px; }
         .code-block { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; color: #a855f7; margin: 20px 0; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .keyword { color: #f472b6; }
         .string { color: #34d399; }
         .func { color: #60a5fa; }
-        h1 { font-size: 48px; margin-bottom: 20px; font-weight: 800; background: linear-gradient(to right, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-size: 48px; margin-bottom: 20px; font-weight: 800; background: linear-gradient(to right, #a855f7, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         h2 { font-size: 28px; margin-top: 50px; margin-bottom: 15px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         p { color: #a1a1aa; line-height: 1.8; font-size: 16px; }
         .back-btn { position: fixed; top: 30px; left: 30px; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 30px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); transition: 0.3s; z-index: 100; text-decoration: none; }
         .back-btn:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.2); }
-        
-        .api-settings-btn { position: absolute; top: 0; right: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; cursor: pointer; transition: 0.3s; font-size: 20px; }
-        .api-settings-btn:hover { background: #a855f7; border-color: #a855f7; }
-
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
         .feature-card { background: #111; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .feature-title { color: white; font-weight: bold; margin-bottom: 10px; }
@@ -29,13 +25,13 @@
         .tier-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
         .tag-free { background: #10b981; color: #000; }
         .tag-paid { background: #f43f5e; color: #fff; }
-        
         .btn-gen { background: #a855f7; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; margin-top: 15px; }
         .btn-gen:hover { opacity: 0.9; }
         
-        #key-gen-ui, #api-settings-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .active { opacity: 1 !important; visibility: visible !important; }
+        #api-settings-btn { position: fixed; top: 30px; right: 30px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 12px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); z-index: 100; }
         
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
         .key-window { width: 400px; background: #111; border: 1px solid #333; border-radius: 16px; padding: 30px; text-align: center; }
         .key-input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin: 15px 0; outline: none; }
         .loading-bar { height: 4px; background: #333; width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; display: none; }
@@ -45,9 +41,9 @@
 </head>
 <body>
     <a href="/" class="back-btn">← Back to BatProx</a>
+    <button id="api-settings-btn" onclick="openPaidSettings()">⚙</button>
     
     <div class="api-container">
-        <button class="api-settings-btn" onclick="openApiSettings()">⚙</button>
         <h1>BatProx Developer API</h1>
         <p>Integrate the world's fastest proxy engine directly into your applications using BatScript. Our proprietary API allows you to build custom proxies, manage traffic, and host your bots 24/7 with zero configuration on <strong>gamesholder.site</strong>.</p>
 
@@ -86,7 +82,8 @@ BatNode.performance.settings = {
         </div>
     </div>
 
-    <div id="key-gen-ui">
+    <!-- Free Key Generation Modal -->
+    <div class="modal-overlay" id="key-gen-ui">
         <div class="key-window" id="key-step-1">
             <h3 style="color:white; font-size:20px; margin-bottom:10px;">Developer Verification</h3>
             <p style="color:#888; font-size:14px;">Enter your Discord User ID to link your free tier account.</p>
@@ -124,13 +121,14 @@ BatNode.performance.settings = {
         </div>
     </div>
 
-    <div id="api-settings-modal">
+    <!-- Paid Key Modal -->
+    <div class="modal-overlay" id="paid-key-ui">
         <div class="key-window">
-            <h3 style="color:white; font-size:20px; margin-bottom:10px;">Upgrade API Tier</h3>
-            <p style="color:#888; font-size:14px;">Enter your paid API key to unlock premium features.</p>
+            <h3 style="color:white; font-size:20px; margin-bottom:10px;">Premium Configuration</h3>
+            <p style="color:#888; font-size:14px;">Enter your paid API key to unlock features.</p>
             <input type="password" class="key-input" id="paid-key-input" placeholder="bp_paid_...">
-            <button class="btn-gen" style="width:100%" onclick="savePaidKey()">Save Key</button>
-            <button onclick="closeApiSettings()" style="background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
+            <button class="btn-gen" style="width:100%" onclick="savePaidKey()">Save Configuration</button>
+            <button onclick="document.getElementById('paid-key-ui').classList.remove('active')" style="background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
@@ -155,32 +153,22 @@ BatNode.performance.settings = {
             document.getElementById(`key-step-${n}`).style.display = 'block';
         }
 
-        async function validateDiscord() {
+        function validateDiscord() {
             const id = document.getElementById('discord-id-input').value;
             if(id.length < 17) { alert("Enter your discord ID and make sure its valid."); return; }
             
             showStep(2);
             let w = 0;
             const bar = document.getElementById('load-fill-1');
-            
-            const req = await fetch('/api/v1/discord/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({id: id})
-            });
-            const res = await req.json();
-
             const int = setInterval(() => {
                 w += 5; bar.style.width = w + '%';
                 if(w >= 100) {
                     clearInterval(int);
-                    if(res.valid) {
-                        document.getElementById('mock-username').innerText = res.username;
-                        showStep(3);
-                    } else {
-                        alert("Invalid Discord ID");
-                        showStep(1);
-                    }
+                    fetch('/api/v1/discord/validate', { method:'POST', body: JSON.stringify({id}) })
+                        .then(r=>r.json()).then(d => {
+                            document.getElementById('mock-username').innerText = d.username;
+                            showStep(3);
+                        });
                 }
             }, 50);
         }
@@ -203,7 +191,6 @@ BatNode.performance.settings = {
                     fetch('/api/v1/keys/create', { method:'POST' })
                         .then(r=>r.json()).then(d => {
                             localStorage.setItem('batprox_api_key', d.key);
-                            localStorage.setItem('batprox_tier', 'free');
                             document.getElementById('final-key').innerText = d.key;
                             showStep(5);
                         });
@@ -211,30 +198,22 @@ BatNode.performance.settings = {
             }, 30);
         }
 
-        function openApiSettings() {
-            document.getElementById('api-settings-modal').classList.add('active');
+        function openPaidSettings() {
+            document.getElementById('paid-key-ui').classList.add('active');
         }
 
-        function closeApiSettings() {
-            document.getElementById('api-settings-modal').classList.remove('active');
-        }
-
-        async function savePaidKey() {
+        function savePaidKey() {
             const key = document.getElementById('paid-key-input').value;
-            const req = await fetch('/api/v1/keys/verify', {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({key})
-            });
-            const res = await req.json();
-            if(res.valid) {
-                localStorage.setItem('batprox_api_key', key);
-                localStorage.setItem('batprox_tier', res.tier);
-                alert("Paid API Key Saved. Premium Features Unlocked.");
-                closeApiSettings();
-            } else {
-                alert("Invalid Key.");
-            }
+            fetch('/api/v1/keys/validate-paid', { method: 'POST', body: JSON.stringify({key}) })
+                .then(r=>r.json()).then(d => {
+                    if(d.valid) {
+                        localStorage.setItem('batprox_paid_key', key);
+                        alert("Premium features enabled.");
+                        document.getElementById('paid-key-ui').classList.remove('active');
+                    } else {
+                        alert("Invalid paid API key.");
+                    }
+                });
         }
     </script>
 </body>
