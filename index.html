@@ -2,213 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer">
-    <meta name="description" content="#1 best free movie website to go to.">
-    <title>Bat Prox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BatProx API</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-    <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="">
+    <style>
+        body { overflow-y: auto; background: #030303; }
+        .api-container { max-width: 1000px; margin: 80px auto; padding: 20px; }
+        .code-block { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; color: #a855f7; margin: 20px 0; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .keyword { color: #f472b6; }
+        .string { color: #34d399; }
+        .func { color: #60a5fa; }
+        .comment { color: #6b7280; font-style: italic; }
+        h1 { font-size: 48px; margin-bottom: 20px; font-weight: 800; background: linear-gradient(to right, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h2 { font-size: 28px; margin-top: 50px; margin-bottom: 20px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        p { color: #a1a1aa; line-height: 1.8; font-size: 16px; }
+        .back-btn { position: fixed; top: 30px; left: 30px; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 30px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 100; transition: 0.3s; }
+        .back-btn:hover { border-color: #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.3); }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
+        .badge.free { background: #10b981; color: #022c22; }
+        .badge.paid { background: #f59e0b; color: #451a03; }
+    </style>
 </head>
 <body>
+    <a href="/" class="back-btn">← Back to BatProx</a>
+    
+    <div class="api-container">
+        <h1>BatProx Engine API</h1>
+        <p>Integrate the industry's most advanced stealth proxy engine directly into your applications. The BatProx API allows developers to build custom proxy solutions, bypass complex firewalls, and manage traffic flow using our proprietary node network.</p>
 
-    <div class="top-controls">
-        <div class="brand-logo">
-            <div class="bat-shape">
-                <div class="bat-wing-left"></div>
-                <div class="bat-wing-right"></div>
-                <div class="bat-globe"></div>
-            </div>
-        </div>
-        <button id="menu-btn">
-            <span></span>
-            <span></span>
-        </button>
-        <button id="settings-btn">⚙</button>
-    </div>
-
-    <nav class="navigation">
-        <a href="/ourapi" class="nav-link">Our API</a>
-    </nav>
-
-    <div id="bg-layer">
-        <canvas id="warp-canvas"></canvas>
-        <div id="starwars-layer"></div>
-        <canvas id="blossom-canvas"></canvas>
-        <canvas id="ocean-canvas"></canvas>
-        <div id="retro-grid"></div>
-    </div>
-
-    <div id="cookie-consent">
-        <div class="cookie-content">
-            <h3>Allow cookies?</h3>
-            <p>If you allow cookies this will grant more permissions, future features, and will save setting options automatically.</p>
-            <div class="cookie-actions">
-                <button id="cookie-yes">Yes</button>
-                <button id="cookie-no">No</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-ui">
-        <div class="settings-window">
-            <div class="settings-header">
-                <h2>Settings Features</h2>
-                <button id="settings-close">X</button>
-            </div>
-            <div class="settings-body">
-                <div class="setting-item">
-                    <label>Interface Theme</label>
-                    <div class="select-wrapper">
-                        <select id="theme-selector">
-                            <option value="void">Void (Winter Snow)</option>
-                            <option value="ocean">Deep Ocean</option>
-                            <option value="sunset">Retro Sunset</option>
-                            <option value="blossom">Pink Blossom</option>
-                            <option value="starwars">Star Wars (Galactic)</option>
-                            <option value="midnight">Midnight Purple</option>
-                            <option value="ember">Crimson Ember</option>
-                            <option value="glitch">Cyber Glitch</option>
-                            <option value="forest">Neon Forest</option>
-                            <option value="gold">Luxury Gold</option>
-                            <option value="cotton">Cotton Candy</option>
-                            <option value="dracula">Dracula Dark</option>
-                            <option value="matrix">System Matrix</option>
-                            <option value="royal">Royal Blue</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <label>Browser Extensions</label>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="ext-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="hub-layer">
-        <div class="hub-window">
-            <div class="hub-header">
-                <button id="hub-exit">X</button>
-            </div>
-            <div class="hub-tabs">
-                <button class="tab-link active" data-view="games">Games</button>
-                <button class="tab-link" data-view="movies">Movies</button>
-                <button class="tab-link" data-view="saved">Saved Media</button>
-            </div>
-            <div class="hub-container">
-                
-                <div id="games-view" class="hub-page active">
-                    <h2>Games Library</h2>
-                    <div class="search-wrapper">
-                        <input type="text" class="hub-search" id="game-search" placeholder="Search games...">
-                    </div>
-                    <div class="content-grid" id="games-grid"></div>
-                </div>
-
-                <div id="movies-view" class="hub-page">
-                    <div class="movie-header">
-                        <h2>Media Library</h2>
-                        <div class="select-wrapper small">
-                            <select id="media-type-selector">
-                                <option value="movie">Movies</option>
-                                <option value="tv">Shows</option>
-                                <option value="anime">Animes</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="search-wrapper">
-                        <input type="text" class="hub-search" id="movie-search" placeholder="Search media...">
-                    </div>
-                    <div class="content-grid" id="movies-grid"></div>
-                </div>
-
-                <div id="saved-view" class="hub-page">
-                    <h2>Your Collection</h2>
-                    <div class="content-grid" id="saved-grid">
-                        <div class="empty-state">No saved media.</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="ask-ui">
-        <div class="ask-window">
-            <div class="ask-content">
-                <h2 id="ask-title">Title Loading...</h2>
-                <p id="ask-desc">Description loading...</p>
-                <div class="ask-actions">
-                    <button id="ask-play">Play Now</button>
-                    <button id="ask-save">Save to Collection</button>
-                </div>
-                <button id="ask-close">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="next-ep-ui">
-        <div class="next-window">
-            <h2>Continue Watching?</h2>
-            <p id="next-desc">Continue next show...</p>
-            <div class="next-actions">
-                <button id="next-play">Play Next Episode</button>
-                <button id="next-close">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ext-ui">
-        <div class="ext-window">
-            <h2>Extensions Manager</h2>
-            <p>No extensions installed.</p>
-            <button id="ext-close">Close</button>
-        </div>
-    </div>
-
-    <div id="vm-interface">
-        <div class="vm-loader"></div>
-        
-        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
-
-        <div id="vm-sidebar" class="sidebar-expanded">
-            <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
-            <div class="sidebar-content">
-                <button id="vm-menu-btn" class="sidebar-btn" title="Menu">
-                    <span></span><span></span>
-                </button>
-                <button id="vm-settings-btn" class="sidebar-btn" title="Settings">⚙</button>
-                <button id="vm-api-btn" class="sidebar-btn" title="Our API">API</button>
-                <button id="vm-exit-browse" class="sidebar-btn exit" title="Exit">Exit</button>
-                <button id="vm-ext-btn" class="sidebar-btn hidden" title="Extensions">Ext</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-ui">
-        
-        <div id="clock-display">00:00:00 PM - 12/09/2025</div>
-
-        <div class="core-assembly">
-            <canvas id="vapor-canvas"></canvas>
-            
-            <div class="input-housing">
-                <input type="text" id="master-input" spellcheck="false" autocomplete="off" placeholder="Enter any website domains:">
-            </div>
+        <h2>Quick Start</h2>
+        <p>Initialize the BatProx core engine in your project. No backend required.</p>
+        <div class="code-block">
+<span class="keyword">const</span> BatNode = <span class="keyword">new</span> <span class="func">BatProx</span>({
+    key: <span class="string">"YOUR_PUBLIC_KEY"</span>,
+    region: <span class="string">"auto"</span>,
+    stealth: <span class="keyword">true</span>
+});
         </div>
 
-        <div class="status-badge">
-            <div id="dynamic-text">The best proxy of them all. Goes to BatProx.</div>
+        <h2>Configuration <span class="badge free">Standard</span></h2>
+        <p>Basic configuration options available for all users.</p>
+        <div class="code-block">
+BatNode.config({
+    errorReporting: <span class="keyword">true</span>,
+    stats: <span class="string">"minimal"</span>,
+    debugMode: <span class="keyword">false</span>
+});
         </div>
 
-    </div>
+        <h2>Performance Optimizer <span class="badge paid">Premium</span></h2>
+        <p>Unlock enterprise-grade traffic management features.</p>
+        <div class="code-block">
+BatNode.optimizer.engine = {
+    loadBalancing: <span class="keyword">true</span>,
+    priorityBandwidth: <span class="string">"high"</span>,
+    reduceCongestion: <span class="keyword">true</span>,
+    edgeNodes: [<span class="string">"us-east"</span>, <span class="string">"eu-west"</span>],
+    lowerLatency: <span class="keyword">true</span>
+};
+        </div>
 
-    <script src="script.js"></script>
+        <h2>Discord Integration <span class="badge free">Standard</span></h2>
+        <p>Securely route traffic statistics to your Discord bot without exposing tokens client-side. Our relay handles the authentication.</p>
+        <div class="code-block">
+BatNode.request.discord({
+    botId: <span class="string">"8928..."</span>,
+    method: <span class="string">"traffic_alert"</span>,
+    payload: { 
+        status: <span class="string">"online"</span>,
+        users: <span class="keyword">142</span>
+    }
+});
+        </div>
+
+        <h2>Traffic Inspector <span class="badge paid">Premium</span></h2>
+        <p>Real-time packet inspection and modification.</p>
+        <div class="code-block">
+BatNode.traffic.inspect((packet) => {
+    <span class="keyword">if</span> (packet.type === <span class="string">"blocked"</span>) {
+        <span class="keyword">return</span> BatNode.reroute(packet, <span class="string">"secure-node-7"</span>);
+    }
+});
+        </div>
+    </div>
 </body>
 </html>
