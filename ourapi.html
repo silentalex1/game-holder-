@@ -6,6 +6,7 @@
     <title>BatProx API</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
+    <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="">
     <style>
         body { overflow-y: auto; background: #030303; }
         .api-container { max-width: 1000px; margin: 80px auto; padding: 30px; }
@@ -27,7 +28,7 @@
         .tag-paid { background: #f43f5e; color: #fff; }
         .btn-gen { background: #a855f7; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; margin-top: 15px; }
         .btn-gen:hover { opacity: 0.9; }
-        
+        #api-settings-btn { position: fixed; top: 30px; right: 30px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 12px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); z-index: 100; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .key-window { width: 400px; background: #111; border: 1px solid #333; border-radius: 16px; padding: 30px; text-align: center; }
@@ -39,6 +40,7 @@
 </head>
 <body>
     <a href="/" class="back-btn">← Back to BatProx</a>
+    <button id="api-settings-btn" onclick="openPaidSettings()">⚙</button>
     
     <div class="api-container">
         <h1>BatProx Developer API</h1>
@@ -117,7 +119,53 @@ BatNode.performance.settings = {
         </div>
     </div>
 
+    <div class="modal-overlay" id="paid-key-ui">
+        <div class="key-window">
+            <h3 style="color:white; font-size:20px; margin-bottom:10px;">Premium Configuration</h3>
+            <p style="color:#888; font-size:14px;">Enter your paid API key to unlock features.</p>
+            <input type="password" class="key-input" id="paid-key-input" placeholder="bp_paid_...">
+            <button class="btn-gen" style="width:100%" onclick="savePaidKey()">Save Configuration</button>
+            <button onclick="document.getElementById('paid-key-ui').classList.remove('active')" style="background:transparent; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
     <script>
+        const THEMES = {
+            void: { p: '#a855f7', bg: '#030303', t: '#ffffff' },
+            ocean: { p: '#3b82f6', bg: '#0f172a', t: '#e2e8f0' },
+            sunset: { p: '#f97316', bg: '#431407', t: '#ffedd5' },
+            blossom: { p: '#fbcfe8', bg: '#1f1016', t: '#fce7f3' },
+            starwars: { p: '#ffe81f', bg: '#000000', t: '#ffe81f' },
+            midnight: { p: '#6366f1', bg: '#0f172a', t: '#e2e8f0' },
+            ember: { p: '#f43f5e', bg: '#0f0505', t: '#fff1f2' },
+            glitch: { p: '#22d3ee', bg: '#081012', t: '#ecfeff' },
+            forest: { p: '#10b981', bg: '#022c22', t: '#d1fae5' },
+            gold: { p: '#eab308', bg: '#1a190b', t: '#fefce8' },
+            cotton: { p: '#f472b6', bg: '#1f1016', t: '#fce7f3' },
+            dracula: { p: '#bd93f9', bg: '#282a36', t: '#f8f8f2' },
+            matrix: { p: '#00ff41', bg: '#000000', t: '#e0ffe4' },
+            royal: { p: '#c084fc', bg: '#170b29', t: '#f3e8ff' }
+        };
+
+        (function() {
+            const savedTheme = localStorage.getItem('batprox_theme') || 'void';
+            const t = THEMES[savedTheme];
+            if(t) {
+                document.body.style.backgroundColor = t.bg;
+                document.documentElement.style.setProperty('--primary', t.p);
+            }
+            updateFavicon();
+        })();
+
+        function updateFavicon() {
+            const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 40 C 20 40 10 30 2 20 Q 15 20 22 28 C 22 20 28 15 32 15 C 36 15 42 20 42 28 Q 49 20 62 20 C 54 30 44 40 32 40 Z' fill='#000000' stroke='#a855f7' stroke-width='3'/></svg>`;
+            const link = document.createElement('link');
+            link.type = 'image/svg+xml';
+            link.rel = 'icon';
+            link.href = 'data:image/svg+xml;base64,' + btoa(svg);
+            document.head.appendChild(link);
+        }
+
         function openKeyGen() {
             if(localStorage.getItem('batprox_api_key')) {
                 document.getElementById('final-key').innerText = localStorage.getItem('batprox_api_key');
@@ -181,6 +229,19 @@ BatNode.performance.settings = {
                         });
                 }
             }, 30);
+        }
+
+        function openPaidSettings() {
+            document.getElementById('paid-key-ui').classList.add('active');
+        }
+
+        function savePaidKey() {
+            const key = document.getElementById('paid-key-input').value;
+            if(key) {
+                localStorage.setItem('batprox_paid_key', key);
+                alert("Premium key saved locally.");
+                document.getElementById('paid-key-ui').classList.remove('active');
+            }
         }
     </script>
 </body>
