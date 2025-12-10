@@ -4,7 +4,6 @@ const path = require('path');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
-const DOMAIN = "gamesholder.site";
 
 const mimeTypes = {
     '.html': 'text/html',
@@ -19,7 +18,8 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, DELETE',
+        'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': 2592000
     };
 
@@ -34,24 +34,49 @@ const server = http.createServer((req, res) => {
     if (req.url.startsWith('/api/v1')) {
         res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
         
-        if (req.url === '/api/v1/discord/validate') {
+        if (req.url === '/api/v1/discord/validate' && req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', () => {
-                const data = JSON.parse(body || '{}');
-                const mockUsername = "User_" + data.id.substring(0, 4); 
-                res.end(JSON.stringify({ valid: true, username: mockUsername }));
+                try {
+                    const data = JSON.parse(body);
+                    const id = data.id || "";
+                    if (/^\d{17,19}$/.test(id)) {
+                        res.end(JSON.stringify({ valid: true, username: `User_${id.slice(-4)}`, hostable: true }));
+                    } else {
+                        res.end(JSON.stringify({ valid: false }));
+                    }
+                } catch (e) {
+                    res.end(JSON.stringify({ valid: false }));
+                }
             });
             return;
         }
 
-        if (req.url === '/api/v1/keys/create') {
-            const key = 'bp_live_' + crypto.randomBytes(12).toString('hex');
-            res.end(JSON.stringify({ success: true, key: key }));
+        if (req.url === '/api/v1/keys/create' && req.method === 'POST') {
+            const key = 'bp_free_' + crypto.randomBytes(8).toString('hex');
+            res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
             return;
         }
 
-        res.end(JSON.stringify({ error: "Unknown Endpoint" }));
+        if (req.url === '/api/v1/keys/verify' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', () => {
+                const data = JSON.parse(body || '{}');
+                const key = data.key || "";
+                if (key.startsWith('bp_paid_')) {
+                    res.end(JSON.stringify({ valid: true, tier: 'paid', features: ['priority', 'edge_nodes', 'no_limits'] }));
+                } else if (key.startsWith('bp_free_')) {
+                    res.end(JSON.stringify({ valid: true, tier: 'free', features: ['standard'] }));
+                } else {
+                    res.end(JSON.stringify({ valid: false }));
+                }
+            });
+            return;
+        }
+
+        res.end(JSON.stringify({ error: "Endpoint not found" }));
         return;
     }
 
