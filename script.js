@@ -158,6 +158,7 @@ const MediaLibrary = {
                     document.getElementById('next-ep-ui').classList.add('active');
                 }, 15000); 
             }
+            document.getElementById('hub-layer').classList.remove('visible');
         };
 
         document.getElementById('ask-save').onclick = () => {
@@ -246,7 +247,7 @@ const UI = {
     },
 
     updateFavicon: function() {
-        const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:#3b82f6;stop-opacity:1' /><stop offset='100%' style='stop-color:#10b981;stop-opacity:1' /></linearGradient></defs><path d='M0 0 L10 24 L18 16 Z' fill='#a855f7'/><path d='M36 0 L26 24 L18 16 Z' fill='#a855f7'/><circle cx='18' cy='12' r='7' fill='url(#g)'/></svg>`;
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 40 C 20 40 10 30 2 20 Q 15 20 22 28 C 22 20 28 15 32 15 C 36 15 42 20 42 28 Q 49 20 62 20 C 54 30 44 40 32 40 Z' fill='#000000' stroke='#a855f7' stroke-width='3'/></svg>`;
         document.getElementById('dynamic-favicon').href = 'data:image/svg+xml;base64,' + btoa(svg);
     },
 
