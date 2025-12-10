@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
+    <meta name="description" content="#1 best free movie website to go to.">
     <title>Bat Prox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
@@ -100,9 +101,10 @@
             <div class="hub-tabs">
                 <button class="tab-link active" data-view="games">Games</button>
                 <button class="tab-link" data-view="movies">Movies</button>
-                <button class="tab-link" data-view="saved">Saved Media</button>
+                <button class="tab-link" data-view="saved">Saved Movies</button>
             </div>
             <div class="hub-container">
+                
                 <div id="games-view" class="hub-page active">
                     <h2>Games Library</h2>
                     <div class="search-wrapper">
@@ -110,6 +112,7 @@
                     </div>
                     <div class="content-grid" id="games-grid"></div>
                 </div>
+
                 <div id="movies-view" class="hub-page">
                     <div class="movie-header">
                         <h2>Media Library</h2>
@@ -126,12 +129,14 @@
                     </div>
                     <div class="content-grid" id="movies-grid"></div>
                 </div>
+
                 <div id="saved-view" class="hub-page">
                     <h2>Your Collection</h2>
                     <div class="content-grid" id="saved-grid">
                         <div class="empty-state">No saved media.</div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -155,15 +160,23 @@
             <h2>Continue Watching?</h2>
             <p id="next-desc">Continue next show...</p>
             <div class="next-actions">
-                <button id="next-play">Resume</button>
+                <button id="next-play">Play Next Episode</button>
                 <button id="next-close">Close</button>
             </div>
         </div>
     </div>
 
+    <div id="ext-ui">
+        <div class="ext-window">
+            <h2>Extensions Manager</h2>
+            <p>No extensions installed. Enable Developer Mode via API.</p>
+            <button id="ext-close">Close</button>
+        </div>
+    </div>
+
     <div id="vm-interface">
         <div class="vm-loader"></div>
-        <iframe id="vm-frame" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
+        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
         
         <div id="vm-sidebar" class="sidebar-expanded">
             <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
@@ -172,6 +185,7 @@
                 <button id="vm-settings-btn" class="sidebar-btn" title="Settings">⚙</button>
                 <button id="vm-api-btn" class="sidebar-btn" title="Our API">API</button>
                 <button id="vm-exit-browse" class="sidebar-btn exit" title="Exit">Exit</button>
+                <button id="vm-ext-btn" class="sidebar-btn hidden" title="Extensions">Ext</button>
             </div>
         </div>
     </div>
