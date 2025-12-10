@@ -1,214 +1,511 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer">
-    <meta name="description" content="#1 best free movie website to go to.">
-    <title>Bat Prox</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
-    <link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="">
-</head>
-<body>
+:root {
+    --primary: #a855f7;
+    --primary-rgb: 168, 85, 247;
+    --bg: #030303;
+    --surface: #0a0a0a;
+    --text: #ffffff;
+    --text-dim: #a1a1aa;
+    --border: rgba(255, 255, 255, 0.1);
+}
 
-    <div class="top-controls">
-        <div class="brand-logo">
-            <div class="bat-shape">
-                <div class="bat-wing-left"></div>
-                <div class="bat-wing-right"></div>
-                <div class="bat-globe"></div>
-            </div>
-        </div>
-        <button id="menu-btn">
-            <span></span>
-            <span></span>
-        </button>
-        <button id="settings-btn">⚙</button>
-    </div>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    <nav class="navigation">
-        <a href="/ourapi" class="nav-link">Our API</a>
-    </nav>
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    transition: background-color 0.5s ease;
+}
 
-    <div id="bg-layer">
-        <canvas id="warp-canvas"></canvas>
-        <div id="starwars-layer"></div>
-        <canvas id="blossom-canvas"></canvas>
-        <canvas id="ocean-canvas"></canvas>
-        <div id="retro-grid"></div>
-    </div>
+input, select {
+    user-select: text;
+    pointer-events: auto;
+    font-family: inherit;
+}
 
-    <div id="cookie-consent">
-        <div class="cookie-content">
-            <h3>Allow cookies?</h3>
-            <p>If you allow cookies this will grant more permissions, future features, and will save setting options automatically.</p>
-            <div class="cookie-actions">
-                <button id="cookie-yes">Yes</button>
-                <button id="cookie-no">No</button>
-            </div>
-        </div>
-    </div>
+#bg-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
 
-    <div id="settings-ui">
-        <div class="settings-window">
-            <div class="settings-header">
-                <h2>Settings Features</h2>
-                <button id="settings-close">X</button>
-            </div>
-            <div class="settings-body">
-                <div class="setting-item">
-                    <label>Interface Theme</label>
-                    <div class="select-wrapper">
-                        <select id="theme-selector">
-                            <option value="void">Void (Winter Snow)</option>
-                            <option value="ocean">Deep Ocean</option>
-                            <option value="sunset">Retro Sunset</option>
-                            <option value="blossom">Pink Blossom</option>
-                            <option value="starwars">Star Wars (Galactic)</option>
-                            <option value="midnight">Midnight Purple</option>
-                            <option value="ember">Crimson Ember</option>
-                            <option value="glitch">Cyber Glitch</option>
-                            <option value="forest">Neon Forest</option>
-                            <option value="gold">Luxury Gold</option>
-                            <option value="cotton">Cotton Candy</option>
-                            <option value="dracula">Dracula Dark</option>
-                            <option value="matrix">System Matrix</option>
-                            <option value="royal">Royal Blue</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <label>Browser Extensions</label>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="ext-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+#warp-canvas, #blossom-canvas, #ocean-canvas, #starwars-layer, #retro-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
 
-    <div id="hub-layer">
-        <div class="hub-window">
-            <div class="hub-header">
-                <button id="hub-exit">X</button>
-            </div>
-            <div class="hub-tabs">
-                <button class="tab-link active" data-view="games">Games</button>
-                <button class="tab-link" data-view="movies">Movies</button>
-                <button class="tab-link" data-view="saved">Saved Media</button>
-            </div>
-            <div class="hub-container">
-                
-                <div id="games-view" class="hub-page active">
-                    <h2>Games Library</h2>
-                    <div class="search-wrapper">
-                        <input type="text" class="hub-search" id="game-search" placeholder="Search games...">
-                    </div>
-                    <div class="content-grid" id="games-grid"></div>
-                </div>
+.tie-fighter {
+    position: absolute;
+    width: 40px;
+    height: 34px;
+    z-index: -2; 
+}
+.tie-wing-l, .tie-wing-r {
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    background: #94a3b8;
+    border: 1px solid #475569;
+    clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 90%);
+}
+.tie-wing-r { right: 0; transform: scaleX(-1); }
+.tie-center {
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    width: 24px;
+    height: 14px;
+    background: #64748b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tie-window {
+    width: 8px;
+    height: 8px;
+    background: #000;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
 
-                <div id="movies-view" class="hub-page">
-                    <div class="movie-header">
-                        <h2>Media Library</h2>
-                        <div class="select-wrapper small">
-                            <select id="media-type-selector">
-                                <option value="movie">Movies</option>
-                                <option value="tv">Shows</option>
-                                <option value="anime">Animes</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="search-wrapper">
-                        <input type="text" class="hub-search" id="movie-search" placeholder="Search media...">
-                    </div>
-                    <div class="content-grid" id="movies-grid"></div>
-                </div>
+#retro-grid {
+    background: 
+        linear-gradient(transparent 95%, var(--primary) 95%),
+        linear-gradient(90deg, transparent 95%, var(--primary) 95%);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg) translateY(100px) scale(2);
+    opacity: 0.2;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
+    animation: grid-scroll 20s linear infinite;
+}
+@keyframes grid-scroll { from { background-position: 0 0; } to { background-position: 0 1000px; } }
 
-                <div id="saved-view" class="hub-page">
-                    <h2>Your Collection</h2>
-                    <div class="content-grid" id="saved-grid">
-                        <div class="empty-state">No saved media.</div>
-                    </div>
-                </div>
+.top-controls {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 50;
+    pointer-events: auto;
+}
 
-            </div>
-        </div>
-    </div>
+.brand-logo {
+    width: 42px;
+    height: 42px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    <div id="ask-ui">
-        <div class="ask-window">
-            <div class="ask-content">
-                <h2 id="ask-title">Title Loading...</h2>
-                <p id="ask-desc">Description loading...</p>
-                <div class="ask-actions">
-                    <button id="ask-play">Play Now</button>
-                    <button id="ask-save">Save to Collection</button>
-                </div>
-                <button id="ask-close">Cancel</button>
-            </div>
-        </div>
-    </div>
+.bat-shape {
+    position: relative;
+    width: 36px;
+    height: 24px;
+}
 
-    <div id="next-ep-ui">
-        <div class="next-window">
-            <h2>Continue Watching?</h2>
-            <p id="next-desc">Continue next show...</p>
-            <div class="next-actions">
-                <button id="next-play">Play Next Episode</button>
-                <button id="next-close">Close</button>
-            </div>
-        </div>
-    </div>
+.bat-globe {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(135deg, #3b82f6, #10b981);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    z-index: 2;
+}
 
-    <div id="ext-ui">
-        <div class="ext-window">
-            <h2>Extensions Manager</h2>
-            <p>No extensions installed.</p>
-            <button id="ext-close">Close</button>
-        </div>
-    </div>
+.bat-wing-left, .bat-wing-right {
+    position: absolute;
+    top: 0;
+    width: 18px;
+    height: 24px;
+    background: var(--primary);
+    clip-path: polygon(100% 30%, 0 0, 20% 100%, 100% 70%);
+}
 
-    <div id="vm-interface">
-        <div class="vm-loader"></div>
-        
-        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
+.bat-wing-left {
+    left: 0;
+    border-top-left-radius: 100%;
+}
 
-        <div id="vm-sidebar" class="sidebar-expanded">
-            <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
-            <div class="sidebar-content">
-                <button id="vm-menu-btn" class="sidebar-btn" title="Menu">
-                    <span></span><span></span>
-                </button>
-                <button id="vm-settings-btn" class="sidebar-btn" title="Settings">⚙</button>
-                <button id="vm-api-btn" class="sidebar-btn" title="Our API">API</button>
-                <button id="vm-exit-browse" class="sidebar-btn exit" title="Exit">Exit</button>
-                <button id="vm-ext-btn" class="sidebar-btn hidden" title="Extensions">Ext</button>
-            </div>
-        </div>
-    </div>
+.bat-wing-right {
+    right: 0;
+    transform: scaleX(-1);
+    border-top-left-radius: 100%;
+}
 
-    <div class="main-ui">
-        
-        <div id="clock-display">00:00:00 PM - 12/09/2025</div>
+.navigation {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 50;
+    pointer-events: auto;
+}
 
-        <div class="core-assembly">
-            <canvas id="vapor-canvas"></canvas>
-            
-            <div class="input-housing">
-                <input type="text" id="master-input" spellcheck="false" autocomplete="off" placeholder="Enter any website domains:">
-            </div>
-        </div>
+.nav-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 24px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+}
 
-        <div class="status-badge">
-            <div id="dynamic-text">The best proxy of them all. Goes to BatProx.</div>
-        </div>
+.nav-link:hover {
+    color: var(--text);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.4);
+}
 
-    </div>
+.main-ui {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+.main-ui > * { pointer-events: auto; }
+
+#menu-btn, #settings-btn {
+    width: 42px;
+    height: 42px;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+#menu-btn { flex-direction: column; gap: 6px; }
+#menu-btn span { display: block; width: 20px; height: 2px; background: var(--text); transition: 0.3s; }
+#menu-btn:hover span { background: var(--primary); width: 24px; }
+#settings-btn { font-size: 20px; }
+#menu-btn:hover, #settings-btn:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+    color: var(--primary);
+}
+
+#clock-display {
+    position: absolute;
+    top: 20%;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.core-assembly {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 40px;
+}
+
+#vapor-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.input-housing {
+    position: relative;
+    z-index: 20;
+    padding: 2px;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(var(--primary-rgb), 0.2);
+    transform: translateZ(0);
+}
+
+.input-housing::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent 20%, transparent 80%, var(--primary) 90%, transparent 100%);
+    animation: border-spin 3s linear infinite;
+}
+
+@keyframes border-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+#master-input {
+    position: relative;
+    z-index: 2;
+    width: 400px;
+    padding: 20px 24px;
+    background: var(--surface);
+    color: var(--text);
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 14px;
+    transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#master-input:focus { width: 600px; }
+
+.status-badge {
+    margin-top: 50px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    padding: 12px 30px;
+    border-radius: 100px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 320px;
+}
+
+#dynamic-text { color: var(--text); font-size: 14px; opacity: 1; transition: 0.3s; text-align: center; }
+.text-cycle { opacity: 0 !important; transform: translateY(5px); }
+
+#hub-layer, #settings-ui, #ask-ui, #next-ep-ui, #ext-ui {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(40px);
+    z-index: 800;
+    opacity: 0;
+    visibility: hidden; 
+    transition: opacity 0.3s, visibility 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.visible, .active { opacity: 1 !important; visibility: visible !important; }
+
+.hub-window, .settings-window, .ask-window, .next-window, .ext-window {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.9);
+    transform: scale(0.95);
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.hub-window { width: 90%; max-width: 1200px; height: 85%; }
+.settings-window, .ask-window, .next-window, .ext-window { width: 450px; padding: 24px; transform: translateY(20px); border-radius: 16px; }
+
+#hub-layer.visible .hub-window { transform: scale(1); }
+#settings-ui.active .settings-window, #ask-ui.active .ask-window, #next-ep-ui.active .next-window, #ext-ui.active .ext-window { transform: translateY(0); }
+
+.hub-header, .settings-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+.hub-header { position: absolute; top: 20px; right: 20px; border: none; }
+
+#hub-exit, #settings-close, #ask-close, #next-close, #ext-close { 
+    background: transparent; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+}
+#hub-exit:hover, #settings-close:hover { background: #ef4444; color: white; border-color: #ef4444; }
+
+.hub-tabs { display: flex; padding: 30px 40px 0; border-bottom: 1px solid var(--border); gap: 30px; }
+.tab-link { background: none; border: none; color: var(--text-dim); padding: 15px 0; font-size: 15px; font-weight: 500; cursor: pointer; position: relative; transition: 0.3s; }
+.tab-link.active { color: var(--text); }
+.tab-link.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary); box-shadow: 0 -2px 15px var(--primary); }
+
+.hub-container { flex: 1; position: relative; overflow-y: auto; overflow-x: hidden; }
+.hub-page { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 40px; opacity: 0; pointer-events: none; transform: translateY(20px); transition: 0.4s; overflow-y: auto; }
+.hub-page.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+.hub-search { background: #18181b; border: 1px solid #333; padding: 14px 24px; border-radius: 100px; width: 400px; color: white; text-align: center; outline: none; transition: all 0.3s; margin-bottom: 30px; }
+.hub-search:focus { border-color: var(--primary); width: 450px; }
+
+.content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; padding-bottom: 50px; }
+.media-card { background: #18181b; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; aspect-ratio: 2/3; border: 1px solid var(--border); }
+.media-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--primary); }
+.media-card img { width: 100%; height: 100%; object-fit: cover; }
+.media-info { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 20px 10px 10px; transform: translateY(100%); transition: transform 0.3s; }
+.media-card:hover .media-info { transform: translateY(0); }
+.media-title { font-size: 13px; font-weight: 600; text-align: center; color: white; }
+
+.play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); opacity: 0; transition: 0.3s; }
+.media-card:hover .play-overlay { opacity: 1; }
+.play-btn { background: var(--primary); padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; font-size: 12px; }
+
+.setting-item { margin-bottom: 20px; }
+.setting-item label { display: block; margin-bottom: 10px; color: var(--text-dim); font-size: 14px; }
+.select-wrapper select { width: 100%; padding: 12px; background: #111; border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; cursor: pointer; }
+
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+.ask-content h2, .next-window h2, .ext-window h2 { font-size: 20px; color: var(--text); margin-bottom: 10px; }
+.ask-content p, .next-window p, .ext-window p { color: var(--text-dim); margin-bottom: 20px; font-size: 14px; }
+.ask-actions, .next-actions { display: flex; gap: 10px; margin-bottom: 10px; }
+.ask-actions button, .next-actions button, #ext-close { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
+#ask-play, #next-play { background: var(--primary); color: white; }
+#ask-save { background: #222; border: 1px solid var(--border); color: white; }
+#ask-close, #next-close, #ext-close { width: 100%; border-radius: 8px; }
+
+#cookie-consent { position: fixed; bottom: 30px; left: 30px; width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: translateY(150%); transition: transform 0.5s; display: block; }
+#cookie-consent.show { transform: translateY(0); }
+.cookie-content h3 { font-size: 16px; margin-bottom: 8px; color: var(--text); font-weight: 600; }
+.cookie-content p { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.5; }
+.cookie-actions { display: flex; gap: 10px; }
+#cookie-yes, #cookie-no { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+#cookie-yes { background: var(--primary); color: white; }
+#cookie-no { background: #222; color: #ccc; }
+
+#vm-interface {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+#vm-interface.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+.vm-loader { height: 3px; width: 0%; background: var(--primary); transition: width 0.5s ease; box-shadow: 0 0 10px var(--primary); }
+
+#vm-frame { flex: 1; border: none; background: #000; width: 100%; height: 100%; }
+
+#vm-sidebar {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 600;
+}
+
+.sidebar-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 5px;
+    transition: 0.3s;
+}
+
+#vm-sidebar.collapsed .sidebar-content { width: 0; opacity: 0; overflow: hidden; }
+#vm-sidebar.collapsed .sidebar-toggle { transform: rotate(180deg); margin-right: 0; }
+#vm-sidebar:not(.collapsed):hover { border-color: var(--primary); }
+
+.sidebar-content {
+    display: flex;
+    gap: 8px;
+    padding-right: 5px;
+    transition: all 0.3s;
+    width: auto;
+    opacity: 1;
+}
+
+.sidebar-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.sidebar-btn:hover { background: rgba(255,255,255,0.1); }
+.sidebar-btn span { width: 16px; height: 2px; background: white; margin: 2px 0; }
+.sidebar-btn.exit { color: #ff5f56; font-size: 10px; font-weight: bold; }
+.sidebar-btn.hidden { display: none; }
+
+@media (max-width: 768px) {
+    #master-input { width: 85vw; }
+    #master-input:focus { width: 92vw; }
+    .hub-window { width: 100%; height: 100%; border-radius: 0; border: none; }
+    .hub-page { padding-top: 80px; }
+    .hub-search { width: 85%; }
+    .top-controls { top: 20px; left: 20px; }
+    .navigation { top: 20px; right: 20px; }
+    #cookie-consent { width: 90%; left: 5%; bottom: 20px; }
+    #vm-sidebar { bottom: 20px; right: 20px; }
+}
