@@ -17,7 +17,7 @@
             <div class="bat-shape">
                 <div class="bat-wing-left"></div>
                 <div class="bat-wing-right"></div>
-                <div class="bat-globe"></div>
+                <div class="bat-head"></div>
             </div>
         </div>
         <button id="menu-btn">
@@ -61,7 +61,7 @@
                     <label>Interface Theme</label>
                     <div class="select-wrapper">
                         <select id="theme-selector">
-                            <option value="void">Void (Winter Snow)</option>
+                            <option value="void">Void (Winter/Fire)</option>
                             <option value="ocean">Deep Ocean</option>
                             <option value="sunset">Retro Sunset</option>
                             <option value="blossom">Pink Blossom</option>
@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <div class="setting-item">
-                    <label>Browser Extensions</label>
+                    <label>Allow Extensions</label>
                     <div class="toggle-wrapper">
                         <label class="switch">
                             <input type="checkbox" id="ext-toggle">
@@ -99,7 +99,7 @@
             <div class="hub-tabs">
                 <button class="tab-link active" data-view="games">Games</button>
                 <button class="tab-link" data-view="movies">Movies</button>
-                <button class="tab-link" data-view="saved">Saved Media</button>
+                <button class="tab-link" data-view="saved">Saved Movies</button>
             </div>
             <div class="hub-container">
                 
@@ -158,7 +158,7 @@
             <h2>Continue Watching?</h2>
             <p id="next-desc">Continue next show...</p>
             <div class="next-actions">
-                <button id="next-play">Play Next Episode</button>
+                <button id="next-play">Resume</button>
                 <button id="next-close">Close</button>
             </div>
         </div>
@@ -167,15 +167,16 @@
     <div id="ext-ui">
         <div class="ext-window">
             <h2>Extensions Manager</h2>
-            <p>No extensions installed. Enable Developer Mode in Settings.</p>
+            <p>No extensions installed. Enable Developer Mode via API.</p>
             <button id="ext-close">Close</button>
         </div>
     </div>
 
     <div id="vm-interface">
         <div class="vm-loader"></div>
-        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
         
+        <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
+
         <div id="vm-sidebar" class="sidebar-expanded">
             <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
             <div class="sidebar-content">
