@@ -140,7 +140,7 @@ const BatProx = {
 const MediaLibrary = {
     data: [
         { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
-        { title: "Five Nights at Freddy's 2", img: "https://image.tmdb.org/t/p/w500/m1t4t2B0b7e2e3e4e5e6e7e8.jpg", id: "dummy-fnaf2", type: "movie", desc: "Upcoming sequel. (Placeholder)" },
+        { title: "Five Nights at Freddy's 2", img: "https://i.pinimg.com/736x/1d/43/d7/1d43d7c7c3a7f80b985885022225332f.jpg", id: "dummy-fnaf2", type: "movie", desc: "The animatronics are back for another shift. (Trailer/Concept)" },
         { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth, Deadpool." },
         { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new emotions!" },
         { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba, a misunderstood young woman because of her green skin, and Glinda, a popular girl, become friends at Shiz University." },
@@ -148,6 +148,8 @@ const MediaLibrary = {
         { title: "Gladiator II", img: "https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmf4oo6747ffrp.jpg", id: "558449", type: "movie", desc: "After his home is conquered by the tyrannical Emperors who now lead Rome, Lucius is forced to enter the Colosseum." },
         { title: "Sonic the Hedgehog 3", img: "https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc3J4fvo24Is982.jpg", id: "939243", type: "movie", desc: "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before." },
         { title: "Mufasa: The Lion King", img: "https://image.tmdb.org/t/p/w500/jbOSUAWMGzGL1L4EaUF8veTVri9.jpg", id: "762509", type: "movie", desc: "Told in flashbacks, Mufasa is an orphaned cub, lost and alone until he meets a sympathetic lion named Taka." },
+        { title: "Kraven the Hunter", img: "https://image.tmdb.org/t/p/w500/i47IUSsN126K11JUzqQIOi1Mg1M.jpg", id: "872585", type: "movie", desc: "Kraven's complex relationship with his ruthless father starts him down a path of vengeance." },
+        { title: "Venom: The Last Dance", img: "https://image.tmdb.org/t/p/w500/aosm8NMQ3UyoBVpSxyimorCQykC.jpg", id: "912649", type: "movie", desc: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in." },
         { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime", desc: "Monkey D. Luffy sails the seas to find the One Piece." },
         { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime", desc: "Set in Utopian Piltover and the oppressed underground of Zaun." },
         { title: "Jujutsu Kaisen", img: "https://image.tmdb.org/t/p/w500/fcv2TRuJbQAxJ79qOgM1bjj7qXJ.jpg", id: "95479", type: "anime", desc: "Yuji Itadori, a boy with tremendous physical strength, consumes a cursed object and becomes the host of a powerful curse." },
@@ -156,6 +158,7 @@ const MediaLibrary = {
         { title: "Solo Leveling", img: "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xc32JH60ymTR.jpg", id: "242095", type: "anime", desc: "Ten years ago, the Gate appeared and connected the real world with the world of magic and monsters." },
         { title: "Naruto", img: "https://image.tmdb.org/t/p/w500/vauCEnR7CiyBDzRCeElXdTUGLhM.jpg", id: "46260", type: "anime", desc: "Naruto Uzumaki, a hyperactive and knuckleheaded ninja, searches for recognition from everyone around him." },
         { title: "Dragon Ball Z", img: "https://image.tmdb.org/t/p/w500/dD0X8c39x6bJv7y1e5c3e6b7.jpg", id: "12971", type: "anime", desc: "After learning that he is from another planet, a warrior named Goku and his friends defend the Earth." },
+        { title: "Bleach", img: "https://image.tmdb.org/t/p/w500/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg", id: "30984", type: "anime", desc: "High school student Ichigo Kurosaki can see ghosts, but that is the least of his problems." },
         { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv", desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine." },
         { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl." },
         { title: "The Boys", img: "https://image.tmdb.org/t/p/w500/7nsJ8K3awwL2iY6M6W3d8z9W7X2.jpg", id: "76479", type: "tv", desc: "A group of vigilantes set out to take down corrupt superheroes who abuse their superpowers." },
@@ -287,21 +290,15 @@ const UI = {
 
     handlers: function() {
         const hub = document.getElementById('hub-layer');
-        const settings = document.getElementById('settings-ui');
-        
         document.getElementById('menu-btn').onclick = (e) => {
             e.stopPropagation();
             hub.classList.add('visible');
         };
-        
-        document.getElementById('settings-btn').onclick = (e) => {
-            e.stopPropagation();
-            settings.classList.add('active');
-        };
-
         document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
-        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
-        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
+        
+        hub.onclick = (e) => {
+            if(e.target === hub) hub.classList.remove('visible');
+        };
 
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
@@ -312,6 +309,20 @@ const UI = {
             t.classList.add('active');
             document.getElementById(`${t.dataset.view}-view`).classList.add('active');
         });
+
+        const settings = document.getElementById('settings-ui');
+        document.getElementById('settings-btn').onclick = (e) => {
+            e.stopPropagation();
+            settings.classList.add('active');
+        };
+        document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
+        
+        settings.onclick = (e) => {
+            if(e.target === settings) settings.classList.remove('active');
+        };
+
+        document.getElementById('settings-ui').querySelector('.settings-window').onclick = (e) => e.stopPropagation();
+        document.getElementById('hub-layer').querySelector('.hub-window').onclick = (e) => e.stopPropagation();
 
         document.getElementById('theme-selector').onchange = (e) => {
             e.stopPropagation();
@@ -325,6 +336,7 @@ const UI = {
             Config.save('batprox_ext', e.target.checked);
             BatProx.toggleExtensions(e.target.checked);
         };
+        document.getElementById('ext-close').onclick = () => document.getElementById('ext-ui').classList.remove('active');
     },
 
     applyTheme: function(name) {
