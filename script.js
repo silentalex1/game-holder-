@@ -24,8 +24,8 @@ const Config = {
     },
 
     loadSettings: function() {
-        const savedTheme = localStorage.getItem('batprox_theme');
-        if(savedTheme) UI.applyTheme(savedTheme); else UI.applyTheme('void');
+        const savedTheme = localStorage.getItem('batprox_theme') || 'void';
+        UI.applyTheme(savedTheme);
         MediaLibrary.loadSaved();
         if(this.extensionsEnabled) {
             document.getElementById('ext-toggle').checked = true;
@@ -47,21 +47,31 @@ const BatProx = {
         });
         input.addEventListener('click', (e) => e.stopPropagation());
 
-        document.getElementById('vm-exit-browse').addEventListener('click', () => this.kill());
-        document.getElementById('vm-toggle-sidebar').addEventListener('click', () => {
+        const exitBtn = document.getElementById('vm-exit-browse');
+        if(exitBtn) exitBtn.addEventListener('click', () => this.kill());
+
+        const sidebarToggle = document.getElementById('vm-toggle-sidebar');
+        if(sidebarToggle) sidebarToggle.addEventListener('click', () => {
             document.getElementById('vm-sidebar').classList.toggle('collapsed');
         });
         
-        document.getElementById('vm-menu-btn').onclick = () => {
+        const menuBtn = document.getElementById('vm-menu-btn');
+        if(menuBtn) menuBtn.onclick = () => {
              document.getElementById('hub-layer').classList.add('visible');
              this.kill(); 
         };
-        document.getElementById('vm-settings-btn').onclick = () => {
+
+        const settingsBtn = document.getElementById('vm-settings-btn');
+        if(settingsBtn) settingsBtn.onclick = () => {
             this.kill();
             document.getElementById('settings-ui').classList.add('active');
         };
-        document.getElementById('vm-api-btn').onclick = () => window.location.href = '/ourapi';
-        document.getElementById('vm-ext-btn').onclick = () => {
+
+        const apiBtn = document.getElementById('vm-api-btn');
+        if(apiBtn) apiBtn.onclick = () => window.location.href = '/ourapi';
+
+        const extBtn = document.getElementById('vm-ext-btn');
+        if(extBtn) extBtn.onclick = () => {
              document.getElementById('ext-ui').classList.add('active');
         };
     },
@@ -123,7 +133,7 @@ const BatProx = {
 const MediaLibrary = {
     data: [
         { title: "Five Nights at Freddy's", img: "https://image.tmdb.org/t/p/w500/A4j8S6moJS2zNtRR8oWF08gRnL5.jpg", id: "507089", type: "movie", desc: "A troubled security guard begins working at Freddy Fazbear's Pizza." },
-        { title: "Five Nights at Freddy's 2", img: "https://image.tmdb.org/t/p/w500/m1t4t2B0b7e2e3e4e5e6e7e8.jpg", id: "upcoming", type: "movie", desc: "Upcoming sequel. (Placeholder)" },
+        { title: "Five Nights at Freddy's 2", img: "https://image.tmdb.org/t/p/w500/m1t4t2B0b7e2e3e4e5e6e7e8.jpg", id: "dummy-fnaf2", type: "movie", desc: "Upcoming sequel. (Placeholder)" },
         { title: "Deadpool & Wolverine", img: "https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", id: "533535", type: "movie", desc: "Wolverine is recovering from his injuries when he crosses paths with the loudmouth, Deadpool." },
         { title: "Inside Out 2", img: "https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", id: "1022789", type: "movie", desc: "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new emotions!" },
         { title: "Wicked", img: "https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQw.jpg", id: "402431", type: "movie", desc: "Elphaba, a misunderstood young woman because of her green skin, and Glinda, a popular girl, become friends at Shiz University." },
@@ -131,8 +141,6 @@ const MediaLibrary = {
         { title: "Gladiator II", img: "https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmf4oo6747ffrp.jpg", id: "558449", type: "movie", desc: "After his home is conquered by the tyrannical Emperors who now lead Rome, Lucius is forced to enter the Colosseum." },
         { title: "Sonic the Hedgehog 3", img: "https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc3J4fvo24Is982.jpg", id: "939243", type: "movie", desc: "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before." },
         { title: "Mufasa: The Lion King", img: "https://image.tmdb.org/t/p/w500/jbOSUAWMGzGL1L4EaUF8veTVri9.jpg", id: "762509", type: "movie", desc: "Told in flashbacks, Mufasa is an orphaned cub, lost and alone until he meets a sympathetic lion named Taka." },
-        { title: "Kraven the Hunter", img: "https://image.tmdb.org/t/p/w500/i47IUSsN126K11JUzqQIOi1Mg1M.jpg", id: "872585", type: "movie", desc: "Kraven's complex relationship with his ruthless father starts him down a path of vengeance." },
-        { title: "Venom: The Last Dance", img: "https://image.tmdb.org/t/p/w500/aosm8NMQ3UyoBVpSxyimorCQykC.jpg", id: "912649", type: "movie", desc: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in." },
         { title: "One Piece", img: "https://image.tmdb.org/t/p/w500/cMD9Ygz11VJmK195pWr35Hsy723.jpg", id: "37854", type: "anime", desc: "Monkey D. Luffy sails the seas to find the One Piece." },
         { title: "Arcane", img: "https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg", id: "94605", type: "anime", desc: "Set in Utopian Piltover and the oppressed underground of Zaun." },
         { title: "Jujutsu Kaisen", img: "https://image.tmdb.org/t/p/w500/fcv2TRuJbQAxJ79qOgM1bjj7qXJ.jpg", id: "95479", type: "anime", desc: "Yuji Itadori, a boy with tremendous physical strength, consumes a cursed object and becomes the host of a powerful curse." },
@@ -141,7 +149,6 @@ const MediaLibrary = {
         { title: "Solo Leveling", img: "https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr0xc32JH60ymTR.jpg", id: "242095", type: "anime", desc: "Ten years ago, the Gate appeared and connected the real world with the world of magic and monsters." },
         { title: "Naruto", img: "https://image.tmdb.org/t/p/w500/vauCEnR7CiyBDzRCeElXdTUGLhM.jpg", id: "46260", type: "anime", desc: "Naruto Uzumaki, a hyperactive and knuckleheaded ninja, searches for recognition from everyone around him." },
         { title: "Dragon Ball Z", img: "https://image.tmdb.org/t/p/w500/dD0X8c39x6bJv7y1e5c3e6b7.jpg", id: "12971", type: "anime", desc: "After learning that he is from another planet, a warrior named Goku and his friends defend the Earth." },
-        { title: "Bleach", img: "https://image.tmdb.org/t/p/w500/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg", id: "30984", type: "anime", desc: "High school student Ichigo Kurosaki can see ghosts, but that is the least of his problems." },
         { title: "Breaking Bad", img: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", id: "1396", type: "tv", desc: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine." },
         { title: "Stranger Things", img: "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", id: "66732", type: "tv", desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl." },
         { title: "The Boys", img: "https://image.tmdb.org/t/p/w500/7nsJ8K3awwL2iY6M6W3d8z9W7X2.jpg", id: "76479", type: "tv", desc: "A group of vigilantes set out to take down corrupt superheroes who abuse their superpowers." },
@@ -149,10 +156,8 @@ const MediaLibrary = {
         { title: "Squid Game", img: "https://image.tmdb.org/t/p/w500/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg", id: "93405", type: "tv", desc: "Hundreds of cash-strapped players accept a strange invitation to compete in children's games." },
         { title: "The Witcher", img: "https://image.tmdb.org/t/p/w500/7vjaCdMw15FEbXyLQTVa04URsPm.jpg", id: "71912", type: "tv", desc: "Geralt of Rivia, a mutated monster-hunter for hire, journeys toward his destiny in a turbulent world." },
         { title: "The Last of Us", img: "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg", id: "100088", type: "tv", desc: "Twenty years after a fungal outbreak ravages the planet, survivors Joel and Tess are tasked with a mission." },
-        { title: "House of the Dragon", img: "https://image.tmdb.org/t/p/w500/z2yahl2uefxDCl0nogcRBstwruJ.jpg", id: "94997", type: "tv", desc: "The Targaryen dynasty is at the absolute apex of its power, with more than 15 dragons under their yoke." },
         { title: "1v1.lol", img: "https://play-lh.googleusercontent.com/1-f-4g-a-q-z-x-c-v-b-n-m", id: "game-1v1", type: "game", url: "https://1v1.lol", desc: "Online building and shooting simulator." },
-        { title: "Subway Surfers", img: "https://play-lh.googleusercontent.com/49222-1-3-4-5-5-2-1", id: "game-subway", type: "game", url: "https://subwaysurfers.com", desc: "Run as fast as you can!" },
-        { title: "Slope", img: "https://play-lh.googleusercontent.com/uR2G9n8jJ6y5h3q4z8t7s9v0w1x2y3z4", id: "game-slope", type: "game", url: "https://slopegame.io", desc: "Speed down a randomized slope." }
+        { title: "Subway Surfers", img: "https://play-lh.googleusercontent.com/49222-1-3-4-5-5-2-1", id: "game-subway", type: "game", url: "https://subwaysurfers.com", desc: "Run as fast as you can!" }
     ],
     saved: [],
     currentItem: null,
@@ -165,13 +170,10 @@ const MediaLibrary = {
             e.stopPropagation();
             this.render(e.target.value);
         };
-        document.getElementById('media-type-selector').onclick = (e) => e.stopPropagation();
         
         document.getElementById('ask-play').onclick = (e) => {
             e.stopPropagation();
             document.getElementById('ask-ui').classList.remove('active');
-            if(this.currentItem.id === 'upcoming') { alert('This movie is not released yet.'); return; }
-            
             if(this.currentItem.type === 'game') {
                 BatProx.boot(this.currentItem.url);
             } else {
@@ -207,6 +209,8 @@ const MediaLibrary = {
         const grid = document.getElementById('games-grid');
         grid.innerHTML = '';
         const games = this.data.filter(x => x.type === 'game');
+        if(games.length === 0) grid.innerHTML = '<div class="empty-state">No games available.</div>';
+        
         games.forEach(item => this.createCard(item, grid));
     },
 
@@ -281,7 +285,10 @@ const UI = {
             hub.classList.add('visible');
         };
         document.getElementById('hub-exit').onclick = () => hub.classList.remove('visible');
-        hub.onclick = (e) => { if(e.target === hub) hub.classList.remove('visible'); };
+        
+        hub.onclick = (e) => {
+            if(e.target === hub) hub.classList.remove('visible');
+        };
 
         const tabs = document.querySelectorAll('.tab-link');
         const pages = document.querySelectorAll('.hub-page');
@@ -299,20 +306,22 @@ const UI = {
             settings.classList.add('active');
         };
         document.getElementById('settings-close').onclick = () => settings.classList.remove('active');
-        settings.onclick = (e) => { if(e.target === settings) settings.classList.remove('active'); };
+        
+        settings.onclick = (e) => {
+            if(e.target === settings) settings.classList.remove('active');
+        };
 
         document.getElementById('settings-ui').querySelector('.settings-window').onclick = (e) => e.stopPropagation();
         document.getElementById('hub-layer').querySelector('.hub-window').onclick = (e) => e.stopPropagation();
 
-        document.getElementById('theme-selector').onclick = (e) => e.stopPropagation();
         document.getElementById('theme-selector').onchange = (e) => {
             e.stopPropagation();
             this.applyTheme(e.target.value);
             Config.save('batprox_theme', e.target.value);
         };
 
-        document.getElementById('ext-toggle').onclick = (e) => e.stopPropagation();
         document.getElementById('ext-toggle').onchange = (e) => {
+            e.stopPropagation();
             Config.extensionsEnabled = e.target.checked;
             Config.save('batprox_ext', e.target.checked);
             BatProx.toggleExtensions(e.target.checked);
@@ -457,7 +466,7 @@ const VaporEngine = {
         this.p.forEach((p, i) => {
             p.y -= p.v; p.l -= 0.009; p.x += Math.sin(p.y * 0.05) * 0.5;
             if(p.l <= 0) this.p.splice(i, 1);
-            const safeR = Math.max(0.1, Math.abs(p.s)); 
+            const safeR = Math.max(0.1, Math.abs(p.s));
             this.ctx.beginPath();
             const g = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, safeR);
             g.addColorStop(0, `rgba(255, 255, 255, ${Math.max(0, p.l * 0.7)})`);
@@ -496,7 +505,7 @@ const BlossomEngine = {
             this.ctx.rotate(p.r * Math.PI / 180);
             this.ctx.fillStyle = '#fbcfe8';
             this.ctx.beginPath();
-            this.ctx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2);
+            this.ctx.ellipse(0, 0, Math.max(0.1, p.s), Math.max(0.1, p.s/2), 0, 0, Math.PI*2);
             this.ctx.fill();
             this.ctx.restore();
         });
