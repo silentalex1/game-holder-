@@ -47,28 +47,32 @@ const server = http.createServer((req, res) => {
             return res.end('URL required');
         }
 
-        const fetchModule = targetUrl.startsWith('https') ? https : http;
+        const lib = targetUrl.startsWith('https') ? https : http;
         const options = {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
         };
-        
-        const proxyReq = fetchModule.get(targetUrl, options, (proxyRes) => {
+
+        const proxyReq = lib.get(targetUrl, options, (proxyRes) => {
+            if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) {
+                res.writeHead(302, { 'Location': `/api/proxy?url=${encodeURIComponent(proxyRes.headers.location)}` });
+                res.end();
+                return;
+            }
+
             const proxyHeaders = { ...proxyRes.headers, ...headers };
-            
             delete proxyHeaders['x-frame-options'];
             delete proxyHeaders['content-security-policy'];
             delete proxyHeaders['frame-options'];
-            delete proxyHeaders['strict-transport-security'];
             
             res.writeHead(proxyRes.statusCode, proxyHeaders);
             proxyRes.pipe(res);
         });
-        
+
         proxyReq.on('error', (err) => {
             res.writeHead(500);
-            res.end('Proxy Error');
+            res.end('');
         });
         return;
     }
@@ -84,8 +88,7 @@ const server = http.createServer((req, res) => {
                     const data = JSON.parse(body || '{}');
                     const id = data.id || "";
                     if (/^\d{17,20}$/.test(id)) {
-                        const mockUser = "User_" + id.substring(0, 5); 
-                        res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
+                        res.end(JSON.stringify({ valid: true, username: "User_" + id.slice(-4) }));
                     } else {
                         res.end(JSON.stringify({ valid: false }));
                     }
@@ -93,23 +96,16 @@ const server = http.createServer((req, res) => {
                 }
 
                 if (pathname === '/api/v1/keys/create') {
-                    const key = 'bp_live_' + crypto.randomBytes(12).toString('hex');
-                    res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
+                    const key = 'bp_' + crypto.randomBytes(12).toString('hex');
+                    res.end(JSON.stringify({ success: true, key: key }));
                     return;
                 }
 
-                if (pathname === '/api/v1/keys/validate-paid') {
-                    const data = JSON.parse(body || '{}');
-                    const isValid = data.key && data.key.startsWith('bp_paid_');
-                    res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
-                    return;
-                }
-
-                res.end(JSON.stringify({ error: "Endpoint not found" }));
+                res.end(JSON.stringify({ error: "Not Found" }));
             });
         } else {
-            res.writeHead(405, { 'Content-Type': 'application/json', ...headers });
-            res.end(JSON.stringify({ error: "Method Not Allowed" }));
+            res.writeHead(405, headers);
+            res.end();
         }
         return;
     }
@@ -124,13 +120,13 @@ const server = http.createServer((req, res) => {
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code === 'ENOENT') {
-                fs.readFile('./index.html', (err, mainContent) => {
+                fs.readFile('./index.html', (err, main) => {
                     res.writeHead(200, { 'Content-Type': 'text/html' });
-                    res.end(mainContent, 'utf-8');
+                    res.end(main, 'utf-8');
                 });
             } else {
                 res.writeHead(500);
-                res.end('Server Error');
+                res.end('');
             }
         } else {
             res.writeHead(200, { 'Content-Type': contentType });
@@ -140,5 +136,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`BatProx Host running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
