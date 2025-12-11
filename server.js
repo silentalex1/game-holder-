@@ -24,6 +24,7 @@ const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': 2592000
     };
 
@@ -58,37 +59,43 @@ const server = http.createServer((req, res) => {
     }
 
     if (pathname.startsWith('/api/v1')) {
-        res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
-        
-        if (pathname === '/api/v1/discord/validate' && req.method === 'POST') {
+        if (req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', () => {
-                const data = JSON.parse(body || '{}');
-                const mockUser = "User_" + (data.id ? data.id.substring(0, 4) : "Anon"); 
-                res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
+                res.writeHead(200, { 'Content-Type': 'application/json', ...headers });
+                
+                if (pathname === '/api/v1/discord/validate') {
+                    const data = JSON.parse(body || '{}');
+                    const id = data.id || "";
+                    if (/^\d{17,20}$/.test(id)) {
+                        const mockUser = "User_" + id.substring(0, 5); 
+                        res.end(JSON.stringify({ valid: true, username: mockUser, discriminator: "0000" }));
+                    } else {
+                        res.end(JSON.stringify({ valid: false }));
+                    }
+                    return;
+                }
+
+                if (pathname === '/api/v1/keys/create') {
+                    const key = 'bp_live_' + crypto.randomBytes(12).toString('hex');
+                    res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
+                    return;
+                }
+
+                if (pathname === '/api/v1/keys/validate-paid') {
+                    const data = JSON.parse(body || '{}');
+                    const isValid = data.key && data.key.startsWith('bp_paid_');
+                    res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
+                    return;
+                }
+
+                res.end(JSON.stringify({ error: "Endpoint not found" }));
             });
-            return;
+        } else {
+            res.writeHead(405, { 'Content-Type': 'application/json', ...headers });
+            res.end(JSON.stringify({ error: "Method Not Allowed" }));
         }
-
-        if (pathname === '/api/v1/keys/create' && req.method === 'POST') {
-            const key = 'bp_free_' + crypto.randomBytes(8).toString('hex');
-            res.end(JSON.stringify({ success: true, key: key, tier: 'free' }));
-            return;
-        }
-
-        if (pathname === '/api/v1/keys/validate-paid' && req.method === 'POST') {
-            let body = '';
-            req.on('data', chunk => { body += chunk.toString(); });
-            req.on('end', () => {
-                const data = JSON.parse(body || '{}');
-                const isValid = data.key && data.key.startsWith('bp_paid_');
-                res.end(JSON.stringify({ valid: isValid, tier: isValid ? 'premium' : 'invalid' }));
-            });
-            return;
-        }
-
-        res.end(JSON.stringify({ error: "Endpoint not found" }));
         return;
     }
 
