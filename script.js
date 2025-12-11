@@ -108,7 +108,24 @@ const BatProx = {
         this.vm.classList.add('active');
         this.loader.style.width = '0%';
         setTimeout(() => this.loader.style.width = '100%', 50);
-        this.frame.src = target;
+        
+        const isGameOrMovie = target.includes('vidking') || target.includes('1v1') || target.includes('slope');
+        
+        if (isGameOrMovie) {
+            this.frame.src = target;
+        } else {
+            const blobContent = `
+                <!DOCTYPE html>
+                <html style="height:100%;margin:0;">
+                <body style="margin:0;height:100%;overflow:hidden;background:#fff;">
+                    <iframe src="${target}" style="width:100%;height:100%;border:none;" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([blobContent], { type: 'text/html' });
+            this.frame.src = URL.createObjectURL(blob);
+        }
+        
         setTimeout(() => this.loader.style.opacity = '0', 500);
     },
 
@@ -197,6 +214,7 @@ const MediaLibrary = {
         grid.innerHTML = '';
         const games = this.data.filter(x => x.type === 'game');
         if(games.length === 0) grid.innerHTML = '<div class="empty-state">No games available.</div>';
+        
         games.forEach(item => this.createCard(item, grid));
     },
 
@@ -217,8 +235,10 @@ const MediaLibrary = {
     createCard: function(item, container) {
         const card = document.createElement('div');
         card.className = 'media-card';
+        const img = item.img;
+        
         card.innerHTML = `
-            <img src="${item.img}" alt="${item.title}">
+            <img src="${img}" alt="${item.title}">
             <div class="media-info">
                 <div class="media-title">${item.title}</div>
             </div>
