@@ -427,6 +427,7 @@ const WarpEngine = {
     resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = window.innerHeight; },
     spawn: function() { this.p.push({ x: (Math.random()-0.5)*this.w*2, y: (Math.random()-0.5)*this.h*2, z: Math.random()*this.w, sz: Math.random() }); },
     loop: function() {
+        if(!this.ctx) return;
         this.ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
         this.ctx.fillRect(0, 0, this.w, this.h);
         const cx = this.w/2, cy = this.h/2;
@@ -456,9 +457,9 @@ const VaporEngine = {
     },
     resize: function() { this.w = this.canvas.width = window.innerWidth; this.h = this.canvas.height = 450; },
     enable: function() { this.active = true; },
-    disable: function() { this.active = false; this.p = []; this.ctx.clearRect(0,0,this.w,this.h); },
+    disable: function() { this.active = false; this.p = []; if(this.ctx) this.ctx.clearRect(0,0,this.w,this.h); },
     loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        if(!this.active || !this.ctx) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0, 0, this.w, this.h);
         const style = getComputedStyle(document.documentElement);
         const rgb = style.getPropertyValue('--primary-rgb').trim() || '168, 85, 247';
@@ -494,7 +495,7 @@ const BlossomEngine = {
     enable: function() { this.active = true; this.canvas.style.display = 'block'; },
     disable: function() { this.active = false; this.canvas.style.display = 'none'; this.p = []; },
     loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        if(!this.active || !this.ctx) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0, 0, this.w, this.h);
         if(this.p.length < 50) {
             this.p.push({ x: Math.random()*this.w, y: -20, v: Math.random()*2+1, r: Math.random()*360, s: Math.random()*5+3 });
@@ -527,7 +528,7 @@ const OceanEngine = {
     enable: function() { this.active = true; this.canvas.style.display = 'block'; },
     disable: function() { this.active = false; this.canvas.style.display = 'none'; },
     loop: function() {
-        if(!this.active) { requestAnimationFrame(() => this.loop()); return; }
+        if(!this.active || !this.ctx) { requestAnimationFrame(() => this.loop()); return; }
         this.ctx.clearRect(0,0,this.w,this.h);
         this.offset += 0.02;
         for(let i = 0; i < 3; i++) {
