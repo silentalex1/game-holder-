@@ -14,7 +14,8 @@ const mimeTypes = {
     '.json': 'application/json',
     '.png': 'image/png',
     '.jpg': 'image/jpg',
-    '.svg': 'image/svg+xml'
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon'
 };
 
 const server = http.createServer((req, res) => {
@@ -24,12 +25,17 @@ const server = http.createServer((req, res) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
-        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Max-Age': 2592000
     };
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204, headers);
+        res.end();
+        return;
+    }
+
+    if (pathname === '/favicon.ico') {
+        res.writeHead(204);
         res.end();
         return;
     }
@@ -42,16 +48,25 @@ const server = http.createServer((req, res) => {
         }
 
         const fetchModule = targetUrl.startsWith('https') ? https : http;
+        const options = {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        };
         
-        fetchModule.get(targetUrl, (proxyRes) => {
+        const proxyReq = fetchModule.get(targetUrl, options, (proxyRes) => {
             const proxyHeaders = { ...proxyRes.headers, ...headers };
+            
             delete proxyHeaders['x-frame-options'];
             delete proxyHeaders['content-security-policy'];
             delete proxyHeaders['frame-options'];
+            delete proxyHeaders['strict-transport-security'];
             
             res.writeHead(proxyRes.statusCode, proxyHeaders);
             proxyRes.pipe(res);
-        }).on('error', (err) => {
+        });
+        
+        proxyReq.on('error', (err) => {
             res.writeHead(500);
             res.end('Proxy Error');
         });
