@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { overflow-y: auto; }
+        body { overflow-y: auto; background: #030303; }
         .api-container { max-width: 1000px; margin: 80px auto; padding: 30px; }
         .code-block { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; color: #a855f7; margin: 20px 0; overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .keyword { color: #f472b6; }
@@ -195,8 +195,16 @@ BatNode.performance.settings = {
                     clearInterval(int);
                     fetch('/api/v1/discord/validate', { method:'POST', body: JSON.stringify({id}) })
                         .then(r=>r.json()).then(d => {
-                            document.getElementById('mock-username').innerText = d.username;
-                            showStep(3);
+                            if(d.valid) {
+                                document.getElementById('mock-username').innerText = d.username;
+                                showStep(3);
+                            } else {
+                                alert("Invalid ID");
+                                showStep(1);
+                            }
+                        }).catch(() => {
+                            alert("Server connection failed");
+                            showStep(1);
                         });
                 }
             }, 50);
