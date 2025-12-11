@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <meta name="description" content="#1 best free movie website to go to.">
     <title>Bat Prox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
@@ -20,10 +19,7 @@
                 <div class="bat-head"></div>
             </div>
         </div>
-        <button id="menu-btn">
-            <span></span>
-            <span></span>
-        </button>
+        <button id="menu-btn"><span></span><span></span></button>
         <button id="settings-btn">⚙</button>
     </div>
 
@@ -80,15 +76,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="setting-item">
-                    <label>Browser Extensions</label>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="ext-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -104,7 +91,6 @@
                 <button class="tab-link" data-view="saved">Saved Movies</button>
             </div>
             <div class="hub-container">
-                
                 <div id="games-view" class="hub-page active">
                     <h2>Games Library</h2>
                     <div class="search-wrapper">
@@ -112,7 +98,6 @@
                     </div>
                     <div class="content-grid" id="games-grid"></div>
                 </div>
-
                 <div id="movies-view" class="hub-page">
                     <div class="movie-header">
                         <h2>Media Library</h2>
@@ -129,14 +114,12 @@
                     </div>
                     <div class="content-grid" id="movies-grid"></div>
                 </div>
-
                 <div id="saved-view" class="hub-page">
                     <h2>Your Collection</h2>
                     <div class="content-grid" id="saved-grid">
                         <div class="empty-state">No saved media.</div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -148,32 +131,9 @@
                 <p id="ask-desc">Description loading...</p>
                 <div class="ask-actions">
                     <button id="ask-play">Play Now</button>
-                    <button id="ask-save">Save to Collection</button>
+                    <button id="ask-save">Save</button>
                 </div>
                 <button id="ask-close-main" class="secondary-btn">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="next-ep-ui" class="modal-overlay">
-        <div class="modal-window next-window">
-            <h2>Continue Watching?</h2>
-            <p id="next-desc">Continue next show...</p>
-            <div class="next-actions">
-                <button id="next-play">Resume</button>
-                <button id="next-close" class="secondary-btn">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="ext-ui" class="modal-overlay">
-        <div class="modal-window ext-window">
-            <div class="modal-header">
-                <h2>Extensions Manager</h2>
-                <button id="ext-close" class="close-btn">X</button>
-            </div>
-            <div class="modal-body">
-                <p>No extensions installed. Enable Developer Mode via API.</p>
             </div>
         </div>
     </div>
@@ -181,21 +141,17 @@
     <div id="vm-interface">
         <div class="vm-loader"></div>
         <iframe id="vm-frame" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups allow-modals"></iframe>
-        
         <div id="vm-sidebar" class="sidebar-expanded">
             <button id="vm-toggle-sidebar" class="sidebar-toggle">></button>
             <div class="sidebar-content">
-                <button id="vm-menu-btn" class="sidebar-btn" title="Menu"><span></span><span></span></button>
-                <button id="vm-settings-btn" class="sidebar-btn" title="Settings">⚙</button>
-                <button id="vm-api-btn" class="sidebar-btn" title="Our API">API</button>
-                <button id="vm-exit-browse" class="sidebar-btn exit" title="Exit">Exit</button>
-                <button id="vm-ext-btn" class="sidebar-btn hidden" title="Extensions">Ext</button>
+                <button id="vm-menu-btn" class="sidebar-btn">M</button>
+                <button id="vm-exit-browse" class="sidebar-btn exit">X</button>
             </div>
         </div>
     </div>
 
     <div class="main-ui">
-        <div id="clock-display">00:00:00 PM - 12/09/2025</div>
+        <div id="clock-display">00:00:00 PM</div>
         <div class="core-assembly">
             <div class="input-housing">
                 <input type="text" id="master-input" spellcheck="false" autocomplete="off" placeholder="Enter any website domains:">
