@@ -28,8 +28,6 @@
         .btn-gen { background: #a855f7; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; margin-top: 15px; }
         .btn-gen:hover { opacity: 0.9; }
         
-        #api-settings-btn { position: fixed; top: 30px; right: 30px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 12px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); z-index: 100; }
-        
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .key-window { width: 400px; background: #111; border: 1px solid #333; border-radius: 16px; padding: 30px; text-align: center; }
@@ -41,7 +39,7 @@
 </head>
 <body>
     <a href="/" class="back-btn">← Back to BatProx</a>
-    <button id="api-settings-btn" onclick="openPaidSettings()">⚙</button>
+    <button id="api-settings-btn" onclick="openPaidSettings()" style="position:fixed; top:30px; right:30px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); width:40px; height:40px; border-radius:12px; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(10px); z-index:100;">⚙</button>
     
     <div class="api-container">
         <h1>BatProx Developer API</h1>
@@ -131,36 +129,17 @@ BatNode.performance.settings = {
     </div>
 
     <script>
-        function applyTheme(name) {
-            const themes = {
-                void: { p: '#a855f7', rgb: '168, 85, 247', bg: '#030303', s: '#0a0a0a', t: '#ffffff' },
-                ocean: { p: '#3b82f6', rgb: '59, 130, 246', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
-                sunset: { p: '#f97316', rgb: '249, 115, 22', bg: '#431407', s: '#7c2d12', t: '#ffedd5' },
-                blossom: { p: '#fbcfe8', rgb: '251, 207, 232', bg: '#1f1016', s: '#29151e', t: '#fce7f3' },
-                starwars: { p: '#ffe81f', rgb: '255, 232, 31', bg: '#000000', s: '#111111', t: '#ffe81f' },
-                midnight: { p: '#6366f1', rgb: '99, 102, 241', bg: '#0f172a', s: '#1e293b', t: '#e2e8f0' },
-                ember: { p: '#f43f5e', rgb: '244, 63, 94', bg: '#0f0505', s: '#1c0a0a', t: '#fff1f2' },
-                glitch: { p: '#22d3ee', rgb: '34, 211, 238', bg: '#081012', s: '#0c1a1f', t: '#ecfeff' },
-                forest: { p: '#10b981', rgb: '16, 185, 129', bg: '#022c22', s: '#064e3b', t: '#d1fae5' },
-                gold: { p: '#eab308', rgb: '234, 179, 8', bg: '#1a190b', s: '#29250b', t: '#fefce8' },
-                cotton: { p: '#f472b6', rgb: '244, 114, 182', bg: '#1f1016', s: '#2e1a22', t: '#fce7f3' },
-                dracula: { p: '#bd93f9', rgb: '189, 147, 249', bg: '#282a36', s: '#44475a', t: '#f8f8f2' },
-                matrix: { p: '#00ff41', rgb: '0, 255, 65', bg: '#000000', s: '#0d0d0d', t: '#e0ffe4' },
-                royal: { p: '#c084fc', rgb: '192, 132, 252', bg: '#170b29', s: '#251b3b', t: '#f3e8ff' }
-            };
-            const t = themes[name] || themes.void;
-            const r = document.documentElement.style;
-            r.setProperty('--primary', t.p);
-            r.setProperty('--primary-rgb', t.rgb);
-            r.setProperty('--bg', t.bg);
-            r.setProperty('--surface', t.s);
-            r.setProperty('--text', t.t);
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('batprox_theme') || 'void';
             applyTheme(saved);
         });
+
+        function applyTheme(name) {
+            const t = { p: '#a855f7', bg: '#030303', s: '#0a0a0a', t: '#ffffff' }; 
+            const r = document.documentElement.style;
+            r.setProperty('--primary', t.p);
+            r.setProperty('--bg', t.bg);
+        }
 
         function openKeyGen() {
             if(localStorage.getItem('batprox_api_key')) {
@@ -203,7 +182,7 @@ BatNode.performance.settings = {
                                 showStep(1);
                             }
                         }).catch(() => {
-                            alert("Server connection failed");
+                            alert("Server Error");
                             showStep(1);
                         });
                 }
